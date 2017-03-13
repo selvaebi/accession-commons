@@ -15,8 +15,13 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
+import java.util.List;
+import java.util.Map;
+
 public interface AccessionRepository<T> {
-    String get(T object);
+    Map<T, String> get(List<T> objects);
+
+
 
     void add(T object, String accession);
 }

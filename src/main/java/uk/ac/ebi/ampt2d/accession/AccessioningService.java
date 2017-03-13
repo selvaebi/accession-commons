@@ -15,9 +15,10 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class AccessioningService<T> {
     private AccessionRepository<T> accessionRepository;
@@ -31,21 +32,20 @@ public class AccessioningService<T> {
     }
 
     public Map<T, String> createAccessions(List<T> objects) {
-        Map<T, String> accessions = new HashMap<>();
+        // look for accessions for those objects in the repository
+        Map<T, String> storedAccessions = accessionRepository.get(objects);
 
-        for (T object : objects) {
-            // look for an existing accession for this object
-            String accession = accessionRepository.get(object);
+        // get all objects that are not in the repository
+        Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
+                                           .collect(Collectors.toSet());
+        for (T object : objectsNotInRepository) {
+            // create one accession for each object that is not in the repository, and store them
+            String accession = accessionGenerator.get(object);
+            accessionRepository.add(object, accession);
 
-            if (accession == null) {
-                // if there is no previous accession for the object, create a new one and store it in the repository
-                accession = accessionGenerator.get(object);
-                accessionRepository.add(object, accession);
-            }
-
-            accessions.put(object, accession);
+            storedAccessions.put(object, accession);
         }
 
-        return accessions;
+        return storedAccessions;
     }
 }

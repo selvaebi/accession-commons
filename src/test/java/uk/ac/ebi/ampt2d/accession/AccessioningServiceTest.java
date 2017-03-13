@@ -46,10 +46,16 @@ public class AccessioningServiceTest {
         };
 
         AccessionRepository<String> repository = new AccessionRepository<String>() {
-            private Map<String, String> storage = new HashMap<String, String>();
+            private Map<String, String> storage = new HashMap<>();
 
-            public String get(String object) {
-                return storage.get(object);
+            public Map<String, String> get(List<String> objects) {
+                Map<String, String> accessions = new HashMap<>();
+                for (String object : objects) {
+                    if (storage.containsKey(object)) {
+                        accessions.put(object, storage.get(object));
+                    }
+                }
+                return accessions;
             }
 
             public void add(String object, String accession) {
