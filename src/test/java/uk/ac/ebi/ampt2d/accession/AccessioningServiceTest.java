@@ -58,8 +58,8 @@ public class AccessioningServiceTest {
                 return accessions;
             }
 
-            public void add(String object, String accession) {
-                storage.put(object, accession);
+            public void add(Map<String, String> accessions) {
+                storage.putAll(accessions);
             }
         };
 

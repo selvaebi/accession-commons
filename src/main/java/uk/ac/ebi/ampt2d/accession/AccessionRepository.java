@@ -21,7 +21,5 @@ import java.util.Map;
 public interface AccessionRepository<T> {
     Map<T, String> get(List<T> objects);
 
-
-
-    void add(T object, String accession);
+    void add(Map<T, String> accession);
 }
