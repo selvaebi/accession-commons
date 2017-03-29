@@ -18,7 +18,7 @@ package uk.ac.ebi.ampt2d.accession;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AccessioningService<T> {
@@ -36,15 +36,16 @@ public class AccessioningService<T> {
         // look for accessions for those objects in the repository
         Map<T, String> storedAccessions = accessionRepository.get(objects);
 
-        // create accessions for all objects that are not in the repository
-        Map<T, String> newAccessions = objects.stream().
-                filter(object -> !storedAccessions.containsKey(object)).distinct().
-                collect(Collectors.toMap(Function.identity(), object -> accessionGenerator.get(object)));
+        // get all objects that are not in the repository
+        Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
+                                               .collect(Collectors.toSet());
 
-        // store the new accessions in the repository and return them all
-        accessionRepository.add(newAccessions);
-
-        storedAccessions.putAll(newAccessions);
+        if (objectsNotInRepository.size() > 0) {
+            // generate accessions for all the new objects, adding them to the repository
+            Map<T, String> newAccessions = accessionGenerator.get(objectsNotInRepository);
+            accessionRepository.add(newAccessions);
+            storedAccessions.putAll(newAccessions);
+        }
 
         return storedAccessions;
     }

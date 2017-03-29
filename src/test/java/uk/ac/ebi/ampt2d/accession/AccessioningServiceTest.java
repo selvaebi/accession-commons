@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -40,14 +41,20 @@ public class AccessioningServiceTest {
 
             private int counter = 0;
 
-            public String get(String object) {
-                return PREFIX + counter++;
+            @Override
+            public Map<String, String> get(Set<String> objects) {
+                Map<String, String> accessions = new HashMap<>();
+                for (String object : objects) {
+                    accessions.put(object, PREFIX + counter++);
+                }
+                return accessions;
             }
         };
 
         AccessionRepository<String> repository = new AccessionRepository<String>() {
             private Map<String, String> storage = new HashMap<>();
 
+            @Override
             public Map<String, String> get(List<String> objects) {
                 Map<String, String> accessions = new HashMap<>();
                 for (String object : objects) {
@@ -58,6 +65,7 @@ public class AccessioningServiceTest {
                 return accessions;
             }
 
+            @Override
             public void add(Map<String, String> accessions) {
                 storage.putAll(accessions);
             }

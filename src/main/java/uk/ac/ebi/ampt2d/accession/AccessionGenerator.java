@@ -15,6 +15,9 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
+import java.util.Map;
+import java.util.Set;
+
 public interface AccessionGenerator<T> {
-    String get(T object);
+    Map<T, String> get(Set<T> object);
 }
