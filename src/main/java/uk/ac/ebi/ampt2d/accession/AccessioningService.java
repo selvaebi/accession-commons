@@ -21,18 +21,37 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A service that provides accessions for objects
+ *
+ * @param <T> Object class
+ */
 public class AccessioningService<T> {
     private AccessionRepository<T> accessionRepository;
 
     private AccessionGenerator<T> accessionGenerator;
 
+    /**
+     * Constructs a service that will retrieve existing accessions from a repository, and create new ones using a
+     * generator
+     *
+     * @param accessionRepository Repository that returns existing accessions and stores the new ones
+     * @param accessionGenerator Generator that creates new accessions for not accessioned objects
+     */
     public AccessioningService(AccessionRepository<T> accessionRepository,
                                AccessionGenerator<T> accessionGenerator) {
         this.accessionRepository = accessionRepository;
         this.accessionGenerator = accessionGenerator;
     }
 
-    public Map<T, String> createAccessions(List<T> objects) {
+    /**
+     * Get accessions for a list of objects. It looks for the object's accessions in a repository, and it they don't
+     * exist, generate new ones, storing them in the repository
+     *
+     * @param objects List of objects to accession
+     * @return Objects to accessions map
+     */
+    public Map<T, String> getAccessions(List<T> objects) {
         // look for accessions for those objects in the repository
         Map<T, String> storedAccessions = accessionRepository.get(objects);
 

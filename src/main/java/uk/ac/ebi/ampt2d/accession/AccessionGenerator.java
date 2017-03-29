@@ -18,6 +18,19 @@ package uk.ac.ebi.ampt2d.accession;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An accession generator, that generate unique accessions for given objects
+ *
+ * @param <T> Object class
+ */
 public interface AccessionGenerator<T> {
-    Map<T, String> get(Set<T> object);
+
+    /**
+     * Generate unique accessions for a set of objects. The returned accessions should be unique: two different
+     * objects cannot get the same accession
+     *
+     * @param objects Set of objects to accession
+     * @return A map of objects to unique accessions
+     */
+    Map<T, String> get(Set<T> objects);
 }

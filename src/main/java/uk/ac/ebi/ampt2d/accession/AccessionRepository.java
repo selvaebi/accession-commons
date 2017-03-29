@@ -18,8 +18,24 @@ package uk.ac.ebi.ampt2d.accession;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Accession repository
+ *
+ * @param <T> Object class
+ */
 public interface AccessionRepository<T> {
+    /**
+     * Given a list of objects, it returns the accessions for those objects that are stored in the repository
+     *
+     * @param objects List of objects to accession
+     * @return Objects to accessions map, for the objects that are stored in the repository
+     */
     Map<T, String> get(List<T> objects);
 
+    /**
+     * Add object-accession pairs to a repository
+     *
+     * @param accessions Objects to accessions map
+     */
     void add(Map<T, String> accessions);
 }

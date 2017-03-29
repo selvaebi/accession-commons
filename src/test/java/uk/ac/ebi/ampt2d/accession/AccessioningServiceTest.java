@@ -77,7 +77,7 @@ public class AccessioningServiceTest {
     @Test
     public void everyNewObjectReceiveOneAccession() throws Exception {
         List<String> newObjects = Arrays.asList("Object 1", "Object 2", "Object 3");
-        Map<String, String> accessions = service.createAccessions(newObjects);
+        Map<String, String> accessions = service.getAccessions(newObjects);
 
         assertTrue(newObjects.stream().allMatch(object -> accessions.get(object) != null));
     }
@@ -88,7 +88,7 @@ public class AccessioningServiceTest {
         String anotherObject1 = "Object 1";
 
         List<String> newObjects = Arrays.asList(object1, anotherObject1);
-        Map<String, String> accessions = service.createAccessions(newObjects);
+        Map<String, String> accessions = service.getAccessions(newObjects);
 
         String accession1 = accessions.get(object1);
         String anotherAccession1 = accessions.get(anotherObject1);
@@ -102,7 +102,7 @@ public class AccessioningServiceTest {
         String object2 = "Object 2";
 
         List<String> newObjects = Arrays.asList(object1, object2);
-        Map<String, String> accessions = service.createAccessions(newObjects);
+        Map<String, String> accessions = service.getAccessions(newObjects);
 
         String accession1 = accessions.get(object1);
         String accession2 = accessions.get(object2);
@@ -115,12 +115,12 @@ public class AccessioningServiceTest {
         String object1 = "Object 1";
         String object2 = "Object 2";
 
-        Map<String, String> accessions = service.createAccessions(Arrays.asList(object1, object2));
+        Map<String, String> accessions = service.getAccessions(Arrays.asList(object1, object2));
 
         String accession1 = accessions.get(object1);
         String accession2 = accessions.get(object2);
 
-        Map<String, String> accessionsFromSecondServiceCall = service.createAccessions(Arrays.asList(object1, object2));
+        Map<String, String> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(object1, object2));
         
         assertEquals(accession1, accessionsFromSecondServiceCall.get(object1));
         assertEquals(accession2, accessionsFromSecondServiceCall.get(object2));
@@ -131,7 +131,7 @@ public class AccessioningServiceTest {
         String object1 = "Object 1";
         String object2 = "Object 2";
 
-        Map<String, String> accessions = service.createAccessions(Arrays.asList(object1, object2));
+        Map<String, String> accessions = service.getAccessions(Arrays.asList(object1, object2));
 
         String accession1 = accessions.get(object1);
         String accession2 = accessions.get(object2);
@@ -141,7 +141,7 @@ public class AccessioningServiceTest {
 
         List<String> objectsToAccession = Arrays.asList(object1, object2, object3, object4);
         Map<String, String> accessionsFromSecondServiceCall = service
-                .createAccessions(Arrays.asList(object1, object2, object3, object4));
+                .getAccessions(Arrays.asList(object1, object2, object3, object4));
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(object1));
         assertEquals(accession2, accessionsFromSecondServiceCall.get(object2));
