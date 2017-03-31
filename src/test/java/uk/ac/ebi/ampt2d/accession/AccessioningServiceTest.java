@@ -20,10 +20,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -83,7 +83,7 @@ public class AccessioningServiceTest {
     }
 
     @Test
-    public void equalsObjectsGetSameAccession() throws Exception {
+    public void sameObjectsGetSameAccession() throws Exception {
         String object1 = "Object 1";
         String anotherObject1 = "Object 1";
 
@@ -111,7 +111,7 @@ public class AccessioningServiceTest {
     }
 
     @Test
-    public void differentCallsToTheServiceUsingTheSameObjectsWillReturnSameAccessions() throws Exception {
+    public void differentCallsToTheServiceUsingSameObjectsWillReturnSameAccessions() throws Exception {
         String object1 = "Object 1";
         String object2 = "Object 2";
 
@@ -127,7 +127,7 @@ public class AccessioningServiceTest {
     }
 
     @Test
-    public void serviceCallsContainingAMixOfAlreadyAccessionedAndNewObjectsAreAllowed() throws Exception {
+    public void mixingAlreadyAccessionedAndNewObjectsIsAllowed() throws Exception {
         String object1 = "Object 1";
         String object2 = "Object 2";
 
@@ -148,9 +148,8 @@ public class AccessioningServiceTest {
         assertNotNull(accessionsFromSecondServiceCall.get(object3));
         assertNotNull(accessionsFromSecondServiceCall.get(object4));
 
-        // the returned
         assertEquals(objectsToAccession.size(),
-                     accessionsFromSecondServiceCall.values().stream().collect(Collectors.toSet()).size());
+                     new HashSet<>(accessionsFromSecondServiceCall.values()).size());
     }
 
 }
