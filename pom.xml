@@ -20,7 +20,7 @@
   <packaging>jar</packaging>
 
   <name>accessioning-service</name>
-  <url>http://maven.apache.org</url>
+  <url>http://github.com/EBIvariation/amp-t2d-accession</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
