@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> Object class
  */
+
 public class AccessioningService<T> {
     private AccessionRepository<T> accessionRepository;
 
@@ -59,7 +60,7 @@ public class AccessioningService<T> {
         Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
                                                .collect(Collectors.toSet());
 
-        if (objectsNotInRepository.size() > 0) {
+        if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
             Map<T, String> newAccessions = accessionGenerator.get(objectsNotInRepository);
             accessionRepository.add(newAccessions);

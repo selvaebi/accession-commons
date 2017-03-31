@@ -23,6 +23,7 @@ import java.util.Set;
  *
  * @param <T> Object class
  */
+
 public interface AccessionGenerator<T> {
 
     /**
