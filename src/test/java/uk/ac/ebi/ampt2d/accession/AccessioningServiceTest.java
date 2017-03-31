@@ -79,7 +79,9 @@ public class AccessioningServiceTest {
         List<String> newObjects = Arrays.asList("Object 1", "Object 2", "Object 3");
         Map<String, String> accessions = service.getAccessions(newObjects);
 
-        assertTrue(newObjects.stream().allMatch(object -> accessions.get(object) != null));
+        for (String object : newObjects) {
+            assertNotNull(accessions.get(object));
+        }
     }
 
     @Test
