@@ -20,17 +20,11 @@ package uk.ac.ebi.ampt2d.accession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorA;
-import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorB;
-import uk.ac.ebi.ampt2d.accession.generator.TestPrefixAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.generator.TestsGeneratorConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
@@ -40,6 +34,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @ContextConfiguration
 @TestPropertySource(properties="test.generator=generatorA")
+@SpringBootTest(classes = TestsGeneratorConfiguration.class)
 public class AccessioningServiceGeneratorAInjectionTest {
 
     @Autowired
@@ -51,22 +46,5 @@ public class AccessioningServiceGeneratorAInjectionTest {
         Map<String, String> accesions = accessionGenerator.get(Collections.singleton(object1));
         System.out.println("accesions.get(object1) = " + accesions.get(object1));
         assertTrue(accesions.get(object1).startsWith("A"));
-    }
-
-    @Configuration
-    @ComponentScan(basePackages = "uk.ac.ebi.ampt2d.accession.generator")
-    public static class TestConfiguration {
-
-        @Bean
-        @ConditionalOnProperty(name = "test.generator", havingValue = "generatorA")
-        TestPrefixAccessionGenerator testAccessionGeneratorA() {
-            return new TestAccessionGeneratorA();
-        }
-
-        @Bean
-        @ConditionalOnProperty(name = "test.generator", havingValue = "generatorB")
-        TestPrefixAccessionGenerator testAccessionGeneratorB() {
-            return new TestAccessionGeneratorB();
-        }
     }
 }
