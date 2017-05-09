@@ -19,11 +19,14 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorA;
 import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorB;
@@ -36,28 +39,18 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-public class AccessioningServiceGeneratorInjectionTest {
+@TestPropertySource(properties="test.generator=generatorA")
+public class AccessioningServiceGeneratorAInjectionTest {
 
-    @Value("#{testAccessionGeneratorA}")
-    AccessionGenerator<String> accessionGeneratorA;
-
-    @Value("#{testAccessionGeneratorB}")
-    AccessionGenerator<String> accessionGeneratorB;
+    @Autowired
+    AccessionGenerator<String> accessionGenerator;
 
     @Test
-    public void generatorATest() {
+    public void generatorTest() {
         String object1 = "obj1";
-        Map<String, String> accesions = accessionGeneratorA.get(Collections.singleton(object1));
+        Map<String, String> accesions = accessionGenerator.get(Collections.singleton(object1));
         System.out.println("accesions.get(object1) = " + accesions.get(object1));
         assertTrue(accesions.get(object1).startsWith("A"));
-    }
-
-    @Test
-    public void generatorBTest() {
-        String object1 = "obj1";
-        Map<String, String> accesions = accessionGeneratorB.get(Collections.singleton(object1));
-        System.out.println("accesions.get(object1) = " + accesions.get(object1));
-        assertTrue(accesions.get(object1).startsWith("B"));
     }
 
     @Configuration
@@ -65,11 +58,13 @@ public class AccessioningServiceGeneratorInjectionTest {
     public static class TestConfiguration {
 
         @Bean
+        @ConditionalOnProperty(name = "test.generator", havingValue = "generatorA")
         TestPrefixAccessionGenerator testAccessionGeneratorA() {
             return new TestAccessionGeneratorA();
         }
 
         @Bean
+        @ConditionalOnProperty(name = "test.generator", havingValue = "generatorB")
         TestPrefixAccessionGenerator testAccessionGeneratorB() {
             return new TestAccessionGeneratorB();
         }
