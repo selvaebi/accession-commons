@@ -17,9 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.generator;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class TestAccessionGeneratorA extends TestPrefixAccessionGenerator {
 
     public TestAccessionGeneratorA() {
