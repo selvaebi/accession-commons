@@ -22,8 +22,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorA;
+import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorB;
 import uk.ac.ebi.ampt2d.accession.generator.TestsGeneratorConfiguration;
 
 import java.util.Collections;
@@ -33,8 +34,9 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@SpringBootTest(classes = TestsGeneratorConfiguration.class, properties = "test.generator=generatorA")
-public class AccessioningServiceGeneratorAInjectionTest {
+@TestPropertySource(properties="test.generator=generatorB")
+@SpringBootTest(classes = TestsGeneratorConfiguration.class, properties = "test.generator=generatorB")
+public class AccessioningServiceGeneratorBInjectionTest {
 
     @Autowired
     AccessionGenerator<String> accessionGenerator;
@@ -43,6 +45,6 @@ public class AccessioningServiceGeneratorAInjectionTest {
     public void generatorTest() {
         String object1 = "obj1";
         Map<String, String> accesions = accessionGenerator.get(Collections.singleton(object1));
-        assertTrue(accesions.get(object1).startsWith(TestAccessionGeneratorA.PREFIX));
+        assertTrue(accesions.get(object1).startsWith(TestAccessionGeneratorB.PREFIX));
     }
 }

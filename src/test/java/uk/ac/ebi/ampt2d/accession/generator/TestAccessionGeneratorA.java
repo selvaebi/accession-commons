@@ -19,7 +19,9 @@ package uk.ac.ebi.ampt2d.accession.generator;
 
 public class TestAccessionGeneratorA extends TestPrefixAccessionGenerator {
 
+    public static final String PREFIX = "A";
+
     public TestAccessionGeneratorA() {
-        super("A");
+        super(PREFIX);
     }
 }
