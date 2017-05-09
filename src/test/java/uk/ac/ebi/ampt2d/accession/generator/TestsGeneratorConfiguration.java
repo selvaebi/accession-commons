@@ -34,7 +34,7 @@ public class TestsGeneratorConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "test.generator", havingValue = "generatorB")
-    TestPrefixAccessionGenerator testAccessionGeneratorB() {
+    AccessionGenerator<String> testAccessionGeneratorB() {
         return new TestAccessionGeneratorB();
     }
 }
