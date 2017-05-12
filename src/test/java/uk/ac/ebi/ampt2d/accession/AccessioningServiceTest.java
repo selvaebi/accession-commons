@@ -50,7 +50,7 @@ public class AccessioningServiceTest {
             }
         };
 
-        AccessionRepository<String> repository = new HashMapTestAccessionRepository();
+        AccessionRepository<String> repository = new TestMapAccessionRepository();
 
         service = new AccessioningService<>(repository, generator);
     }
