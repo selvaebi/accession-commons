@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 public class AccessioningServiceGeneratorBInjectionTest {
 
     @Autowired
-    AccessionGenerator<String> accessionGenerator;
+    private AccessionGenerator<String> accessionGenerator;
 
     @Test
     public void generatorTest() {
