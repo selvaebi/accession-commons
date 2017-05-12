@@ -30,6 +30,7 @@ import uk.ac.ebi.ampt2d.accession.generator.TestsGeneratorConfiguration;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -43,6 +44,8 @@ public class AccessioningServiceGeneratorBInjectionTest {
 
     @Test
     public void generatorTest() {
+        assertNotNull(accessionGenerator);
+
         String object1 = "obj1";
         Map<String, String> accesions = accessionGenerator.get(Collections.singleton(object1));
         assertTrue(accesions.get(object1).startsWith(TestAccessionGeneratorB.PREFIX));
