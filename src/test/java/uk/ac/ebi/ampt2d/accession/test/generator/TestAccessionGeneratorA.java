@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.generator;
+package uk.ac.ebi.ampt2d.accession.test.generator;
 
 public class TestAccessionGeneratorA extends TestPrefixAccessionGenerator {
 

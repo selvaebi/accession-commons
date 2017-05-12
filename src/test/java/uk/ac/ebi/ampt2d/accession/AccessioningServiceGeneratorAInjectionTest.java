@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.generator.TestAccessionGeneratorA;
-import uk.ac.ebi.ampt2d.accession.generator.TestsGeneratorConfiguration;
+import uk.ac.ebi.ampt2d.accession.test.generator.TestAccessionGeneratorA;
+import uk.ac.ebi.ampt2d.accession.test.configuration.TestsGeneratorConfiguration;
 
 import java.util.Collections;
 import java.util.Map;

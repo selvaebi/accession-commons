@@ -17,6 +17,7 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.accession.test.TestMapAccessionRepository;
 
 import java.util.Arrays;
 import java.util.HashMap;

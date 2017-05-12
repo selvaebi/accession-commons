@@ -16,12 +16,14 @@
  *
  */
 
-package uk.ac.ebi.ampt2d.accession.generator;
+package uk.ac.ebi.ampt2d.accession.test.configuration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.test.generator.TestAccessionGeneratorA;
+import uk.ac.ebi.ampt2d.accession.test.generator.TestAccessionGeneratorB;
 
 @Configuration
 public class TestsGeneratorConfiguration {
