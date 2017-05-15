@@ -17,6 +17,7 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.accession.test.TestMapAccessionRepository;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class AccessioningServiceTest {
 
@@ -51,25 +51,7 @@ public class AccessioningServiceTest {
             }
         };
 
-        AccessionRepository<String> repository = new AccessionRepository<String>() {
-            private Map<String, String> storage = new HashMap<>();
-
-            @Override
-            public Map<String, String> get(List<String> objects) {
-                Map<String, String> accessions = new HashMap<>();
-                for (String object : objects) {
-                    if (storage.containsKey(object)) {
-                        accessions.put(object, storage.get(object));
-                    }
-                }
-                return accessions;
-            }
-
-            @Override
-            public void add(Map<String, String> accessions) {
-                storage.putAll(accessions);
-            }
-        };
+        AccessionRepository<String> repository = new TestMapAccessionRepository();
 
         service = new AccessioningService<>(repository, generator);
     }
