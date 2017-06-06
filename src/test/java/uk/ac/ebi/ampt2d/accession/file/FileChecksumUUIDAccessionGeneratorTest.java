@@ -15,10 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.file;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.accession.file.FileChecksumUUIDAccessionGenerator;
 
 import java.util.Arrays;
 import java.util.Collections;

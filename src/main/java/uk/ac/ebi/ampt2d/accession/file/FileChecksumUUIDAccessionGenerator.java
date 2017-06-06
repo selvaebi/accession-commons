@@ -15,7 +15,9 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.file;
+
+import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
