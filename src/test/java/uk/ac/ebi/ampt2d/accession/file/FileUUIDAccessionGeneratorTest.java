@@ -19,7 +19,6 @@ package uk.ac.ebi.ampt2d.accession.file;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import uk.ac.ebi.ampt2d.accession.file.FileChecksumUUIDAccessionGenerator;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,9 +26,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
-public class FileChecksumUUIDAccessionGeneratorTest {
+public class FileUUIDAccessionGeneratorTest {
 
     private static Random randomGenerator;
 
@@ -40,15 +41,18 @@ public class FileChecksumUUIDAccessionGeneratorTest {
 
     @Test
     public void differentAccessionsAreGeneratedForDifferentInputs() throws Exception {
-        String checksum1 = randomChecksum();
-        String checksum2 = randomChecksum();
+        File file1 = new File();
+        File file2 = new File();
+        
+        file1.setChecksum(randomChecksum());
+        file2.setChecksum(randomChecksum());
 
-        FileChecksumUUIDAccessionGenerator generator = new FileChecksumUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
 
-        Map<String, String> accessions = generator.get(new HashSet<>(Arrays.asList(checksum1, checksum2)));
+        Map<File, String> accessions = generator.get(new HashSet<>(Arrays.asList(file1, file2)));
 
-        String accession1 = accessions.get(checksum1);
-        String accession2 = accessions.get(checksum2);
+        String accession1 = accessions.get(file1);
+        String accession2 = accessions.get(file2);
 
         assertTrue(accession1 != null);
         assertTrue(accession2 != null);
@@ -58,15 +62,16 @@ public class FileChecksumUUIDAccessionGeneratorTest {
 
     @Test
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
-        String checksum = randomChecksum();
+        File file = new File();
+        file.setChecksum(randomChecksum());
 
-        FileChecksumUUIDAccessionGenerator generator = new FileChecksumUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
 
-        Map<String, String> accessions = generator.get(Collections.singleton(checksum));
-        String accession1 = accessions.get(checksum);
+        Map<File, String> accessions = generator.get(Collections.singleton(file));
+        String accession1 = accessions.get(file);
 
-        accessions = generator.get(Collections.singleton(checksum));
-        String accession2 = accessions.get(checksum);
+        accessions = generator.get(Collections.singleton(file));
+        String accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }
@@ -74,16 +79,17 @@ public class FileChecksumUUIDAccessionGeneratorTest {
 
     @Test
     public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
-        String checksum = randomChecksum();
+        File file = new File();
+        file.setChecksum(randomChecksum());
 
-        FileChecksumUUIDAccessionGenerator generator = new FileChecksumUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
 
-        Map<String, String> accessions = generator.get(Collections.singleton(checksum));
-        String accession1 = accessions.get(checksum);
+        Map<File, String> accessions = generator.get(Collections.singleton(file));
+        String accession1 = accessions.get(file);
 
-        FileChecksumUUIDAccessionGenerator generator2 = new FileChecksumUUIDAccessionGenerator();
-        accessions = generator2.get(Collections.singleton(checksum));
-        String accession2 = accessions.get(checksum);
+        FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator();
+        accessions = generator2.get(Collections.singleton(file));
+        String accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }

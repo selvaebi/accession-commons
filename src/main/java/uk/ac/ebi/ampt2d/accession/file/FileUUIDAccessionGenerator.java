@@ -23,19 +23,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Accession generator that generates UUID accessions for give
  */
-public class FileChecksumUUIDAccessionGenerator implements AccessionGenerator<String> {
+public class FileUUIDAccessionGenerator implements AccessionGenerator<File> {
 
     @Override
-    public Map<String, String> get(Set<String> checksums) {
-        Map<String, String> accessions = new HashMap<>(checksums.size());
-
-        for (String checksum : checksums) {
-            accessions.put(checksum, generateAccesion(checksum));
-        }
+    public Map<File, String> get(Set<File> files) {
+        Map<File, String> accessions = files.stream().collect(
+                Collectors.toMap(Function.identity(), file -> generateAccesion(file.getChecksum())));
 
         return accessions;
     }
