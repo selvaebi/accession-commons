@@ -15,7 +15,6 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
  */
 
 public class AccessioningService<T> {
+
     private AccessionRepository<T> accessionRepository;
 
     private AccessionGenerator<T> accessionGenerator;
