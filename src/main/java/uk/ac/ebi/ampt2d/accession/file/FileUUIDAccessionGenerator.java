@@ -19,29 +19,17 @@ package uk.ac.ebi.ampt2d.accession.file;
 
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Accession generator that generates UUID accessions for give
  */
-public class FileUUIDAccessionGenerator implements AccessionGenerator<File> {
+public class FileUUIDAccessionGenerator extends AccessionGenerator<File> {
 
     @Override
-    public Map<File, String> get(Set<File> files) {
-        Map<File, String> accessions = files.stream().collect(
-                Collectors.toMap(Function.identity(), file -> generateAccesion(file.getChecksum())));
-
-        return accessions;
-    }
-
-    private String generateAccesion(String checksum) {
+    protected String generateAccesion(File file) {
         // TODO: we should add a domain name to the checksum
-        UUID accession = UUID.nameUUIDFromBytes(checksum.getBytes());
+        UUID accession = UUID.nameUUIDFromBytes(file.getChecksum().getBytes());
         return accession.toString();
     }
 }

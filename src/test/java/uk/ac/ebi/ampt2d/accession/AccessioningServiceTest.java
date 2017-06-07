@@ -20,11 +20,9 @@ import org.junit.Test;
 import uk.ac.ebi.ampt2d.accession.test.TestMapAccessionRepository;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -42,12 +40,8 @@ public class AccessioningServiceTest {
             private int counter = 0;
 
             @Override
-            public Map<String, String> get(Set<String> objects) {
-                Map<String, String> accessions = new HashMap<>();
-                for (String object : objects) {
-                    accessions.put(object, PREFIX + counter++);
-                }
-                return accessions;
+            protected String generateAccesion(String object) {
+                return PREFIX + counter++;
             }
         };
 

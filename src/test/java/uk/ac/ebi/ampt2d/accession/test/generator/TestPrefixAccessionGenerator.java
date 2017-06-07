@@ -19,11 +19,7 @@ package uk.ac.ebi.ampt2d.accession.test.generator;
 
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-public class TestPrefixAccessionGenerator implements AccessionGenerator<String> {
+public class TestPrefixAccessionGenerator extends AccessionGenerator<String> {
 
     private int counter;
 
@@ -35,13 +31,7 @@ public class TestPrefixAccessionGenerator implements AccessionGenerator<String> 
     }
 
     @Override
-    public Map<String, String> get(Set<String> objects) {
-        Map<String, String> accesions = new HashMap<>();
-
-        for (String object : objects) {
-            accesions.put(object, prefix + counter++);
-        }
-
-        return accesions;
+    protected String generateAccesion(String object) {
+        return prefix + counter++;
     }
 }
