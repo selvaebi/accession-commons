@@ -32,6 +32,8 @@ import static org.junit.Assert.assertTrue;
 
 public class FileUUIDAccessionGeneratorTest {
 
+    public static final String TEST_NAMESPACE = "Test";
+
     private static Random randomGenerator;
 
     @BeforeClass
@@ -47,7 +49,7 @@ public class FileUUIDAccessionGeneratorTest {
         file1.setChecksum(randomChecksum());
         file2.setChecksum(randomChecksum());
 
-        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
         Map<File, String> accessions = generator.get(new HashSet<>(Arrays.asList(file1, file2)));
 
@@ -65,7 +67,7 @@ public class FileUUIDAccessionGeneratorTest {
         File file = new File();
         file.setChecksum(randomChecksum());
 
-        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
         Map<File, String> accessions = generator.get(Collections.singleton(file));
         String accession1 = accessions.get(file);
@@ -76,22 +78,38 @@ public class FileUUIDAccessionGeneratorTest {
         assertEquals(accession1, accession2);
     }
 
-
     @Test
-    public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
+    public void twoDifferentGeneratorInstancesForSameNamespaceReturnTheSameAccessionForTheSameInput() {
         File file = new File();
         file.setChecksum(randomChecksum());
 
-        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
         Map<File, String> accessions = generator.get(Collections.singleton(file));
         String accession1 = accessions.get(file);
 
-        FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator();
+        FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
         accessions = generator2.get(Collections.singleton(file));
         String accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
+    }
+
+    @Test
+    public void twoDifferentGeneratorInstancesForDiferentNamespacesReturnDifferentAccessionsForTheSameInput() {
+        File file = new File();
+        file.setChecksum(randomChecksum());
+
+        FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator("MD5");
+
+        Map<File, String> accessions = generator.get(Collections.singleton(file));
+        String accession1 = accessions.get(file);
+
+        FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator("SHA1");
+        accessions = generator2.get(Collections.singleton(file));
+        String accession2 = accessions.get(file);
+
+        assertNotEquals(accession1, accession2);
     }
 
     private String randomChecksum() {

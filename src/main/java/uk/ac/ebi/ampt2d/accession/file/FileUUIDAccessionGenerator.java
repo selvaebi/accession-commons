@@ -17,19 +17,19 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-
-import java.util.UUID;
+import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
 
 /**
  * Accession generator that generates UUID accessions for give
  */
-public class FileUUIDAccessionGenerator extends AccessionGenerator<File> {
+public class FileUUIDAccessionGenerator extends UuidAccessionGenerator<File> {
+
+    protected FileUUIDAccessionGenerator(String namespace) {
+        super(namespace);
+    }
 
     @Override
-    protected String generateAccesion(File file) {
-        // TODO: we should add a domain name to the checksum
-        UUID accession = UUID.nameUUIDFromBytes(file.getChecksum().getBytes());
-        return accession.toString();
+    protected String getObjectId(File file) {
+        return file.getChecksum();
     }
 }
