@@ -72,14 +72,11 @@ public class File {
 
         File file = (File) o;
 
-        if (!checksum.equals(file.checksum)) return false;
-        return accession != null ? accession.equals(file.accession) : file.accession == null;
+        return checksum.equals(file.checksum);
     }
 
     @Override
     public int hashCode() {
-        int result = checksum.hashCode();
-        result = 31 * result + (accession != null ? accession.hashCode() : 0);
-        return result;
+        return checksum.hashCode();
     }
 }

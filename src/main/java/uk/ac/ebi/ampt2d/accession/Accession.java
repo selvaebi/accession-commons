@@ -17,12 +17,30 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+public class Accession<T> {
 
-@SpringBootApplication
-public class AccessioningRepositoryApp {
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(AccessioningRepositoryApp.class, args);
+    private T object;
+
+    private String accession;
+
+    public Accession(T object, String accession) {
+        this.object = object;
+        this.accession = accession;
+    }
+
+    public T getObject() {
+        return object;
+    }
+
+    public void setObject(T object) {
+        this.object = object;
+    }
+
+    public String getAccession() {
+        return accession;
+    }
+
+    public void setAccession(String accession) {
+        this.accession = accession;
     }
 }
