@@ -45,6 +45,11 @@ public class FileAccessioningServiceTest {
         service = new FileAccessioningService(fileAccessionRepository, "FileAccessioningServiceTest");
     }
 
+    @After
+    public void tearDown() throws Exception {
+        fileAccessionRepository.getFileJpaRepository().deleteAll();
+    }
+
     @Test
     public void sameAccessionsAreReturnedForIdenticalFiles() throws Exception {
         String checksumA = "checksumA";
