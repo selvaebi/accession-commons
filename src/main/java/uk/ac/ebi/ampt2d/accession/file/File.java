@@ -64,4 +64,22 @@ public class File {
     public void setAccession(String accession) {
         this.accession = accession;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        File file = (File) o;
+
+        if (!checksum.equals(file.checksum)) return false;
+        return accession != null ? accession.equals(file.accession) : file.accession == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = checksum.hashCode();
+        result = 31 * result + (accession != null ? accession.hashCode() : 0);
+        return result;
+    }
 }
