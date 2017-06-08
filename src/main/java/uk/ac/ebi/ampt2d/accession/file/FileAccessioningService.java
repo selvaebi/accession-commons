@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.springframework.stereotype.Service;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
 public class FileAccessioningService extends AccessioningService<File>{
