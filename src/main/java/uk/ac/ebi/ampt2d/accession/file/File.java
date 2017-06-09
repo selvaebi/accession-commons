@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,12 +32,14 @@ public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
     private Long id;
 
     @Column(unique = true)
     private String checksum;
 
     @Column(unique = true)
+    @JsonIgnore
     private String accession;
 
     public File() {

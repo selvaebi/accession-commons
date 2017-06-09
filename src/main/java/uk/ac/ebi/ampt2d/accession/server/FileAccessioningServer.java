@@ -40,9 +40,9 @@ public class FileAccessioningServer {
     }
 
     @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public AccessionResponse<File> accessionFiles(@RequestBody List<File> files) {
+    public FileAccessionResponse accessionFiles(@RequestBody List<File> files) {
         Map<File, String> accessions = accessioningService.getAccessions(files);
 
-        return new AccessionResponse<>(accessions);
+        return new FileAccessionResponse(accessions);
     }
 }
