@@ -17,22 +17,22 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@ContextConfiguration(classes = FileTestConfiguration.class)
+@DataJpaTest
 public class FileAccessioningServiceTest {
 
     @Autowired
@@ -43,11 +43,6 @@ public class FileAccessioningServiceTest {
     @Before
     public void setUp() throws Exception {
         service = new FileAccessioningService(fileAccessionRepository, "FileAccessioningServiceTest");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        fileAccessionRepository.getFileJpaRepository().deleteAll();
     }
 
     @Test
