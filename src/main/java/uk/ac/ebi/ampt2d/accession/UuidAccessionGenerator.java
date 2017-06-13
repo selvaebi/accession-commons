@@ -49,11 +49,11 @@ public abstract class UuidAccessionGenerator<T> extends AccessionGenerator<T> {
     private byte[] concatenateNamespaceAndNameBytes(String name) {
         byte[] nameBytes = name.getBytes();
 
-        byte[] nameSpaceAndNameBytes = new byte[namespaceUuidBytes.length + nameBytes.length];
-        System.arraycopy(namespaceUuidBytes, 0, nameSpaceAndNameBytes, 0, namespaceUuidBytes.length);
-        System.arraycopy(nameBytes, 0, nameSpaceAndNameBytes, namespaceUuidBytes.length, nameBytes.length);
+        byte[] namespaceAndNameBytes = new byte[namespaceUuidBytes.length + nameBytes.length];
+        System.arraycopy(namespaceUuidBytes, 0, namespaceAndNameBytes, 0, namespaceUuidBytes.length);
+        System.arraycopy(nameBytes, 0, namespaceAndNameBytes, namespaceUuidBytes.length, nameBytes.length);
 
-        return nameSpaceAndNameBytes;
+        return namespaceAndNameBytes;
     }
 
     protected abstract String getObjectId(T object);
