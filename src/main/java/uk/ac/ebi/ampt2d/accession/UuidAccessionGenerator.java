@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.accession;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public abstract class UuidAccessionGenerator<T> extends AccessionGenerator<T> {
+public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGenerator<T> {
 
     private byte[] namespaceUuidBytes;
 

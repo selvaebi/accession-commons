@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.IndividualAccessionGenerator;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,14 +57,14 @@ public class FileAccessionRepositoryTest {
 
         files = Arrays.asList(fileA, fileB);
 
-        generator = new AccessionGenerator<File>() {
+        generator = new IndividualAccessionGenerator<File>() {
             @Override
             protected String generateAccesion(File object) {
                 return "ACC" + object.getChecksum();
             }
         };
 
-        alternativeGenerator = new AccessionGenerator<File>() {
+        alternativeGenerator = new IndividualAccessionGenerator<File>() {
             @Override
             protected String generateAccesion(File object) {
                 return "ALT" + object.getChecksum();

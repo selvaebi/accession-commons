@@ -34,7 +34,7 @@ public class AccessioningServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        AccessionGenerator<String> generator = new AccessionGenerator<String>() {
+        AccessionGenerator<String> generator = new IndividualAccessionGenerator<String>() {
             private static final String PREFIX = "ACC";
 
             private int counter = 0;

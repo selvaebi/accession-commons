@@ -17,8 +17,6 @@ package uk.ac.ebi.ampt2d.accession;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * An accession generator, that generate unique accessions for given objects
@@ -26,7 +24,7 @@ import java.util.stream.Collectors;
  * @param <T> Object class
  */
 
-public abstract class AccessionGenerator<T> {
+public interface AccessionGenerator<T> {
 
     /**
      * Generate unique accessions for a set of objects. The returned accessions should be unique: two different
@@ -35,12 +33,5 @@ public abstract class AccessionGenerator<T> {
      * @param objects Set of objects to accession
      * @return A map of objects to unique accessions
      */
-    public Map<T, String> get(Set<T> objects) {
-        Map<T, String> accessions = objects.stream().collect(
-                Collectors.toMap(Function.identity(), this::generateAccesion));
-
-        return accessions;
-    }
-
-    protected abstract String generateAccesion(T object);
+    Map<T, String> get(Set<T> objects);
 }
