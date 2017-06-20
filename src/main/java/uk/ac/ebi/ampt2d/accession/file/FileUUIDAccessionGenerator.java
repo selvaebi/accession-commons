@@ -30,6 +30,6 @@ public class FileUUIDAccessionGenerator extends UuidAccessionGenerator<File> {
 
     @Override
     protected String getObjectId(File file) {
-        return file.getChecksum();
+        return file.getHash();
     }
 }

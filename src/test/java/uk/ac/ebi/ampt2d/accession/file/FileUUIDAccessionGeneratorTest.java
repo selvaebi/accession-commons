@@ -47,8 +47,8 @@ public class FileUUIDAccessionGeneratorTest {
         File file1 = new File();
         File file2 = new File();
         
-        file1.setChecksum(randomChecksum());
-        file2.setChecksum(randomChecksum());
+        file1.setHash(randomChecksum());
+        file2.setHash(randomChecksum());
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
@@ -66,7 +66,7 @@ public class FileUUIDAccessionGeneratorTest {
     @Test
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
         File file = new File();
-        file.setChecksum(randomChecksum());
+        file.setHash(randomChecksum());
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
@@ -82,7 +82,7 @@ public class FileUUIDAccessionGeneratorTest {
     @Test
     public void twoDifferentGeneratorInstancesForSameNamespaceReturnTheSameAccessionForTheSameInput() {
         File file = new File();
-        file.setChecksum(randomChecksum());
+        file.setHash(randomChecksum());
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
@@ -99,7 +99,7 @@ public class FileUUIDAccessionGeneratorTest {
     @Test
     public void twoDifferentGeneratorInstancesForDiferentNamespacesReturnDifferentAccessionsForTheSameInput() {
         File file = new File();
-        file.setChecksum(randomChecksum());
+        file.setHash(randomChecksum());
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator("MD5");
 

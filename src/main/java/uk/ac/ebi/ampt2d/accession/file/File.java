@@ -37,7 +37,7 @@ public class File {
     private Long id;
 
     @Column(unique = true)
-    private String checksum;
+    private String hash;
 
     @Column(unique = true)
     @JsonIgnore
@@ -54,12 +54,12 @@ public class File {
         this.id = id;
     }
 
-    public String getChecksum() {
-        return checksum;
+    public String getHash() {
+        return hash;
     }
 
-    public void setChecksum(String checksum) {
-        this.checksum = checksum;
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public UUID getAccession() {
@@ -77,11 +77,11 @@ public class File {
 
         File file = (File) o;
 
-        return checksum.equals(file.checksum);
+        return hash.equals(file.hash);
     }
 
     @Override
     public int hashCode() {
-        return checksum.hashCode();
+        return hash.hashCode();
     }
 }

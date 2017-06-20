@@ -67,7 +67,7 @@ public class FileAccessionRepositoryTest {
 
     private File getTestFile(String checksum) {
         File file = new File();
-        file.setChecksum(checksum);
+        file.setHash(checksum);
         return file;
     }
 

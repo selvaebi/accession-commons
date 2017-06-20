@@ -22,5 +22,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface FileCrudRepository extends CrudRepository<File, Long> {
-    List<File> findByChecksumIn(List<String> checksum);
+    List<File> findByHashIn(List<String> checksum);
 }

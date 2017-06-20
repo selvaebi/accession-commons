@@ -35,8 +35,8 @@ public class FileAccessionRepository implements AccessionRepository<File, UUID> 
 
     @Override
     public Map<File, UUID> get(List<File> objects) {
-        List<String> checksums = objects.stream().map(File::getChecksum).collect(Collectors.toList());
-        List<File> filesInRepository = fileJpaRepository.findByChecksumIn(checksums);
+        List<String> checksums = objects.stream().map(File::getHash).collect(Collectors.toList());
+        List<File> filesInRepository = fileJpaRepository.findByHashIn(checksums);
         return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), File::getAccession));
     }
 

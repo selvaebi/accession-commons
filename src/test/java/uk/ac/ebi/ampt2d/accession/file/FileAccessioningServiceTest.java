@@ -52,15 +52,15 @@ public class FileAccessioningServiceTest {
         String checksumB = "checksumB";
         File fileA = new File();
         File fileB = new File();
-        fileA.setChecksum(checksumA);
-        fileB.setChecksum(checksumB);
+        fileA.setHash(checksumA);
+        fileB.setHash(checksumB);
 
         Map<File, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
         fileA = new File();
         fileB = new File();
-        fileA.setChecksum(checksumA);
-        fileB.setChecksum(checksumB);
+        fileA.setHash(checksumA);
+        fileB.setHash(checksumB);
 
         Map<File, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
