@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,14 +55,14 @@ public class FileAccessioningServiceTest {
         fileA.setChecksum(checksumA);
         fileB.setChecksum(checksumB);
 
-        Map<File, String> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
         fileA = new File();
         fileB = new File();
         fileA.setChecksum(checksumA);
         fileB.setChecksum(checksumB);
 
-        Map<File, String> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(generatedAccessions.get(fileA), retrievedAccessions.get(fileA));
         assertEquals(generatedAccessions.get(fileB), retrievedAccessions.get(fileB));

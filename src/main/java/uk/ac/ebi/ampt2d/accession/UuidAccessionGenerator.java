@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.accession;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGenerator<T> {
+public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGenerator<T, UUID> {
 
     private byte[] namespaceUuidBytes;
 
@@ -37,13 +37,13 @@ public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGener
     }
 
     @Override
-    protected String generateAccesion(T object) {
+    protected UUID generateAccesion(T object) {
         String objectId = getObjectId(object);
 
         // TODO: this generates a version 3 (name based) UUID: explore other options to get a version 5 UUID
         UUID accession = UUID.nameUUIDFromBytes(concatenateNamespaceAndNameBytes(objectId));
 
-        return accession.toString();
+        return accession;
     }
 
     private byte[] concatenateNamespaceAndNameBytes(String name) {

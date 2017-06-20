@@ -23,24 +23,25 @@ import uk.ac.ebi.ampt2d.accession.AccessionRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class FileAccessionRepository implements AccessionRepository<File> {
+public class FileAccessionRepository implements AccessionRepository<File, UUID> {
 
     @Autowired
     private FileCrudRepository fileJpaRepository;
 
     @Override
-    public Map<File, String> get(List<File> objects) {
+    public Map<File, UUID> get(List<File> objects) {
         List<String> checksums = objects.stream().map(File::getChecksum).collect(Collectors.toList());
         List<File> filesInRepository = fileJpaRepository.findByChecksumIn(checksums);
         return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), File::getAccession));
     }
 
     @Override
-    public void add(Map<File, String> accessions) {
+    public void add(Map<File, UUID> accessions) {
         for (File file : accessions.keySet()) {
             file.setAccession(accessions.get(file));
             fileJpaRepository.save(file);

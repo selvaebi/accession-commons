@@ -21,13 +21,14 @@ import uk.ac.ebi.ampt2d.accession.file.File;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class FileAccessionResponse {
 
     private List<FileAccession> accessions;
 
-    public FileAccessionResponse(Map<File, String> accessionMap) {
+    public FileAccessionResponse(Map<File, UUID> accessionMap) {
         this.accessions = accessionMap.entrySet().stream()
                                       .map(entry -> new FileAccession(entry.getKey(), entry.getValue()))
                                       .collect(Collectors.toList());
@@ -45,9 +46,9 @@ public class FileAccessionResponse {
 
         private File file;
 
-        private String accession;
+        private UUID accession;
 
-        FileAccession(File file, String accession) {
+        FileAccession(File file, UUID accession) {
             this.file = file;
             this.accession = accession;
         }
@@ -60,11 +61,11 @@ public class FileAccessionResponse {
             this.file = file;
         }
 
-        public String getAccession() {
+        public UUID getAccession() {
             return accession;
         }
 
-        public void setAccession(String accession) {
+        public void setAccession(UUID accession) {
             this.accession = accession;
         }
     }

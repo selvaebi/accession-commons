@@ -19,7 +19,9 @@ package uk.ac.ebi.ampt2d.accession.file;
 
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
-public class FileAccessioningService extends AccessioningService<File>{
+import java.util.UUID;
+
+public class FileAccessioningService extends AccessioningService<File, UUID>{
 
     public FileAccessioningService(FileAccessionRepository accessionRepository,
                                    String namespace) {

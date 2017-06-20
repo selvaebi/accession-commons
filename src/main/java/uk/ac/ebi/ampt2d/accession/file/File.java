@@ -25,6 +25,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table
@@ -40,7 +41,7 @@ public class File {
 
     @Column(unique = true)
     @JsonIgnore
-    private String accession;
+    private UUID accession;
 
     public File() {
     }
@@ -61,11 +62,11 @@ public class File {
         this.checksum = checksum;
     }
 
-    public String getAccession() {
+    public UUID getAccession() {
         return accession;
     }
 
-    public void setAccession(String accession) {
+    public void setAccession(UUID accession) {
         this.accession = accession;
     }
 

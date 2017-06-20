@@ -28,6 +28,7 @@ import uk.ac.ebi.ampt2d.accession.file.FileAccessioningService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/v1/accession")
@@ -41,7 +42,7 @@ public class FileAccessioningServer {
 
     @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public FileAccessionResponse accessionFiles(@RequestBody List<File> files) {
-        Map<File, String> accessions = accessioningService.getAccessions(files);
+        Map<File, UUID> accessions = accessioningService.getAccessions(files);
 
         return new FileAccessionResponse(accessions);
     }

@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
  * @param <T> Object class
  */
 
-public class AccessioningService<T> {
+public class AccessioningService<T, U> {
 
-    private AccessionRepository<T> accessionRepository;
+    private AccessionRepository<T, U> accessionRepository;
 
-    private AccessionGenerator<T> accessionGenerator;
+    private AccessionGenerator<T, U> accessionGenerator;
 
     /**
      * Constructs a service that will retrieve existing accessions from a repository, and create new ones using a
@@ -39,8 +39,8 @@ public class AccessioningService<T> {
      * @param accessionRepository Repository that returns existing accessions and stores the new ones
      * @param accessionGenerator Generator that creates new accessions for not accessioned objects
      */
-    public AccessioningService(AccessionRepository<T> accessionRepository,
-                               AccessionGenerator<T> accessionGenerator) {
+    public AccessioningService(AccessionRepository<T, U> accessionRepository,
+                               AccessionGenerator<T, U > accessionGenerator) {
         this.accessionRepository = accessionRepository;
         this.accessionGenerator = accessionGenerator;
     }
@@ -52,9 +52,9 @@ public class AccessioningService<T> {
      * @param objects List of objects to accession
      * @return Objects to accessions map
      */
-    public Map<T, String> getAccessions(List<T> objects) {
+    public Map<T, U> getAccessions(List<T> objects) {
         // look for accessions for those objects in the repository
-        Map<T, String> storedAccessions = accessionRepository.get(objects);
+        Map<T, U> storedAccessions = accessionRepository.get(objects);
 
         // get all objects that are not in the repository
         Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
@@ -62,7 +62,7 @@ public class AccessioningService<T> {
 
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
-            Map<T, String> newAccessions = accessionGenerator.get(objectsNotInRepository);
+            Map<T, U> newAccessions = accessionGenerator.get(objectsNotInRepository);
             accessionRepository.add(newAccessions);
             storedAccessions.putAll(newAccessions);
         }

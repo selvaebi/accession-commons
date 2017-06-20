@@ -24,7 +24,7 @@ import java.util.Set;
  * @param <T> Object class
  */
 
-public interface AccessionGenerator<T> {
+public interface AccessionGenerator<T, U> {
 
     /**
      * Generate unique accessions for a set of objects. The returned accessions should be unique: two different
@@ -33,5 +33,5 @@ public interface AccessionGenerator<T> {
      * @param objects Set of objects to accession
      * @return A map of objects to unique accessions
      */
-    Map<T, String> get(Set<T> objects);
+    Map<T, U> get(Set<T> objects);
 }

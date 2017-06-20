@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -51,10 +52,10 @@ public class FileUUIDAccessionGeneratorTest {
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
-        Map<File, String> accessions = generator.get(new HashSet<>(Arrays.asList(file1, file2)));
+        Map<File, UUID> accessions = generator.get(new HashSet<>(Arrays.asList(file1, file2)));
 
-        String accession1 = accessions.get(file1);
-        String accession2 = accessions.get(file2);
+        UUID accession1 = accessions.get(file1);
+        UUID accession2 = accessions.get(file2);
 
         assertTrue(accession1 != null);
         assertTrue(accession2 != null);
@@ -69,11 +70,11 @@ public class FileUUIDAccessionGeneratorTest {
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
-        Map<File, String> accessions = generator.get(Collections.singleton(file));
-        String accession1 = accessions.get(file);
+        Map<File, UUID> accessions = generator.get(Collections.singleton(file));
+        UUID accession1 = accessions.get(file);
 
         accessions = generator.get(Collections.singleton(file));
-        String accession2 = accessions.get(file);
+        UUID accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }
@@ -85,12 +86,12 @@ public class FileUUIDAccessionGeneratorTest {
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
 
-        Map<File, String> accessions = generator.get(Collections.singleton(file));
-        String accession1 = accessions.get(file);
+        Map<File, UUID> accessions = generator.get(Collections.singleton(file));
+        UUID accession1 = accessions.get(file);
 
         FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator(TEST_NAMESPACE);
         accessions = generator2.get(Collections.singleton(file));
-        String accession2 = accessions.get(file);
+        UUID accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }
@@ -102,12 +103,12 @@ public class FileUUIDAccessionGeneratorTest {
 
         FileUUIDAccessionGenerator generator = new FileUUIDAccessionGenerator("MD5");
 
-        Map<File, String> accessions = generator.get(Collections.singleton(file));
-        String accession1 = accessions.get(file);
+        Map<File, UUID> accessions = generator.get(Collections.singleton(file));
+        UUID accession1 = accessions.get(file);
 
         FileUUIDAccessionGenerator generator2 = new FileUUIDAccessionGenerator("SHA1");
         accessions = generator2.get(Collections.singleton(file));
-        String accession2 = accessions.get(file);
+        UUID accession2 = accessions.get(file);
 
         assertNotEquals(accession1, accession2);
     }

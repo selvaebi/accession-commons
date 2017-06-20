@@ -26,12 +26,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.IndividualAccessionGenerator;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -46,30 +46,18 @@ public class FileAccessionRepositoryTest {
 
     List<File> files;
 
-    private AccessionGenerator<File> generator;
+    private AccessionGenerator<File, UUID> generator;
 
-    private AccessionGenerator<File> alternativeGenerator;
+    private AccessionGenerator<File, UUID> alternativeGenerator;
 
     @Before
     public void setUp() throws Exception {
         File fileA = getTestFile("checksumA");
         File fileB = getTestFile("checksumB");
-
         files = Arrays.asList(fileA, fileB);
 
-        generator = new IndividualAccessionGenerator<File>() {
-            @Override
-            protected String generateAccesion(File object) {
-                return "ACC" + object.getChecksum();
-            }
-        };
-
-        alternativeGenerator = new IndividualAccessionGenerator<File>() {
-            @Override
-            protected String generateAccesion(File object) {
-                return "ALT" + object.getChecksum();
-            }
-        };
+        generator = new FileUUIDAccessionGenerator("ACC");
+        alternativeGenerator = new FileUUIDAccessionGenerator("ALT");
     }
 
     @After
@@ -85,18 +73,18 @@ public class FileAccessionRepositoryTest {
 
     @Test
     public void repositoryIsInitiallyEmpty() throws Exception {
-        Map<File, String> accessions = accessionRepository.get(files);
+        Map<File, UUID> accessions = accessionRepository.get(files);
         assertEquals(0, accessions.size());
     }
 
     @Test
     public void addShouldStoreTheFilesInTheRepository() throws Exception {
-        Map<File, String> accessionedFiles = generator.get(new HashSet<>(files));
+        Map<File, UUID> accessionedFiles = generator.get(new HashSet<>(files));
         accessionRepository.add(accessionedFiles);
 
         assertEquals(2, accessionRepository.getFileJpaRepository().count());
 
-        Map<File, String> accessionsFromRepository = accessionRepository.get(files);
+        Map<File, UUID> accessionsFromRepository = accessionRepository.get(files);
 
         assertEquals(accessionedFiles, accessionsFromRepository);
     }
@@ -106,17 +94,17 @@ public class FileAccessionRepositoryTest {
         HashSet<File> fileSet = new HashSet<>(files);
 
         // store the files with the initial accessions
-        Map<File, String> accessionedFiles = generator.get(fileSet);
+        Map<File, UUID> accessionedFiles = generator.get(fileSet);
         accessionRepository.add(accessionedFiles);
         assertEquals(2, accessionRepository.getFileJpaRepository().count());
 
         // store again the files with alternative accessions
-        Map<File, String> alternativeAccesionedFiles = alternativeGenerator.get(fileSet);
+        Map<File, UUID> alternativeAccesionedFiles = alternativeGenerator.get(fileSet);
         accessionRepository.add(alternativeAccesionedFiles);
         assertEquals(2, accessionRepository.getFileJpaRepository().count());
 
         // the stored accessions should be the alternative ones
-        Map<File, String> accessionsFromRepository = accessionRepository.get(files);
+        Map<File, UUID> accessionsFromRepository = accessionRepository.get(files);
         assertNotEquals(accessionedFiles, accessionsFromRepository);
         assertEquals(alternativeAccesionedFiles, accessionsFromRepository);
     }

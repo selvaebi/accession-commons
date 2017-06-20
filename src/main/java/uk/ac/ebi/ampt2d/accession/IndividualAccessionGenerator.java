@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> Object class
  */
-public abstract class IndividualAccessionGenerator<T> implements AccessionGenerator<T> {
+public abstract class IndividualAccessionGenerator<T, U> implements AccessionGenerator<T, U> {
 
     /**
      * Basic implementaton of the get method that delegates into the 'generateAccession' method the responsability of
@@ -38,8 +38,8 @@ public abstract class IndividualAccessionGenerator<T> implements AccessionGenera
      * @return A map of objects to unique accessions
      */
     @Override
-    public Map<T, String> get(Set<T> objects) {
-        Map<T, String> accessions = objects.stream().collect(
+    public Map<T, U> get(Set<T> objects) {
+        Map<T, U> accessions = objects.stream().collect(
                 Collectors.toMap(Function.identity(), this::generateAccesion));
 
         return accessions;
@@ -51,5 +51,5 @@ public abstract class IndividualAccessionGenerator<T> implements AccessionGenera
      * @param object Object to accession
      * @return Accession
      */
-    protected abstract String generateAccesion(T object);
+    protected abstract U generateAccesion(T object);
 }

@@ -30,11 +30,11 @@ import static org.junit.Assert.assertNotNull;
 
 public class AccessioningServiceTest {
 
-    private  AccessioningService<String> service;
+    private  AccessioningService<String, String> service;
 
     @Before
     public void setUp() throws Exception {
-        AccessionGenerator<String> generator = new IndividualAccessionGenerator<String>() {
+        AccessionGenerator<String, String> generator = new IndividualAccessionGenerator<String, String>() {
             private static final String PREFIX = "ACC";
 
             private int counter = 0;
@@ -45,7 +45,7 @@ public class AccessioningServiceTest {
             }
         };
 
-        AccessionRepository<String> repository = new TestMapAccessionRepository();
+        AccessionRepository<String, String> repository = new TestMapAccessionRepository();
 
         service = new AccessioningService<>(repository, generator);
     }

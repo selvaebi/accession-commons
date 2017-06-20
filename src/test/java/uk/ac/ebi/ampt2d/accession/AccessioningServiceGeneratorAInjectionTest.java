@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 public class AccessioningServiceGeneratorAInjectionTest {
 
     @Autowired
-    private AccessionGenerator<String> accessionGenerator;
+    private AccessionGenerator<String, String> accessionGenerator;
 
     @Test
     public void generatorTest() {
