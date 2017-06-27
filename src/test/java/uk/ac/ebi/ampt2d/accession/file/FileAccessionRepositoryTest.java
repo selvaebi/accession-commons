@@ -26,6 +26,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -56,8 +57,8 @@ public class FileAccessionRepositoryTest {
         File fileB = getTestFile("checksumB");
         files = Arrays.asList(fileA, fileB);
 
-        generator = new FileUUIDAccessionGenerator("ACC");
-        alternativeGenerator = new FileUUIDAccessionGenerator("ALT");
+        generator = new UuidAccessionGenerator<>("ACC");
+        alternativeGenerator = new UuidAccessionGenerator<>("ALT");
     }
 
     @After

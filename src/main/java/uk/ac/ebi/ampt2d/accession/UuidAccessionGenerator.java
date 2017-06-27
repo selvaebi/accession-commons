@@ -20,11 +20,11 @@ package uk.ac.ebi.ampt2d.accession;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGenerator<T, UUID> {
+public class UuidAccessionGenerator<T> extends IndividualAccessionGenerator<T, UUID> {
 
     private byte[] namespaceUuidBytes;
 
-    protected UuidAccessionGenerator(String namespace) {
+    public UuidAccessionGenerator(String namespace) {
         namespaceUuidBytes = getNamespaceUUIDbytes(namespace);
     }
 
@@ -38,23 +38,19 @@ public abstract class UuidAccessionGenerator<T> extends IndividualAccessionGener
 
     @Override
     protected UUID generateAccesion(T object) {
-        String objectId = getObjectId(object);
-
         // TODO: this generates a version 3 (name based) UUID: explore other options to get a version 5 UUID
-        UUID accession = UUID.nameUUIDFromBytes(concatenateNamespaceAndNameBytes(objectId));
+        UUID accession = UUID.nameUUIDFromBytes(concatenateNamespaceAndNameBytes(object.hashCode()));
 
         return accession;
     }
 
-    private byte[] concatenateNamespaceAndNameBytes(String name) {
-        byte[] nameBytes = name.getBytes();
+    private byte[] concatenateNamespaceAndNameBytes(int hash) {
+        byte[] hashBytes = ByteBuffer.allocate(4).putInt(hash).array();
 
-        byte[] namespaceAndNameBytes = new byte[namespaceUuidBytes.length + nameBytes.length];
+        byte[] namespaceAndNameBytes = new byte[namespaceUuidBytes.length + hashBytes.length];
         System.arraycopy(namespaceUuidBytes, 0, namespaceAndNameBytes, 0, namespaceUuidBytes.length);
-        System.arraycopy(nameBytes, 0, namespaceAndNameBytes, namespaceUuidBytes.length, nameBytes.length);
+        System.arraycopy(hashBytes, 0, namespaceAndNameBytes, namespaceUuidBytes.length, hashBytes.length);
 
         return namespaceAndNameBytes;
     }
-
-    protected abstract String getObjectId(T object);
 }
