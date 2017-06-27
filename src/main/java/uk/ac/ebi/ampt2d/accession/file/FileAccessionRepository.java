@@ -44,8 +44,8 @@ public class FileAccessionRepository implements AccessionRepository<File, UUID> 
     public void add(Map<File, UUID> accessions) {
         for (File file : accessions.keySet()) {
             file.setAccession(accessions.get(file));
-            fileJpaRepository.save(file);
         }
+        fileJpaRepository.save(accessions.keySet());
     }
 
     FileCrudRepository getFileJpaRepository() {
