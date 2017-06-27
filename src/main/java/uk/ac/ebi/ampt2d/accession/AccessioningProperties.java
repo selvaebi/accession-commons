@@ -22,8 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "accessioning")
 public class AccessioningProperties {
 
-    private String namespace
-            ;
+    private String namespace;
 
     public String getNamespace() {
         return namespace;
