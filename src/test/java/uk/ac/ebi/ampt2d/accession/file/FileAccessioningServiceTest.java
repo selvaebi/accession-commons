@@ -50,17 +50,13 @@ public class FileAccessioningServiceTest {
     public void sameAccessionsAreReturnedForIdenticalFiles() throws Exception {
         String checksumA = "checksumA";
         String checksumB = "checksumB";
-        File fileA = new File();
-        File fileB = new File();
-        fileA.setHash(checksumA);
-        fileB.setHash(checksumB);
+        File fileA = new File(checksumA);
+        File fileB = new File(checksumB);
 
         Map<File, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
-        fileA = new File();
-        fileB = new File();
-        fileA.setHash(checksumA);
-        fileB.setHash(checksumB);
+        fileA = new File(checksumA);
+        fileB = new File(checksumB);
 
         Map<File, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 

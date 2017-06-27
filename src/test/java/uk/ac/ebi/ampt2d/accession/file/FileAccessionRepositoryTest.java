@@ -53,8 +53,8 @@ public class FileAccessionRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        File fileA = getTestFile("checksumA");
-        File fileB = getTestFile("checksumB");
+        File fileA = new File("checksumA");
+        File fileB = new File("checksumB");
         files = Arrays.asList(fileA, fileB);
 
         generator = new UuidAccessionGenerator<>("ACC");
@@ -64,12 +64,6 @@ public class FileAccessionRepositoryTest {
     @After
     public void tearDown() throws Exception {
         accessionRepository.getFileJpaRepository().deleteAll();
-    }
-
-    private File getTestFile(String checksum) {
-        File file = new File();
-        file.setHash(checksum);
-        return file;
     }
 
     @Test

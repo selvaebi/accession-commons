@@ -46,6 +46,10 @@ public class File {
     public File() {
     }
 
+    public File(String hash) {
+        this.hash = hash;
+    }
+
     public Long getId() {
         return id;
     }
