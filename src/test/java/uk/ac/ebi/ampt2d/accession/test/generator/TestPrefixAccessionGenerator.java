@@ -17,9 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.accession.test.generator;
 
-import uk.ac.ebi.ampt2d.accession.IndividualAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
 
-public class TestPrefixAccessionGenerator extends IndividualAccessionGenerator<String, String> {
+public class TestPrefixAccessionGenerator extends SingleAccessionGenerator<String, String> {
 
     private int counter;
 

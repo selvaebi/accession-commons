@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> Object class
  */
-public abstract class IndividualAccessionGenerator<T, U> implements AccessionGenerator<T, U> {
+public abstract class SingleAccessionGenerator<T, U> implements AccessionGenerator<T, U> {
 
     /**
      * Basic implementaton of the get method that delegates into the 'generateAccession' method the responsability of
