@@ -40,7 +40,7 @@ public abstract class SingleAccessionGenerator<T, U> implements AccessionGenerat
     @Override
     public Map<T, U> get(Set<T> objects) {
         Map<T, U> accessions = objects.stream().collect(
-                Collectors.toMap(Function.identity(), this::generateAccesion));
+                Collectors.toMap(Function.identity(), this::generateAccession));
 
         return accessions;
     }
@@ -51,5 +51,5 @@ public abstract class SingleAccessionGenerator<T, U> implements AccessionGenerat
      * @param object Object to accession
      * @return Accession
      */
-    protected abstract U generateAccesion(T object);
+    protected abstract U generateAccession(T object);
 }

@@ -40,7 +40,7 @@ public class AccessioningServiceTest {
             private int counter = 0;
 
             @Override
-            protected String generateAccesion(String object) {
+            protected String generateAccession(String object) {
                 return PREFIX + counter++;
             }
         };

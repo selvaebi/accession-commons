@@ -31,7 +31,7 @@ public class TestPrefixAccessionGenerator extends SingleAccessionGenerator<Strin
     }
 
     @Override
-    protected String generateAccesion(String object) {
+    protected String generateAccession(String object) {
         return prefix + counter++;
     }
 }

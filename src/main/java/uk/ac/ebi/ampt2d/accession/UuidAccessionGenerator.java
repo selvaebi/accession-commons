@@ -37,7 +37,7 @@ public class UuidAccessionGenerator<T> extends SingleAccessionGenerator<T, UUID>
     }
 
     @Override
-    protected UUID generateAccesion(T object) {
+    protected UUID generateAccession(T object) {
         // TODO: this generates a version 3 (name based) UUID: explore other options to get a version 5 UUID
         UUID accession = UUID.nameUUIDFromBytes(concatenateNamespaceAndNameBytes(object.hashCode()));
 
