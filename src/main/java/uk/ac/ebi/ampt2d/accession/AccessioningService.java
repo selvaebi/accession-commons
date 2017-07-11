@@ -15,9 +15,12 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
+import uk.ac.ebi.ampt2d.accession.file.UuidFile;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,23 +28,16 @@ import java.util.stream.Collectors;
  *
  * @param <T> Object class
  */
-
-public class AccessioningService<T, U> {
-
-    private AccessionRepository<T, U> accessionRepository;
+public abstract class AccessioningService<T, U> {
 
     private AccessionGenerator<T, U> accessionGenerator;
 
     /**
-     * Constructs a service that will retrieve existing accessions from a repository, and create new ones using a
-     * generator
+     * Constructs a service that will retrieve existing accessions, and create new ones if necessary.
      *
-     * @param accessionRepository Repository that returns existing accessions and stores the new ones
      * @param accessionGenerator Generator that creates new accessions for not accessioned objects
      */
-    public AccessioningService(AccessionRepository<T, U> accessionRepository,
-                               AccessionGenerator<T, U > accessionGenerator) {
-        this.accessionRepository = accessionRepository;
+    public AccessioningService(AccessionGenerator<T, U> accessionGenerator) {
         this.accessionGenerator = accessionGenerator;
     }
 
@@ -54,7 +50,7 @@ public class AccessioningService<T, U> {
      */
     public Map<T, U> getAccessions(List<T> objects) {
         // look for accessions for those objects in the repository
-        Map<T, U> storedAccessions = accessionRepository.get(objects);
+        Map<T, U> storedAccessions = this.get(objects);
 
         // get all objects that are not in the repository
         Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
@@ -63,10 +59,15 @@ public class AccessioningService<T, U> {
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
             Map<T, U> newAccessions = accessionGenerator.get(objectsNotInRepository);
-            accessionRepository.add(newAccessions);
+            this.add(newAccessions);
             storedAccessions.putAll(newAccessions);
         }
 
         return storedAccessions;
     }
+
+    public abstract Map<T, U> get(List<T> objects);
+
+    public abstract void add(Map<T, U> accessions);
+
 }

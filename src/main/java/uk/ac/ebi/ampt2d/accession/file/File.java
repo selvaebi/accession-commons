@@ -17,75 +17,12 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.UUID;
 
-@Entity
-@Table
-public class File {
+public interface File<T> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private Long id;
+    String getHash();
 
-    @Column(unique = true)
-    private String hash;
+    <T> T getAccession();
 
-    @Column(unique = true)
-    @JsonIgnore
-    private UUID accession;
-
-    public File() {
-    }
-
-    public File(String hash) {
-        this.hash = hash;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public UUID getAccession() {
-        return accession;
-    }
-
-    public void setAccession(UUID accession) {
-        this.accession = accession;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        File file = (File) o;
-
-        return hash.equals(file.hash);
-    }
-
-    @Override
-    public int hashCode() {
-        return hash.hashCode();
-    }
 }

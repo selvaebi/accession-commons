@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class AccessioningServiceTest {
 
-    private  AccessioningService<String, String> service;
+    private AccessioningService<String, String> service;
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class AccessioningServiceTest {
 
         AccessionRepository<String, String> repository = new TestMapAccessionRepository();
 
-        service = new AccessioningService<>(repository, generator);
+//        service = new AccessioningService<>(generator);
     }
 
     @Test

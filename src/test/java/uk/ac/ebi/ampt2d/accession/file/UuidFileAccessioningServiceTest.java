@@ -34,31 +34,31 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = FileTestConfiguration.class)
 @DataJpaTest
-public class FileAccessioningServiceTest {
+public class UuidFileAccessioningServiceTest {
 
     @Autowired
-    private FileAccessionRepository fileAccessionRepository;
+    private UuidFileAccessionRepository uuidFileAccessionRepository;
 
-    private FileAccessioningService service;
+    private UuidFileAccessioningService service;
 
     @Before
     public void setUp() throws Exception {
-        service = new FileAccessioningService(fileAccessionRepository, "FileAccessioningServiceTest");
+        service = new UuidFileAccessioningService( "UuidFileAccessioningServiceTest");
     }
 
     @Test
     public void sameAccessionsAreReturnedForIdenticalFiles() throws Exception {
         String checksumA = "checksumA";
         String checksumB = "checksumB";
-        File fileA = new File(checksumA);
-        File fileB = new File(checksumB);
+        UuidFile fileA = new UuidFile(checksumA);
+        UuidFile fileB = new UuidFile(checksumB);
 
-        Map<File, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<UuidFile, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
-        fileA = new File(checksumA);
-        fileB = new File(checksumB);
+        fileA = new UuidFile(checksumA);
+        fileB = new UuidFile(checksumB);
 
-        Map<File, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<UuidFile, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(generatedAccessions.get(fileA), retrievedAccessions.get(fileA));
         assertEquals(generatedAccessions.get(fileB), retrievedAccessions.get(fileB));

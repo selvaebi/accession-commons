@@ -17,38 +17,10 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import uk.ac.ebi.ampt2d.accession.AccessionRepository;
+import java.util.Collection;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+public interface FileAccessionRepository {
 
-@Component
-public class FileAccessionRepository implements AccessionRepository<File, UUID> {
+    Collection findByHashIn(Collection<String> checksum);
 
-    @Autowired
-    private FileCrudRepository fileJpaRepository;
-
-    @Override
-    public Map<File, UUID> get(List<File> objects) {
-        List<String> checksums = objects.stream().map(File::getHash).collect(Collectors.toList());
-        List<File> filesInRepository = fileJpaRepository.findByHashIn(checksums);
-        return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), File::getAccession));
-    }
-
-    @Override
-    public void add(Map<File, UUID> accessions) {
-        for (File file : accessions.keySet()) {
-            file.setAccession(accessions.get(file));
-        }
-        fileJpaRepository.save(accessions.keySet());
-    }
-
-    FileCrudRepository getFileJpaRepository() {
-        return fileJpaRepository;
-    }
 }

@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accession.server;
 
-import uk.ac.ebi.ampt2d.accession.file.File;
+import uk.ac.ebi.ampt2d.accession.file.UuidFile;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class FileAccessionResponse {
 
     private List<FileAccession> accessions;
 
-    public FileAccessionResponse(Map<File, UUID> accessionMap) {
+    public FileAccessionResponse(Map<UuidFile, UUID> accessionMap) {
         this.accessions = accessionMap.entrySet().stream()
                                       .map(entry -> new FileAccession(entry.getKey(), entry.getValue()))
                                       .collect(Collectors.toList());
@@ -44,20 +44,20 @@ public class FileAccessionResponse {
 
     class FileAccession {
 
-        private File file;
+        private UuidFile file;
 
         private UUID accession;
 
-        FileAccession(File file, UUID accession) {
+        FileAccession(UuidFile file, UUID accession) {
             this.file = file;
             this.accession = accession;
         }
 
-        public File getFile() {
+        public UuidFile getFile() {
             return file;
         }
 
-        public void setFile(File file) {
+        public void setFile(UuidFile file) {
             this.file = file;
         }
 

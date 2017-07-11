@@ -17,15 +17,16 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.repository.CrudRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
-public class FileAccessioningService extends AccessioningService<File, UUID>{
+//@Profile("file-uuid")
+public interface UuidFileAccessionRepository extends FileAccessionRepository, CrudRepository<UuidFile, UUID> {
 
-    public FileAccessioningService(FileAccessionRepository accessionRepository,
-                                   String namespace) {
-        super(accessionRepository, new UuidAccessionGenerator<>(namespace));
-    }
+    Collection<UuidFile> findByHashIn(Collection<String> checksum);
+
 }
