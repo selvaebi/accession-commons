@@ -19,19 +19,20 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * An accession generator, that generate unique accessions for given objects
+ * A generator for unique accessions for given objects
  *
- * @param <T> Object class
+ * @param <T> Type of the object to accession
+ * @param <U> Type of the accession
  */
 
 public interface AccessionGenerator<T, U> {
 
     /**
-     * Generate unique accessions for a set of objects. The returned accessions should be unique: two different
+     * Generate unique accessions for a set of objects. Returned accessions must be unique: two different
      * objects cannot get the same accession
      *
      * @param objects Set of objects to accession
      * @return A map of objects to unique accessions
      */
-    Map<T, U> get(Set<T> objects);
+    Map<T, U> generateAccessions(Set<T> objects);
 }

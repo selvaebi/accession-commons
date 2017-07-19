@@ -36,14 +36,14 @@ public class UuidFile implements File<UUID> {
     @JsonIgnore
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String hash;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     @JsonIgnore
     private UUID accession;
 
-    public UuidFile() {
+    UuidFile() {
     }
 
     public UuidFile(String hash) {
@@ -54,17 +54,9 @@ public class UuidFile implements File<UUID> {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String getHash() {
         return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     @Override

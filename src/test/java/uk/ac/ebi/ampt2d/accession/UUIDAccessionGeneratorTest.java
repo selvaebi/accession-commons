@@ -49,7 +49,7 @@ public class UUIDAccessionGeneratorTest {
 
         UuidAccessionGenerator<String> generator = new UuidAccessionGenerator<>(TEST_NAMESPACE);
 
-        Map<String, UUID> accessions = generator.get(new HashSet<>(Arrays.asList(hash1, hash2)));
+        Map<String, UUID> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(hash1, hash2)));
 
         UUID accession1 = accessions.get(hash1);
         UUID accession2 = accessions.get(hash2);
@@ -66,10 +66,10 @@ public class UUIDAccessionGeneratorTest {
 
         UuidAccessionGenerator<String> generator = new UuidAccessionGenerator<>(TEST_NAMESPACE);
 
-        Map<String, UUID> accessions = generator.get(Collections.singleton(hash));
+        Map<String, UUID> accessions = generator.generateAccessions(Collections.singleton(hash));
         UUID accession1 = accessions.get(hash);
 
-        accessions = generator.get(Collections.singleton(hash));
+        accessions = generator.generateAccessions(Collections.singleton(hash));
         UUID accession2 = accessions.get(hash);
 
         assertEquals(accession1, accession2);
@@ -81,11 +81,11 @@ public class UUIDAccessionGeneratorTest {
 
         UuidAccessionGenerator<String> generator = new UuidAccessionGenerator<>(TEST_NAMESPACE);
 
-        Map<String, UUID> accessions = generator.get(Collections.singleton(hash));
+        Map<String, UUID> accessions = generator.generateAccessions(Collections.singleton(hash));
         UUID accession1 = accessions.get(hash);
 
         UuidAccessionGenerator<String> generator2 = new UuidAccessionGenerator<>(TEST_NAMESPACE);
-        accessions = generator2.get(Collections.singleton(hash));
+        accessions = generator2.generateAccessions(Collections.singleton(hash));
         UUID accession2 = accessions.get(hash);
 
         assertEquals(accession1, accession2);
@@ -97,11 +97,11 @@ public class UUIDAccessionGeneratorTest {
 
         UuidAccessionGenerator<String> generator = new UuidAccessionGenerator<>(TEST_NAMESPACE);
 
-        Map<String, UUID> accessions = generator.get(Collections.singleton(hash));
+        Map<String, UUID> accessions = generator.generateAccessions(Collections.singleton(hash));
         UUID accession1 = accessions.get(hash);
 
         UuidAccessionGenerator<String> generator2 = new UuidAccessionGenerator<>("SHA1");
-        accessions = generator2.get(Collections.singleton(hash));
+        accessions = generator2.generateAccessions(Collections.singleton(hash));
         UUID accession2 = accessions.get(hash);
 
         assertNotEquals(accession1, accession2);

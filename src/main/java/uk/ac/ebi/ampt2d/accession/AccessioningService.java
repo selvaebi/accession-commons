@@ -15,12 +15,9 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import uk.ac.ebi.ampt2d.accession.file.UuidFile;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +55,7 @@ public abstract class AccessioningService<T, U> {
 
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
-            Map<T, U> newAccessions = accessionGenerator.get(objectsNotInRepository);
+            Map<T, U> newAccessions = accessionGenerator.generateAccessions(objectsNotInRepository);
             this.add(newAccessions);
             storedAccessions.putAll(newAccessions);
         }

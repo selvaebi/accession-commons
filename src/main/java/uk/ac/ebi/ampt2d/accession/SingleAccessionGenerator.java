@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 public abstract class SingleAccessionGenerator<T, U> implements AccessionGenerator<T, U> {
 
     /**
-     * Basic implementaton of the get method that delegates into the 'generateAccession' method the responsability of
-     * generate an accession for a given object
+     * Loops through all the objects to accession and delegates into the 'generateAccession' method the
+     * responsibility of generating an accession for each of them.
      *
      * @param objects Set of objects to accession
      * @return A map of objects to unique accessions
      */
     @Override
-    public Map<T, U> get(Set<T> objects) {
+    public Map<T, U> generateAccessions(Set<T> objects) {
         Map<T, U> accessions = objects.stream().collect(
                 Collectors.toMap(Function.identity(), this::generateAccession));
 
@@ -46,7 +46,7 @@ public abstract class SingleAccessionGenerator<T, U> implements AccessionGenerat
     }
 
     /**
-     * Generates an accession for a given object
+     * Generates an accession for a given object.
      *
      * @param object Object to accession
      * @return Accession

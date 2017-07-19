@@ -47,7 +47,7 @@ public class AccessioningServiceGeneratorBInjectionTest {
         assertNotNull(accessionGenerator);
 
         String object1 = "obj1";
-        Map<String, String> accesions = accessionGenerator.get(Collections.singleton(object1));
+        Map<String, String> accesions = accessionGenerator.generateAccessions(Collections.singleton(object1));
         assertTrue(accesions.get(object1).startsWith(TestAccessionGeneratorB.PREFIX));
     }
 }
