@@ -19,10 +19,14 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+
 @ConfigurationProperties(prefix = "accessioning")
 public class AccessioningProperties {
 
     private String namespace;
+
+    public AccessioningProperties() {
+    }
 
     public String getNamespace() {
         return namespace;

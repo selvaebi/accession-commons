@@ -28,6 +28,9 @@ public class FileAccessionResponse {
 
     private List<FileAccession> accessions;
 
+    public FileAccessionResponse() {
+    }
+
     public FileAccessionResponse(Map<UuidFile, UUID> accessionMap) {
         this.accessions = accessionMap.entrySet().stream()
                                       .map(entry -> new FileAccession(entry.getKey(), entry.getValue()))
@@ -42,11 +45,14 @@ public class FileAccessionResponse {
         this.accessions = accessions;
     }
 
-    class FileAccession {
+    static class FileAccession {
 
         private UuidFile file;
 
         private UUID accession;
+
+        public FileAccession() {
+        }
 
         FileAccession(UuidFile file, UUID accession) {
             this.file = file;

@@ -20,16 +20,9 @@ package uk.ac.ebi.ampt2d.accession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class UUIDAccessionGeneratorTest {
 
@@ -111,7 +104,7 @@ public class UUIDAccessionGeneratorTest {
         String hexDigits = "0123456789abcdef";
 
         char[] text = new char[32];
-        for(int i=0; i < text.length; i++) {
+        for (int i = 0; i < text.length; i++) {
             text[i] = hexDigits.charAt(randomGenerator.nextInt(hexDigits.length()));
         }
 

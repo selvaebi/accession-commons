@@ -17,8 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import java.util.UUID;
-
 public interface File<T> {
 
     String getHash();

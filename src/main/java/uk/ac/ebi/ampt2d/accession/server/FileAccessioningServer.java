@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.accession.AccessioningProperties;
 import uk.ac.ebi.ampt2d.accession.file.UuidFile;
-import uk.ac.ebi.ampt2d.accession.file.UuidFileAccessionRepository;
 import uk.ac.ebi.ampt2d.accession.file.UuidFileAccessioningService;
 
 import java.util.List;
@@ -35,14 +33,12 @@ import java.util.UUID;
 @RequestMapping(value = "/v1/accession")
 public class FileAccessioningServer {
 
+    @Autowired
     private UuidFileAccessioningService accessioningService;
 
-    public FileAccessioningServer(@Autowired AccessioningProperties properties) {
-        this.accessioningService = new UuidFileAccessioningService(properties.getNamespace());
-    }
-
-    @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json",consumes = "application/json")
     public FileAccessionResponse accessionFiles(@RequestBody List<UuidFile> files) {
+
         Map<UuidFile, UUID> accessions = accessioningService.getAccessions(files);
 
         return new FileAccessionResponse(accessions);

@@ -22,9 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
 
@@ -33,7 +31,6 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = FileTestConfiguration.class)
 @DataJpaTest
 public class UuidFileAccessionRepositoryTest {
 
@@ -48,6 +45,7 @@ public class UuidFileAccessionRepositoryTest {
     public void setUp() throws Exception {
         generator = new UuidAccessionGenerator<>("ACC");
         alternativeGenerator = new UuidAccessionGenerator<>("ALT");
+
     }
 
     @Test
