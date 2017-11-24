@@ -28,51 +28,17 @@ public class FileAccessionResponse {
 
     private List<FileAccession> accessions;
 
-    public FileAccessionResponse() {
+    FileAccessionResponse() {
     }
 
     public FileAccessionResponse(Map<UuidFile, UUID> accessionMap) {
         this.accessions = accessionMap.entrySet().stream()
-                                      .map(entry -> new FileAccession(entry.getKey(), entry.getValue()))
-                                      .collect(Collectors.toList());
+                .map(entry -> new FileAccession(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
     public List<FileAccession> getAccessions() {
         return accessions;
     }
 
-    public void setAccessions(List<FileAccession> accessions) {
-        this.accessions = accessions;
-    }
-
-    static class FileAccession {
-
-        private UuidFile file;
-
-        private UUID accession;
-
-        public FileAccession() {
-        }
-
-        FileAccession(UuidFile file, UUID accession) {
-            this.file = file;
-            this.accession = accession;
-        }
-
-        public UuidFile getFile() {
-            return file;
-        }
-
-        public void setFile(UuidFile file) {
-            this.file = file;
-        }
-
-        public UUID getAccession() {
-            return accession;
-        }
-
-        public void setAccession(UUID accession) {
-            this.accession = accession;
-        }
-    }
 }

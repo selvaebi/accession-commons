@@ -31,12 +31,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class UuidFileAccessioningService extends AccessioningService<UuidFile, UUID> {
+public class  UuidFileAccessioningService extends AccessioningService<UuidFile, UUID> {
 
     @Autowired
     private UuidFileAccessionRepository fileRepository;
 
-    public UuidFileAccessioningService(@Autowired AccessioningProperties properties) {
+    public UuidFileAccessioningService(AccessioningProperties properties) {
         super(new UuidAccessionGenerator<>(properties.getNamespace()));
     }
 

@@ -25,9 +25,6 @@ public class AccessioningProperties {
 
     private String namespace;
 
-    public AccessioningProperties() {
-    }
-
     public String getNamespace() {
         return namespace;
     }
