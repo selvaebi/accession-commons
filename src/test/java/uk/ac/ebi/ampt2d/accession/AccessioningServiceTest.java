@@ -16,15 +16,14 @@
 package uk.ac.ebi.ampt2d.accession;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.ac.ebi.ampt2d.accession.test.TestMapAccessionRepository;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,28 +31,36 @@ import static org.junit.Assert.assertNotNull;
 
 public class AccessioningServiceTest {
 
-    private  AccessioningService<String> service;
+    private  AccessioningService<String,String> service;
 
     @Before
     public void setUp() throws Exception {
-        AccessionGenerator<String> generator = new AccessionGenerator<String>() {
+
+        AccessionGenerator<String, String> generator = new SingleAccessionGenerator<String, String>() {
             private static final String PREFIX = "ACC";
 
             private int counter = 0;
 
             @Override
-            public Map<String, String> get(Set<String> objects) {
-                Map<String, String> accessions = new HashMap<>();
-                for (String object : objects) {
-                    accessions.put(object, PREFIX + counter++);
-                }
-                return accessions;
+            protected String generateAccession(String object) {
+                return PREFIX + object;
             }
         };
 
-        AccessionRepository<String> repository = new TestMapAccessionRepository();
+        AccessionRepository<String, String> repository = new TestMapAccessionRepository();
 
-        service = new AccessioningService<>(repository, generator);
+        service = new AccessioningService<String,String>(generator){
+
+            @Override
+            public Map<String, String> get(List<String> objects) {
+                return repository.get(objects);
+            }
+
+            @Override
+            public void add(Map<String, String> accessions) {
+                repository.add(accessions);
+            }
+        };
     }
 
     @Test
