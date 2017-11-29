@@ -21,17 +21,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = FileConfiguration.class)
+@ActiveProfiles("file-uuid")
 public class UuidFileAccessioningServiceTest {
 
     @Autowired
@@ -124,7 +131,6 @@ public class UuidFileAccessioningServiceTest {
         UuidFile fileC = new UuidFile("checksumC");
         UuidFile fileD = new UuidFile("checksumD");
 
-
         List<UuidFile> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
         Map<UuidFile, UUID> accessionsFromSecondServiceCall = service
                 .getAccessions(objectsToAccession);
@@ -137,6 +143,5 @@ public class UuidFileAccessioningServiceTest {
         assertEquals(objectsToAccession.size(),
                 new HashSet<>(accessionsFromSecondServiceCall.values()).size());
     }
-
 
 }

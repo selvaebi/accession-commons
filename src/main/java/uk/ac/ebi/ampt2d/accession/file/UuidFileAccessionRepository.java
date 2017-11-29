@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 @Repository
+@Profile("file-uuid")
 public interface UuidFileAccessionRepository extends FileAccessionRepository, CrudRepository<UuidFile, UUID> {
 
     Collection<UuidFile> findByHashIn(Collection<String> checksum);

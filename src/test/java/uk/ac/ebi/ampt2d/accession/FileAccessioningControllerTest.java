@@ -27,19 +27,21 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.file.File;
 import uk.ac.ebi.ampt2d.accession.file.UuidFile;
 import uk.ac.ebi.ampt2d.accession.file.UuidFileAccessionRepository;
-import uk.ac.ebi.ampt2d.accession.server.FileAccessionResponse;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RestControllerTest {
+@ActiveProfiles("file-uuid")
+public class FileAccessioningControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -56,11 +58,11 @@ public class RestControllerTest {
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<FileAccessionResponse> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<FileAccessionResponse>() {
+        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().getAccessions().size());
+        assertEquals(3, response.getBody().size());
     }
 
     @Test
@@ -72,19 +74,19 @@ public class RestControllerTest {
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<FileAccessionResponse> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<FileAccessionResponse>() {
+        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().getAccessions().size());
+        assertEquals(3, response.getBody().size());
         assertEquals(3, uuidFileAccessionRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<FileAccessionResponse>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().getAccessions().size());
+        assertEquals(3, response.getBody().size());
         assertEquals(3, uuidFileAccessionRepository.count());
     }
 

@@ -20,9 +20,16 @@ package uk.ac.ebi.ampt2d.accession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class UUIDAccessionGeneratorTest {
 
@@ -93,7 +100,7 @@ public class UUIDAccessionGeneratorTest {
         Map<String, UUID> accessions = generator.generateAccessions(Collections.singleton(hash));
         UUID accession1 = accessions.get(hash);
 
-        UuidAccessionGenerator<String> generator2 = new UuidAccessionGenerator<>("SHA1");
+        UuidAccessionGenerator<String> generator2 = new UuidAccessionGenerator<>("SHA-1");
         accessions = generator2.generateAccessions(Collections.singleton(hash));
         UUID accession2 = accessions.get(hash);
 
