@@ -17,40 +17,30 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
+import uk.ac.ebi.ampt2d.accession.utils.UUIDUtil;
+
 import java.nio.ByteBuffer;
 import java.util.UUID;
+
 
 public class UuidAccessionGenerator<T> extends SingleAccessionGenerator<T, UUID> {
 
     private byte[] namespaceUuidBytes;
 
     public UuidAccessionGenerator(String namespace) {
-        namespaceUuidBytes = getNamespaceUUIDbytes(namespace);
+        namespaceUuidBytes = getNamespaceUUIDBytes(namespace);
     }
 
-    private byte[] getNamespaceUUIDbytes(String namespace) {
-        UUID namespaceUuid = UUID.nameUUIDFromBytes(namespace.getBytes());
-        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(namespaceUuid.getMostSignificantBits());
-        bb.putLong(namespaceUuid.getLeastSignificantBits());
-        return bb.array();
+    private byte[] getNamespaceUUIDBytes(String namespace) {
+        UUID namespaceUuid = UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
+        return UUIDUtil.getUuidAsBytes(namespaceUuid);
     }
 
     @Override
     protected UUID generateAccession(T object) {
-        // TODO: this generates a version 3 (name based) UUID: explore other options to get a version 5 UUID
-        UUID accession = UUID.nameUUIDFromBytes(concatenateNamespaceAndNameBytes(object.hashCode()));
-
+        byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
+        UUID accession = UUIDUtil.generateVersion5Uuid(namespaceUuidBytes,hashBytes);
         return accession;
     }
 
-    private byte[] concatenateNamespaceAndNameBytes(int hash) {
-        byte[] hashBytes = ByteBuffer.allocate(4).putInt(hash).array();
-
-        byte[] namespaceAndNameBytes = new byte[namespaceUuidBytes.length + hashBytes.length];
-        System.arraycopy(namespaceUuidBytes, 0, namespaceAndNameBytes, 0, namespaceUuidBytes.length);
-        System.arraycopy(hashBytes, 0, namespaceAndNameBytes, namespaceUuidBytes.length, hashBytes.length);
-
-        return namespaceAndNameBytes;
-    }
 }
