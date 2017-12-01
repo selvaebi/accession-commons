@@ -25,21 +25,20 @@ import java.util.UUID;
 
 public class UuidAccessionGenerator<T> extends SingleAccessionGenerator<T, UUID> {
 
-    private byte[] namespaceUuidBytes;
+    private UUID namespaceUuid;
 
     public UuidAccessionGenerator(String namespace) {
-        namespaceUuidBytes = getNamespaceUUIDBytes(namespace);
+        namespaceUuid = getNamespaceUUIDBytes(namespace);
     }
 
-    private byte[] getNamespaceUUIDBytes(String namespace) {
-        UUID namespaceUuid = UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
-        return UUIDUtil.getUuidAsBytes(namespaceUuid);
+    private UUID getNamespaceUUIDBytes(String namespace) {
+        return UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
     }
 
     @Override
     protected UUID generateAccession(T object) {
         byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
-        UUID accession = UUIDUtil.generateVersion5Uuid(namespaceUuidBytes,hashBytes);
+        UUID accession = UUIDUtil.generateVersion5Uuid(namespaceUuid,hashBytes);
         return accession;
     }
 
