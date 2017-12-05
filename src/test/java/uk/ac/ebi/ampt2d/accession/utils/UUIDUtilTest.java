@@ -19,6 +19,8 @@ package uk.ac.ebi.ampt2d.accession.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.python.core.PyObject;
+import org.python.util.PythonInterpreter;
 
 import java.util.UUID;
 
@@ -36,7 +38,7 @@ public class UUIDUtilTest {
         UUID namespace3UUID = UUIDUtil.getNamespaceUUIDFromBytes(namespace2.getBytes());
 
         Assert.assertNotEquals(namespace1UUID, namespace2UUID);
-        Assert.assertEquals(namespace2UUID,namespace3UUID);
+        Assert.assertEquals(namespace2UUID, namespace3UUID);
         Assert.assertEquals(VERSION_FIVE, namespace1UUID.version());
     }
 
@@ -54,9 +56,33 @@ public class UUIDUtilTest {
         UUID name3UUIDObject = UUIDUtil.generateVersion5Uuid(namespaceUUID, name2.getBytes());
 
         Assert.assertNotEquals(name1UUIDObject, name2UUIDObject);
-        Assert.assertEquals(name2UUIDObject,name3UUIDObject);
+        Assert.assertEquals(name2UUIDObject, name3UUIDObject);
         Assert.assertEquals(VERSION_FIVE, name1UUIDObject.version());
         Assert.assertEquals(VERSION_FIVE, name2UUIDObject.version());
+
+    }
+
+    @Test
+    public void testUuidGenerationWithPython() {
+
+        String namespace = "AMP";
+        String name1 = "Object1";
+        String rootNamespace = "00000000-0000-0000-0000-000000000000";
+
+        PythonInterpreter pythonInterpreter = new PythonInterpreter();
+
+        pythonInterpreter.exec("import uuid");
+        pythonInterpreter.exec("pyNamespaceUuid = uuid.uuid5(uuid.UUID('" + rootNamespace + "'),'" + namespace + "')");
+        PyObject pyNamespaceUuid = pythonInterpreter.get("pyNamespaceUuid");
+        UUID javaNamespaceUuid = UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
+
+        Assert.assertEquals(javaNamespaceUuid.toString(), pyNamespaceUuid.__str__().toString());
+
+        pythonInterpreter.exec("pyUuid = uuid.uuid5(pyNamespaceUuid,'" + name1 + "')");
+        PyObject pyUuid = pythonInterpreter.get("pyUuid");
+        UUID javaUuid = UUIDUtil.generateVersion5Uuid(javaNamespaceUuid, name1.getBytes());
+
+        Assert.assertEquals(javaUuid.toString(), pyUuid.__str__().toString());
 
     }
 
