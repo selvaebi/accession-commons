@@ -15,31 +15,15 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Accession repository
+ * Accessioning repository
  *
  * @param <T> Object class
  */
 
-public interface AccessionRepository<T, U> {
+public interface AccessioningRepository<T, U> {
 
-    /**
-     * Given a list of objects, it looks for the accessioned ones in the repository, and returns a them in a map. The
-     * objects that have no accession in the repository are not returned.
-     *
-     * @param objects List of objects to accession
-     * @return Objects to accessions map, for the objects that are stored in the repository
-     */
-    Map<T, U> get(List<T> objects);
-
-    /**
-     * Add object-accession pairs to a repository
-     *
-     * @param accessions Objects to accessions map
-     */
-    void add(Map<T, U> accessions);
-
+    Collection<T> findByHashIn(Collection<U> checksum);
 }

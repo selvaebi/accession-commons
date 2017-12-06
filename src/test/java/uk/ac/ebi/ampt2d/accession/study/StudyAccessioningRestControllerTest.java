@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +27,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.file.File;
-import uk.ac.ebi.ampt2d.accession.file.UuidFile;
-import uk.ac.ebi.ampt2d.accession.file.UuidFileAccessionRepository;
+import uk.ac.ebi.ampt2d.accession.AccessioningObject;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -39,55 +36,52 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("file-uuid")
-public class FileAccessioningControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=study-uuid")
+public class StudyAccessioningRestControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private UuidFileAccessionRepository uuidFileAccessionRepository;
+    private StudyAccessioningRepository studyAccessioningRepository;
 
     @Test
     public void testRestApi() {
-        File fileA = new UuidFile("checksumA");
-        File fileB = new UuidFile("checksumB");
-        File fileC = new UuidFile("checksumC");
+        AccessioningObject study1 = new Study("Title1", "Type1", "Email1");
+        AccessioningObject study2 = new Study("Title2", "Type2", "Email2");
 
-        String url = "/v1/accession/file";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
+        String url = "/v1/accession/study";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
+        assertEquals(2, response.getBody().size());
     }
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        File fileA = new UuidFile("checksumA");
-        File fileB = new UuidFile("checksumB");
-        File fileC = new UuidFile("checksumC");
+        AccessioningObject study1 = new Study("Title1", "Type1", "Email1");
+        AccessioningObject study2 = new Study("Title2", "Type2", "Email2");
 
-        String url = "/v1/accession/file";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
+        String url = "/v1/accession/study";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
-        assertEquals(3, uuidFileAccessionRepository.count());
+        assertEquals(2, response.getBody().size());
+        assertEquals(2, studyAccessioningRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
-        assertEquals(3, uuidFileAccessionRepository.count());
+        assertEquals(2, response.getBody().size());
+        assertEquals(2, studyAccessioningRepository.count());
     }
 
 }

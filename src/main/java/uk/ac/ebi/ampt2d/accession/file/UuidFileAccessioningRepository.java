@@ -17,9 +17,17 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.springframework.context.annotation.ComponentScan;
-import uk.ac.ebi.ampt2d.accession.AccessioningProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-@ComponentScan(basePackages = "uk.ac.ebi.ampt2d.accession.file", basePackageClasses = AccessioningProperties.class)
-public class FileConfiguration {
+import java.util.Collection;
+import java.util.UUID;
+
+@Repository
+@ConditionalOnProperty(name = "services", havingValue = "file-uuid")
+public interface UuidFileAccessioningRepository extends AccessioningRepository<UuidFile, String>, CrudRepository<UuidFile, UUID> {
+
+    Collection<UuidFile> findByHashIn(Collection<String> checksum);
 }

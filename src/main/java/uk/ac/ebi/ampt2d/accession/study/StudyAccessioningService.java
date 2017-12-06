@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -32,28 +32,29 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@ConditionalOnProperty(name = "services", havingValue = "file-uuid")
-public class UuidFileAccessioningService extends AccessioningService<UuidFile, UUID> {
+@ConditionalOnProperty(name = "services", havingValue = "study-uuid")
+public class StudyAccessioningService extends AccessioningService<Study, UUID> {
 
     @Autowired
-    private UuidFileAccessioningRepository fileRepository;
+    private StudyAccessioningRepository studyAccessionRepository;
 
-    public UuidFileAccessioningService(AccessioningProperties properties) {
+    public StudyAccessioningService(AccessioningProperties properties) {
         super(new UuidAccessionGenerator<>(properties.getNamespace()));
     }
 
     @Override
-    public Map<UuidFile, UUID> get(List<UuidFile> objects) {
-        List<String> checksums = objects.stream().map(UuidFile::getHash).collect(Collectors.toList());
-        Collection<UuidFile> filesInRepository = fileRepository.findByHashIn(checksums);
-        return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), UuidFile::getAccession));
+    public Map<Study, UUID> get(List<Study> objects) {
+        List<String> checksums = objects.stream().map(Study::getHash).collect(Collectors.toList());
+        objects.stream().forEach(study -> study.setHash(study.getHash()));
+        Collection<Study> studiesInRepository = studyAccessionRepository.findByHashIn(checksums);
+        return studiesInRepository.stream().collect(Collectors.toMap(Function.identity(), Study::getAccession));
     }
 
     @Override
-    public void add(Map<UuidFile, UUID> accessions) {
-        for (UuidFile file : accessions.keySet()) {
-            file.setAccession(accessions.get(file));
+    public void add(Map<Study, UUID> accessions) {
+        for (Study study : accessions.keySet()) {
+            study.setAccession(accessions.get(study));
         }
-        fileRepository.save(accessions.keySet());
+        studyAccessionRepository.save(accessions.keySet());
     }
 }

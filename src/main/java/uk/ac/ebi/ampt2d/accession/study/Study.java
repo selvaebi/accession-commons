@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.ac.ebi.ampt2d.accession.AccessioningObject;
@@ -28,38 +28,63 @@ import javax.persistence.Id;
 import java.util.UUID;
 
 @Entity
-public class UuidFile implements AccessioningObject<UUID> {
+public class Study implements AccessioningObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long id;
 
+    @Column(nullable = false)
+    private String studyTitle;
+
+    @Column(nullable = false)
+    private String studyType;
+
+    @Column(nullable = false)
+    private String submitterEmail;
+
+    @JsonIgnore
     @Column(nullable = false, unique = true)
     private String hash;
 
     @Column(nullable = false, unique = true)
     private UUID accession;
 
-    UuidFile() {
+    Study() {
     }
 
-    public UuidFile(String hash) {
-        this.hash = hash;
+    public Study(String studyTitle, String studyType, String submitterEmail) {
+        this.studyTitle = studyTitle;
+        this.studyType = studyType;
+        this.submitterEmail = submitterEmail;
+        this.hash = getHash();
     }
 
-    public Long getId() {
-        return id;
+    public String getStudyTitle() {
+        return studyTitle;
+    }
+
+    public String getStudyType() {
+        return studyType;
+    }
+
+    public String getSubmitterEmail() {
+        return submitterEmail;
     }
 
     @Override
     public String getHash() {
-        return hash;
+        return String.valueOf((this.studyTitle + this.studyType + this.submitterEmail).hashCode());
     }
 
     @Override
     public UUID getAccession() {
         return accession;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public void setAccession(UUID accession) {
@@ -71,13 +96,13 @@ public class UuidFile implements AccessioningObject<UUID> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UuidFile uuidFile = (UuidFile) o;
+        Study study = (Study) o;
 
-        return hash.equals(uuidFile.hash);
+        return getHash().equals(study.getHash());
     }
 
     @Override
     public int hashCode() {
-        return hash.hashCode();
+        return getHash().hashCode();
     }
 }
