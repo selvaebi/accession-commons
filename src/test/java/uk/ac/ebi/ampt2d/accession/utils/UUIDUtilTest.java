@@ -19,8 +19,6 @@ package uk.ac.ebi.ampt2d.accession.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.python.core.PyObject;
-import org.python.util.PythonInterpreter;
 
 import java.util.UUID;
 
@@ -66,23 +64,19 @@ public class UUIDUtilTest {
     public void testUuidGenerationWithPython() {
 
         String namespace = "AMP";
-        String name1 = "Object1";
-        String rootNamespace = "00000000-0000-0000-0000-000000000000";
+        String name = "Object1";
 
-        PythonInterpreter pythonInterpreter = new PythonInterpreter();
+        //These values are generated in python for the above namespace and name
+        String namespaceUuidFromPython = "458fcef2-d938-53c3-9db4-46b96bfd1fee";
+        String nameUuidFromPython = "ff7de0c4-d984-5198-8b70-48a8face0d50";
 
-        pythonInterpreter.exec("import uuid");
-        pythonInterpreter.exec("pyNamespaceUuid = uuid.uuid5(uuid.UUID('" + rootNamespace + "'),'" + namespace + "')");
-        PyObject pyNamespaceUuid = pythonInterpreter.get("pyNamespaceUuid");
         UUID javaNamespaceUuid = UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
 
-        Assert.assertEquals(javaNamespaceUuid.toString(), pyNamespaceUuid.__str__().toString());
+        Assert.assertEquals(namespaceUuidFromPython, javaNamespaceUuid.toString());
 
-        pythonInterpreter.exec("pyUuid = uuid.uuid5(pyNamespaceUuid,'" + name1 + "')");
-        PyObject pyUuid = pythonInterpreter.get("pyUuid");
-        UUID javaUuid = UUIDUtil.generateVersion5Uuid(javaNamespaceUuid, name1.getBytes());
+        UUID javaUuid = UUIDUtil.generateVersion5Uuid(javaNamespaceUuid, name.getBytes());
 
-        Assert.assertEquals(javaUuid.toString(), pyUuid.__str__().toString());
+        Assert.assertEquals(nameUuidFromPython, javaUuid.toString());
 
     }
 
