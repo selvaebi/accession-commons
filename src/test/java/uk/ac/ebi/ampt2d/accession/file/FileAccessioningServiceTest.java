@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -39,26 +38,26 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ComponentScan(basePackages = "uk.ac.ebi.ampt2d.accession.file")
-@TestPropertySource(properties = "services=file-uuid")
+@TestPropertySource(properties = "services=file-accession")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class UuidFileAccessioningServiceTest {
+public class FileAccessioningServiceTest {
 
     @Autowired
-    private UuidFileAccessioningService service;
+    private FileAccessioningService service;
 
     @Test
     public void sameAccessionsAreReturnedForIdenticalFiles() throws Exception {
         String checksumA = "checksumA";
         String checksumB = "checksumB";
-        UuidFile fileA = new UuidFile(checksumA);
-        UuidFile fileB = new UuidFile(checksumB);
+        File fileA = new File(checksumA);
+        File fileB = new File(checksumB);
 
-        Map<UuidFile, UUID> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
-        fileA = new UuidFile(checksumA);
-        fileB = new UuidFile(checksumB);
+        fileA = new File(checksumA);
+        fileB = new File(checksumB);
 
-        Map<UuidFile, UUID> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(generatedAccessions.get(fileA), retrievedAccessions.get(fileA));
         assertEquals(generatedAccessions.get(fileB), retrievedAccessions.get(fileB));
@@ -66,10 +65,10 @@ public class UuidFileAccessioningServiceTest {
 
     @Test
     public void everyNewObjectReceiveOneAccession() throws Exception {
-        List<UuidFile> newObjects = Arrays.asList(new UuidFile("checksumA"), new UuidFile("checksumB"), new UuidFile("checksumC"));
-        Map<UuidFile, UUID> accessions = service.getAccessions(newObjects);
+        List<File> newObjects = Arrays.asList(new File("checksumA"), new File("checksumB"), new File("checksumC"));
+        Map<File, String> accessions = service.getAccessions(newObjects);
 
-        for (UuidFile object : newObjects) {
+        for (File object : newObjects) {
             assertNotNull(accessions.get(object));
         }
     }
@@ -77,44 +76,44 @@ public class UuidFileAccessioningServiceTest {
     @Test
     public void sameObjectsGetSameAccession() throws Exception {
 
-        UuidFile fileA = new UuidFile("checksumA");
-        UuidFile fileB = new UuidFile("checksumA");
+        File fileA = new File("checksumA");
+        File fileB = new File("checksumA");
 
-        List<UuidFile> newObjects = Arrays.asList(fileA, fileB);
-        Map<UuidFile, UUID> accessions = service.getAccessions(newObjects);
+        List<File> newObjects = Arrays.asList(fileA, fileB);
+        Map<File, String> accessions = service.getAccessions(newObjects);
 
-        UUID accession1 = accessions.get(fileA);
-        UUID anotherAccession1 = accessions.get(fileB);
+        String accession1 = accessions.get(fileA);
+        String anotherAccession1 = accessions.get(fileB);
 
         assertEquals(accession1, anotherAccession1);
     }
 
     @Test
     public void differentObjectsGetDifferentAccessions() throws Exception {
-        UuidFile fileA = new UuidFile("checksumA");
-        UuidFile fileB = new UuidFile("checksumB");
+        File fileA = new File("checksumA");
+        File fileB = new File("checksumB");
 
-        List<UuidFile> newObjects = Arrays.asList(fileA, fileB);
-        Map<UuidFile, UUID> accessions = service.getAccessions(newObjects);
+        List<File> newObjects = Arrays.asList(fileA, fileB);
+        Map<File, String> accessions = service.getAccessions(newObjects);
 
-        UUID accession1 = accessions.get(fileA);
-        UUID anotherAccession1 = accessions.get(fileB);
+        String accession1 = accessions.get(fileA);
+        String anotherAccession1 = accessions.get(fileB);
 
         assertNotEquals(accession1, anotherAccession1);
     }
 
     @Test
     public void differentCallsToTheServiceUsingSameObjectsWillReturnSameAccessions() throws Exception {
-        UuidFile fileA = new UuidFile("checksumA");
-        UuidFile fileB = new UuidFile("checksumB");
+        File fileA = new File("checksumA");
+        File fileB = new File("checksumB");
 
-        List<UuidFile> newObjects = Arrays.asList(fileA, fileB);
-        Map<UuidFile, UUID> accessions = service.getAccessions(newObjects);
+        List<File> newObjects = Arrays.asList(fileA, fileB);
+        Map<File, String> accessions = service.getAccessions(newObjects);
 
-        UUID accession1 = accessions.get(fileA);
-        UUID anotherAccession1 = accessions.get(fileB);
+        String accession1 = accessions.get(fileA);
+        String anotherAccession1 = accessions.get(fileB);
 
-        Map<UuidFile, UUID> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));
         assertEquals(anotherAccession1, accessionsFromSecondServiceCall.get(fileB));
@@ -122,19 +121,19 @@ public class UuidFileAccessioningServiceTest {
 
     @Test
     public void mixingAlreadyAccessionedAndNewObjectsIsAllowed() throws Exception {
-        UuidFile fileA = new UuidFile("checksumA");
-        UuidFile fileB = new UuidFile("checksumB");
+        File fileA = new File("checksumA");
+        File fileB = new File("checksumB");
 
-        Map<UuidFile, UUID> accessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> accessions = service.getAccessions(Arrays.asList(fileA, fileB));
 
-        UUID accession1 = accessions.get(fileA);
-        UUID accession2 = accessions.get(fileB);
+        String accession1 = accessions.get(fileA);
+        String accession2 = accessions.get(fileB);
 
-        UuidFile fileC = new UuidFile("checksumC");
-        UuidFile fileD = new UuidFile("checksumD");
+        File fileC = new File("checksumC");
+        File fileD = new File("checksumD");
 
-        List<UuidFile> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
-        Map<UuidFile, UUID> accessionsFromSecondServiceCall = service
+        List<File> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
+        Map<File, String> accessionsFromSecondServiceCall = service
                 .getAccessions(objectsToAccession);
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));

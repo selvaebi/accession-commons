@@ -25,7 +25,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,34 +33,33 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = "services=file-uuid")
-public class UuidFileAccessioningRepositoryTest {
+@TestPropertySource(properties = "services=file-accession")
+public class FileAccessioningRepositoryTest {
 
     @Autowired
-    private UuidFileAccessioningRepository accessionRepository;
+    private FileAccessioningRepository accessionRepository;
 
-    private AccessionGenerator<UuidFile, UUID> generator;
+    private AccessionGenerator<File, String> generator;
 
-    private AccessionGenerator<UuidFile, UUID> alternativeGenerator;
+    private AccessionGenerator<File, String> alternativeGenerator;
 
     @Before
     public void setUp() throws Exception {
-        generator = new UuidAccessionGenerator<>("ACC");
-        alternativeGenerator = new UuidAccessionGenerator<>("ALT");
+        generator = new SHA1AccessionGenerator<>("ACC");
+        alternativeGenerator = new SHA1AccessionGenerator<>("ALT");
 
     }
 
     @Test
     public void testFilesAreStoredInTheRepository() throws Exception {
-        List<UuidFile> files = Arrays.asList(new UuidFile("checksumA"), new UuidFile("checksumB"));
-        Map<UuidFile, UUID> accessionedFiles = generator.generateAccessions(new HashSet<>(files));
-        for (Map.Entry<UuidFile, UUID> entry : accessionedFiles.entrySet()) {
+        List<File> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
+        Map<File, String> accessionedFiles = generator.generateAccessions(new HashSet<>(files));
+        for (Map.Entry<File, String> entry : accessionedFiles.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
         accessionRepository.save(accessionedFiles.keySet());
@@ -70,26 +69,26 @@ public class UuidFileAccessioningRepositoryTest {
         Collection<String> checksums = new ArrayList<>();
         checksums.add("checksumA");
         checksums.add("checksumB");
-        Collection<UuidFile> accessionsFromRepository = accessionRepository.findByHashIn(checksums);
+        Collection<File> accessionsFromRepository = accessionRepository.findByHashIn(checksums);
         assertEquals(new ArrayList<>(accessionedFiles.keySet()), accessionsFromRepository);
     }
 
     @Test
     public void addingTheSameFilesWillReplaceTheAccessionsInTheRepository() throws Exception {
-        List<UuidFile> files = Arrays.asList(new UuidFile("checksumA"), new UuidFile("checksumB"));
-        HashSet<UuidFile> fileSet = new HashSet<>(files);
+        List<File> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
+        HashSet<File> fileSet = new HashSet<>(files);
 
         // Store the files with the initial accessions
-        Map<UuidFile, UUID> accessionedFiles = generator.generateAccessions(fileSet);
-        for (Map.Entry<UuidFile, UUID> entry : accessionedFiles.entrySet()) {
+        Map<File, String> accessionedFiles = generator.generateAccessions(fileSet);
+        for (Map.Entry<File, String> entry : accessionedFiles.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
         accessionRepository.save(accessionedFiles.keySet());
         assertEquals(2, accessionRepository.count());
 
         // Storing again the same files with new accessions overwrites the existing ones
-        Map<UuidFile, UUID> alternativeAccesionedFiles = alternativeGenerator.generateAccessions(fileSet);
-        for (Map.Entry<UuidFile, UUID> entry : alternativeAccesionedFiles.entrySet()) {
+        Map<File, String> alternativeAccesionedFiles = alternativeGenerator.generateAccessions(fileSet);
+        for (Map.Entry<File, String> entry : alternativeAccesionedFiles.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
         accessionRepository.save(alternativeAccesionedFiles.keySet());
@@ -98,30 +97,30 @@ public class UuidFileAccessioningRepositoryTest {
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
     public void cantStoreFileWithoutAccession() {
-        UuidFile file = new UuidFile("cantStoreFileWithoutAccession");
+        File file = new File("cantStoreFileWithoutAccession");
         accessionRepository.save(file);
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
     public void cantStoreMultipleFilesWithSameHash() {
-        UuidFile originalFile = new UuidFile("cantStoreMultipleFilesWithSameHash");
-        originalFile.setAccession(UUID.randomUUID());
+        File originalFile = new File("cantStoreMultipleFilesWithSameHash");
+        originalFile.setAccession("randomString");
         accessionRepository.save(originalFile);
         assertEquals(1, accessionRepository.count());
 
-        UuidFile newFile = new UuidFile(originalFile.getHash());
-        newFile.setAccession(UUID.randomUUID());
+        File newFile = new File(originalFile.getHash());
+        newFile.setAccession("anotherRandomString");
         accessionRepository.save(newFile);
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
     public void cantStoreMultipleFilesWithSameAccession() {
-        UuidFile originalFile = new UuidFile("cantStoreMultipleFilesWithSameAccession1");
-        originalFile.setAccession(UUID.randomUUID());
+        File originalFile = new File("cantStoreMultipleFilesWithSameAccession1");
+        originalFile.setAccession("randomString");
         accessionRepository.save(originalFile);
         assertEquals(1, accessionRepository.count());
 
-        UuidFile newFile = new UuidFile("cantStoreMultipleFilesWithSameAccession2");
+        File newFile = new File("cantStoreMultipleFilesWithSameAccession2");
         newFile.setAccession(originalFile.getAccession());
         accessionRepository.save(newFile);
     }

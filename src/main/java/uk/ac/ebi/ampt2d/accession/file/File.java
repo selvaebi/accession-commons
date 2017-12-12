@@ -28,7 +28,7 @@ import javax.persistence.Id;
 import java.util.UUID;
 
 @Entity
-public class UuidFile implements AccessioningObject<UUID> {
+public class File implements AccessioningObject<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,12 +39,12 @@ public class UuidFile implements AccessioningObject<UUID> {
     private String hash;
 
     @Column(nullable = false, unique = true)
-    private UUID accession;
+    private String accession;
 
-    UuidFile() {
+    File() {
     }
 
-    public UuidFile(String hash) {
+    public File(String hash) {
         this.hash = hash;
     }
 
@@ -58,11 +58,11 @@ public class UuidFile implements AccessioningObject<UUID> {
     }
 
     @Override
-    public UUID getAccession() {
+    public String getAccession() {
         return accession;
     }
 
-    public void setAccession(UUID accession) {
+    public void setAccession(String accession) {
         this.accession = accession;
     }
 
@@ -71,9 +71,9 @@ public class UuidFile implements AccessioningObject<UUID> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UuidFile uuidFile = (UuidFile) o;
+        File file = (File) o;
 
-        return hash.equals(uuidFile.hash);
+        return hash.equals(file.hash);
     }
 
     @Override

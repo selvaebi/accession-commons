@@ -15,19 +15,25 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.nio.ByteBuffer;
 
-@Repository
-@ConditionalOnProperty(name = "services", havingValue = "file-uuid")
-public interface UuidFileAccessioningRepository extends AccessioningRepository<UuidFile, String>, CrudRepository<UuidFile, UUID> {
+public class SHA1AccessionGenerator<T> extends SingleAccessionGenerator<T, String> {
 
-    Collection<UuidFile> findByHashIn(Collection<String> checksum);
+    private String namespace;
+
+    public SHA1AccessionGenerator(String namespace) {
+        this.namespace = namespace;
+    }
+
+    @Override
+    protected String generateAccession(T object) {
+        byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
+        String accession = Sha1Util.generateSha1Accession(namespace.getBytes(), hashBytes);
+        return accession;
+    }
+
 }

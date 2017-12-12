@@ -32,16 +32,16 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/v1/accession")
-@ConditionalOnProperty(name = "services", havingValue = "file-uuid")
-public class UuidFileAccessioningRestController {
+@ConditionalOnProperty(name = "services", havingValue = "file-accession")
+public class FileAccessioningRestController {
 
     @Autowired
     AccessioningService accessioningService;
 
     @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public Set<UuidFile> accessionFiles(@RequestBody List<UuidFile> files) {
+    public Set<File> accessionFiles(@RequestBody List<File> files) {
 
-        Map<UuidFile, UUID> accessions = accessioningService.getAccessions(files);
+        Map<File, String> accessions = accessioningService.getAccessions(files);
         return accessions.keySet();
     }
 }

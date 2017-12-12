@@ -36,25 +36,25 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"services = file-uuid"})
-public class UuidFileAccessioningRestControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"services=file-accession"})
+public class FileAccessioningRestControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private UuidFileAccessioningRepository uuidFileAccessioningRepository;
+    private FileAccessioningRepository fileAccessioningRepository;
 
     @Test
     public void testRestApi() {
-        AccessioningObject fileA = new UuidFile("checksumA");
-        AccessioningObject fileB = new UuidFile("checksumB");
-        AccessioningObject fileC = new UuidFile("checksumC");
+        AccessioningObject fileA = new File("checksumA");
+        AccessioningObject fileB = new File("checksumB");
+        AccessioningObject fileC = new File("checksumC");
 
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        ResponseEntity<Set<File>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -63,27 +63,27 @@ public class UuidFileAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        AccessioningObject fileA = new UuidFile("checksumA");
-        AccessioningObject fileB = new UuidFile("checksumB");
-        AccessioningObject fileC = new UuidFile("checksumC");
+        AccessioningObject fileA = new File("checksumA");
+        AccessioningObject fileB = new File("checksumB");
+        AccessioningObject fileC = new File("checksumC");
 
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<Set<UuidFile>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        ResponseEntity<Set<File>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, response.getBody().size());
-        assertEquals(3, uuidFileAccessioningRepository.count());
+        assertEquals(3, fileAccessioningRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<UuidFile>>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, response.getBody().size());
-        assertEquals(3, uuidFileAccessioningRepository.count());
+        assertEquals(3, fileAccessioningRepository.count());
     }
 
 }
