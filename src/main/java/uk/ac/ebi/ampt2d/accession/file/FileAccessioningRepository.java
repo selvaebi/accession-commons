@@ -23,11 +23,10 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
 import java.util.Collection;
-import java.util.UUID;
 
 @Repository
 @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-public interface FileAccessioningRepository extends AccessioningRepository<File, String>, CrudRepository<File, UUID> {
+public interface FileAccessioningRepository extends AccessioningRepository<File, String>, CrudRepository<File, String> {
 
     Collection<File> findByHashIn(Collection<String> checksum);
 }
