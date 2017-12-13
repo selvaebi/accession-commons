@@ -31,13 +31,9 @@ public class Sha1Util {
 
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(Sha1Util.class);
 
-    public static String generateSha1Accession(byte[] namespaceBytes, byte[] nameBytes) {
+    public static String generateSha1Accession(byte[] nameBytes) {
 
-        byte[] namespaceAndNameBytes = new byte[namespaceBytes.length + nameBytes.length];
-        System.arraycopy(namespaceBytes, 0, namespaceAndNameBytes, 0, namespaceBytes.length);
-        System.arraycopy(nameBytes, 0, namespaceAndNameBytes, namespaceBytes.length, nameBytes.length);
-
-        return DatatypeConverter.printHexBinary(toSHA1(namespaceAndNameBytes));
+        return DatatypeConverter.printHexBinary(toSHA1(nameBytes));
     }
 
     private static byte[] toSHA1(byte[] bytes) {

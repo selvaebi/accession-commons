@@ -19,10 +19,8 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(AccessioningProperties.class)
 public class AccessioningRepositoryApplication {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(AccessioningRepositoryApplication.class, args);

@@ -23,16 +23,10 @@ import java.nio.ByteBuffer;
 
 public class SHA1AccessionGenerator<T> extends SingleAccessionGenerator<T, String> {
 
-    private String namespace;
-
-    public SHA1AccessionGenerator(String namespace) {
-        this.namespace = namespace;
-    }
-
     @Override
     protected String generateAccession(T object) {
         byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
-        String accession = Sha1Util.generateSha1Accession(namespace.getBytes(), hashBytes);
+        String accession = Sha1Util.generateSha1Accession(hashBytes);
         return accession;
     }
 

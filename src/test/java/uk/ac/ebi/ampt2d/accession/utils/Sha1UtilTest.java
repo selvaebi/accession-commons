@@ -25,17 +25,16 @@ public class Sha1UtilTest {
     @Test
     public void testGenerateAccession() {
 
-        String namespace = "AMP";
-        String name1 = "Object1";
-        String name2 = "Object2";
+        String object1 = "Object1";
+        String object2 = "Object2";
 
-        String name1Accession = Sha1Util.generateSha1Accession(namespace.getBytes(), name1.getBytes());
-        String name2Accession = Sha1Util.generateSha1Accession(namespace.getBytes(), name2.getBytes());
-        String name3Accession = Sha1Util.generateSha1Accession(namespace.getBytes(), name2.getBytes());
+        String object1Accession = Sha1Util.generateSha1Accession(object1.getBytes());
+        String object2Accession = Sha1Util.generateSha1Accession(object2.getBytes());
+        String object3Accession = Sha1Util.generateSha1Accession(object2.getBytes());
 
-        Assert.assertNotEquals(name1Accession, name2Accession);
-        Assert.assertEquals(name2Accession, name3Accession);
-        Assert.assertEquals(40,name1Accession.length());
+        Assert.assertNotEquals(object1Accession, object2Accession);
+        Assert.assertEquals(object2Accession, object3Accession);
+        Assert.assertEquals(40, object1Accession.length());
 
     }
 

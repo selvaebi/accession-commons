@@ -20,7 +20,6 @@ package uk.ac.ebi.ampt2d.accession.file;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.ampt2d.accession.AccessioningProperties;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
 import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
 
@@ -37,8 +36,8 @@ public class FileAccessioningService extends AccessioningService<File, String> {
     @Autowired
     private FileAccessioningRepository fileRepository;
 
-    public FileAccessioningService(AccessioningProperties properties) {
-        super(new SHA1AccessionGenerator<>(properties.getNamespace()));
+    public FileAccessioningService() {
+        super(new SHA1AccessionGenerator<>());
     }
 
     @Override

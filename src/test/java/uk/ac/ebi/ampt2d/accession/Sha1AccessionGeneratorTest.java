@@ -32,8 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 public class Sha1AccessionGeneratorTest {
 
-    public static final String TEST_NAMESPACE = "Test";
-
     private static Random randomGenerator;
 
     @BeforeClass
@@ -46,7 +44,7 @@ public class Sha1AccessionGeneratorTest {
         String hash1 = randomChecksum();
         String hash2 = randomChecksum();
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>(TEST_NAMESPACE);
+        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
 
         Map<String, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(hash1, hash2)));
 
@@ -63,7 +61,7 @@ public class Sha1AccessionGeneratorTest {
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
         String hash = randomChecksum();
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>(TEST_NAMESPACE);
+        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
 
         Map<String, String> accessions = generator.generateAccessions(Collections.singleton(hash));
         String accession1 = accessions.get(hash);
@@ -75,35 +73,19 @@ public class Sha1AccessionGeneratorTest {
     }
 
     @Test
-    public void twoDifferentGeneratorInstancesForSameNamespaceReturnTheSameAccessionForTheSameInput() {
+    public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
         String hash = randomChecksum();
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>(TEST_NAMESPACE);
+        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
 
         Map<String, String> accessions = generator.generateAccessions(Collections.singleton(hash));
         String accession1 = accessions.get(hash);
 
-        SHA1AccessionGenerator<String> generator2 = new SHA1AccessionGenerator<>(TEST_NAMESPACE);
+        SHA1AccessionGenerator<String> generator2 = new SHA1AccessionGenerator<>();
         accessions = generator2.generateAccessions(Collections.singleton(hash));
         String accession2 = accessions.get(hash);
 
         assertEquals(accession1, accession2);
-    }
-
-    @Test
-    public void twoDifferentGeneratorInstancesForDiferentNamespacesReturnDifferentAccessionsForTheSameInput() {
-        String hash = randomChecksum();
-
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>(TEST_NAMESPACE);
-
-        Map<String, String> accessions = generator.generateAccessions(Collections.singleton(hash));
-        String accession1 = accessions.get(hash);
-
-        SHA1AccessionGenerator<String> generator2 = new SHA1AccessionGenerator<>("SHA-1");
-        accessions = generator2.generateAccessions(Collections.singleton(hash));
-        String accession2 = accessions.get(hash);
-
-        assertNotEquals(accession1, accession2);
     }
 
     private String randomChecksum() {

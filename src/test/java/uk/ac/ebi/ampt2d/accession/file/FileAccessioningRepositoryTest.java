@@ -50,8 +50,8 @@ public class FileAccessioningRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-        generator = new SHA1AccessionGenerator<>("ACC");
-        alternativeGenerator = new SHA1AccessionGenerator<>("ALT");
+        generator = new SHA1AccessionGenerator<>();
+        alternativeGenerator = new SHA1AccessionGenerator<>();
 
     }
 
