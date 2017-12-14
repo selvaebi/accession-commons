@@ -19,14 +19,11 @@ package uk.ac.ebi.ampt2d.accession;
 
 import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
 
-import java.nio.ByteBuffer;
-
-public class SHA1AccessionGenerator<T> extends SingleAccessionGenerator<T, String> {
+public class SHA1AccessionGenerator<T extends AccessioningObject> extends SingleAccessionGenerator<T, String> {
 
     @Override
     protected String generateAccession(T object) {
-        byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
-        String accession = Sha1Util.generateSha1Accession(hashBytes);
+        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
         return accession;
     }
 

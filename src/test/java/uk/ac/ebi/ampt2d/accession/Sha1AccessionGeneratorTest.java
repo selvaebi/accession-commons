@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.accession;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.accession.file.File;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,15 +42,33 @@ public class Sha1AccessionGeneratorTest {
 
     @Test
     public void differentAccessionsAreGeneratedForDifferentInputs() throws Exception {
-        String hash1 = randomChecksum();
-        String hash2 = randomChecksum();
+        File file1 = new File(randomChecksum());
+        File file2 = new File(randomChecksum());
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
+        SHA1AccessionGenerator<File> generator = new SHA1AccessionGenerator<>();
 
-        Map<String, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(hash1, hash2)));
+        Map<File, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(file1, file2)));
 
-        String accession1 = accessions.get(hash1);
-        String accession2 = accessions.get(hash2);
+        String accession1 = accessions.get(file1);
+        String accession2 = accessions.get(file2);
+
+        assertTrue(accession1 != null);
+        assertTrue(accession2 != null);
+
+        assertNotEquals(accession1, accession2);
+    }
+
+    @Test
+    public void differentAccessionsAreGeneratedForDifferentObjects() throws Exception {
+        File file1 = new File(randomChecksum());
+        File file2 = new File(randomChecksum());
+
+        SHA1AccessionGenerator<File> generator = new SHA1AccessionGenerator<>();
+
+        Map<File, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(file1, file2)));
+
+        String accession1 = accessions.get(file1);
+        String accession2 = accessions.get(file2);
 
         assertTrue(accession1 != null);
         assertTrue(accession2 != null);
@@ -59,31 +78,31 @@ public class Sha1AccessionGeneratorTest {
 
     @Test
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
-        String hash = randomChecksum();
+        File file = new File(randomChecksum());
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
+        SHA1AccessionGenerator<File> generator = new SHA1AccessionGenerator<>();
 
-        Map<String, String> accessions = generator.generateAccessions(Collections.singleton(hash));
-        String accession1 = accessions.get(hash);
+        Map<File, String> accessions = generator.generateAccessions(Collections.singleton(file));
+        String accession1 = accessions.get(file);
 
-        accessions = generator.generateAccessions(Collections.singleton(hash));
-        String accession2 = accessions.get(hash);
+        accessions = generator.generateAccessions(Collections.singleton(file));
+        String accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }
 
     @Test
     public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
-        String hash = randomChecksum();
+        File file = new File(randomChecksum());
 
-        SHA1AccessionGenerator<String> generator = new SHA1AccessionGenerator<>();
+        SHA1AccessionGenerator<File> generator = new SHA1AccessionGenerator<>();
 
-        Map<String, String> accessions = generator.generateAccessions(Collections.singleton(hash));
-        String accession1 = accessions.get(hash);
+        Map<File, String> accessions = generator.generateAccessions(Collections.singleton(file));
+        String accession1 = accessions.get(file);
 
-        SHA1AccessionGenerator<String> generator2 = new SHA1AccessionGenerator<>();
-        accessions = generator2.generateAccessions(Collections.singleton(hash));
-        String accession2 = accessions.get(hash);
+        SHA1AccessionGenerator<File> generator2 = new SHA1AccessionGenerator<>();
+        accessions = generator2.generateAccessions(Collections.singleton(file));
+        String accession2 = accessions.get(file);
 
         assertEquals(accession1, accession2);
     }
