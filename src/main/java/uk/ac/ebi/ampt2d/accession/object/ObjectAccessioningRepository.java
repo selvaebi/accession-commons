@@ -15,20 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.object;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-@ConfigurationProperties(prefix = "accessioning")
-public class AccessioningProperties {
+import java.util.Collection;
 
-    private String namespace;
+@Repository
+@ConditionalOnProperty(name = "services", havingValue = "object-accession")
+public interface ObjectAccessioningRepository extends AccessioningRepository<AccessionObject, String>, CrudRepository<AccessionObject, String> {
 
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
+    Collection<AccessionObject> findByHashIn(Collection<String> checksum);
 }
