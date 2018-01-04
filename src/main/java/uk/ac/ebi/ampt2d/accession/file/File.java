@@ -17,10 +17,66 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-public interface File<T> {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.ac.ebi.ampt2d.accession.AccessioningObject;
 
-    String getHash();
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-    <T> T getAccession();
+@Entity
+public class File implements AccessioningObject<String> {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String hash;
+
+    @Column(nullable = false, unique = true)
+    private String accession;
+
+    File() {
+    }
+
+    public File(String hash) {
+        this.hash = hash;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public String getHash() {
+        return hash;
+    }
+
+    @Override
+    public String getAccession() {
+        return accession;
+    }
+
+    public void setAccession(String accession) {
+        this.accession = accession;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        File file = (File) o;
+
+        return hash.equals(file.hash);
+    }
+
+    @Override
+    public int hashCode() {
+        return hash.hashCode();
+    }
 }

@@ -18,40 +18,38 @@
 package uk.ac.ebi.ampt2d.accession.file;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.ampt2d.accession.AccessioningProperties;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.UuidAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@Profile("file-uuid")
-public class  UuidFileAccessioningService extends AccessioningService<UuidFile, UUID> {
+@ConditionalOnProperty(name = "services", havingValue = "file-accession")
+public class FileAccessioningService extends AccessioningService<File, String> {
 
     @Autowired
-    private UuidFileAccessionRepository fileRepository;
+    private FileAccessioningRepository fileRepository;
 
-    public UuidFileAccessioningService(AccessioningProperties properties) {
-        super(new UuidAccessionGenerator<>(properties.getNamespace()));
+    public FileAccessioningService() {
+        super(new SHA1AccessionGenerator<>());
     }
 
     @Override
-    public Map<UuidFile, UUID> get(List<UuidFile> objects) {
-        List<String> checksums = objects.stream().map(UuidFile::getHash).collect(Collectors.toList());
-        Collection<UuidFile> filesInRepository = fileRepository.findByHashIn(checksums);
-        return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), UuidFile::getAccession));
+    public Map<File, String> get(List<File> objects) {
+        List<String> checksums = objects.stream().map(File::getHash).collect(Collectors.toList());
+        Collection<File> filesInRepository = fileRepository.findByHashIn(checksums);
+        return filesInRepository.stream().collect(Collectors.toMap(Function.identity(), File::getAccession));
     }
 
     @Override
-    public void add(Map<UuidFile, UUID> accessions) {
-        for (UuidFile file : accessions.keySet()) {
+    public void add(Map<File, String> accessions) {
+        for (File file : accessions.keySet()) {
             file.setAccession(accessions.get(file));
         }
         fileRepository.save(accessions.keySet());

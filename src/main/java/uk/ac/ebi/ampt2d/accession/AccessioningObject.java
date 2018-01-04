@@ -15,18 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.context.annotation.Profile;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+public interface AccessioningObject<T> {
 
-import java.util.Collection;
-import java.util.UUID;
+    String getHash();
 
-@Repository
-@Profile("file-uuid")
-public interface UuidFileAccessionRepository extends FileAccessionRepository, CrudRepository<UuidFile, UUID> {
+    T getAccession();
 
-    Collection<UuidFile> findByHashIn(Collection<String> checksum);
 }

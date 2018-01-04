@@ -17,28 +17,13 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import uk.ac.ebi.ampt2d.accession.utils.UUIDUtil;
+import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
-
-
-public class UuidAccessionGenerator<T> extends SingleAccessionGenerator<T, UUID> {
-
-    private UUID namespaceUuid;
-
-    public UuidAccessionGenerator(String namespace) {
-        namespaceUuid = getNamespaceUUIDBytes(namespace);
-    }
-
-    private UUID getNamespaceUUIDBytes(String namespace) {
-        return UUIDUtil.getNamespaceUUIDFromBytes(namespace.getBytes());
-    }
+public class SHA1AccessionGenerator<T extends AccessioningObject> extends SingleAccessionGenerator<T, String> {
 
     @Override
-    protected UUID generateAccession(T object) {
-        byte[] hashBytes = ByteBuffer.allocate(4).putInt(object.hashCode()).array();
-        UUID accession = UUIDUtil.generateVersion5Uuid(namespaceUuid,hashBytes);
+    protected String generateAccession(T object) {
+        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
         return accession;
     }
 

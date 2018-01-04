@@ -15,32 +15,33 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.server;
+package uk.ac.ebi.ampt2d.accession.file;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.accession.file.UuidFile;
-import uk.ac.ebi.ampt2d.accession.file.UuidFileAccessioningService;
+import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/v1/accession")
-public class FileAccessioningController {
+@ConditionalOnProperty(name = "services", havingValue = "file-accession")
+public class FileAccessioningRestController {
 
     @Autowired
-    private UuidFileAccessioningService accessioningService;
+    private AccessioningService accessioningService;
 
-    @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json",consumes = "application/json")
-    public Set<UuidFile> accessionFiles(@RequestBody List<UuidFile> files) {
+    @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    public Set<File> accessionFiles(@RequestBody List<File> files) {
 
-        Map<UuidFile, UUID> accessions = accessioningService.getAccessions(files);
+        Map<File, String> accessions = accessioningService.getAccessions(files);
         return accessions.keySet();
     }
 }
+
