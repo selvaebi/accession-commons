@@ -120,9 +120,9 @@ public class StudySha1AccessioningServiceTest {
         Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
-        String anotherAccession1 = accessions.get(study2);
+        String accession2 = accessions.get(study2);
 
-        assertNotEquals(accession1, anotherAccession1);
+        assertNotEquals(accession1, accession2);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class StudySha1AccessioningServiceTest {
         Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
-        String anotherAccession1 = accessions.get(study2);
+        String accession2 = accessions.get(study2);
 
         Map<String, String> studyMap3 = new HashMap<>();
         studyMap3.put("title", "Title2");
@@ -162,7 +162,7 @@ public class StudySha1AccessioningServiceTest {
                 .getAccessions(objectsToAccession);
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(study1));
-        assertEquals(anotherAccession1, accessionsFromSecondServiceCall.get(study2));
+        assertEquals(accession2, accessionsFromSecondServiceCall.get(study2));
         assertNotNull(accessionsFromSecondServiceCall.get(study3));
 
         assertEquals(objectsToAccession.size(),

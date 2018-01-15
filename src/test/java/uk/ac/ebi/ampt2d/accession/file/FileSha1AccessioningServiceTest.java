@@ -98,9 +98,9 @@ public class FileSha1AccessioningServiceTest {
         Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
-        String anotherAccession1 = accessions.get(fileB);
+        String accession2 = accessions.get(fileB);
 
-        assertNotEquals(accession1, anotherAccession1);
+        assertNotEquals(accession1, accession2);
     }
 
     @Test
@@ -112,12 +112,12 @@ public class FileSha1AccessioningServiceTest {
         Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
-        String anotherAccession1 = accessions.get(fileB);
+        String accession2 = accessions.get(fileB);
 
         Map<File, String> accessionsFromSecondServiceCall = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));
-        assertEquals(anotherAccession1, accessionsFromSecondServiceCall.get(fileB));
+        assertEquals(accession2, accessionsFromSecondServiceCall.get(fileB));
     }
 
     @Test

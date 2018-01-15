@@ -95,10 +95,10 @@ public class StudyAccessioningRepositoryTest {
     @Test
     public void addingTheSameStudiesWithDifferentAccessionsOverwritesInTheRepository() throws Exception {
 
-        HashSet<Study> Studys = new HashSet<>(Arrays.asList(accessionObject1, accessionObject2));
+        HashSet<Study> studies = new HashSet<>(Arrays.asList(accessionObject1, accessionObject2));
 
         // Store the studies with the initial accessions
-        Map<Study, String> accessionedStudies = generator.generateAccessions(Studys);
+        Map<Study, String> accessionedStudies = generator.generateAccessions(studies);
         for (Map.Entry<Study, String> entry : accessionedStudies.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
@@ -106,7 +106,7 @@ public class StudyAccessioningRepositoryTest {
         assertEquals(2, StudyRepository.count());
 
         // Storing again the same studies with new accessions overwrites the existing ones
-        Map<Study, String> alternativeAccesionedStudies = alternativeGenerator.generateAccessions(Studys);
+        Map<Study, String> alternativeAccesionedStudies = alternativeGenerator.generateAccessions(studies);
         for (Map.Entry<Study, String> entry : alternativeAccesionedStudies.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
