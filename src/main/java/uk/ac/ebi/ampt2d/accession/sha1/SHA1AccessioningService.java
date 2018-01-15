@@ -15,13 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.object;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,31 +30,31 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
-@ConditionalOnProperty(name = "services", havingValue = "object-accession")
-public class ObjectAccessioningService extends AccessioningService<AccessionObject, String> {
+@Service("sha1-accession")
+@ConditionalOnProperty(name = "accessionBy", havingValue = "sha1")
+public class SHA1AccessioningService extends AccessioningService<AccessioningObject, String> {
 
     @Autowired
-    private ObjectAccessioningRepository accessioningRepository;
+    private AccessioningRepository accessioningRepository;
 
-    public ObjectAccessioningService() {
+    public SHA1AccessioningService() {
         super(new SHA1AccessionGenerator());
     }
 
     @Override
-    public Map<AccessionObject, String> get(List<AccessionObject> AccessionObjects) {
+    public Map<AccessioningObject, String> get(List<AccessioningObject> AccessionObjects) {
         List<String> checksums = AccessionObjects.stream().map(obj -> {
             obj.setHash(obj.getHash());
             return obj.getHash();
         }).collect(Collectors.toList());
-        Collection<AccessionObject> studiesInRepo = accessioningRepository.findByHashIn(checksums);
-        return studiesInRepo.stream().collect(Collectors.toMap(Function.identity(), AccessionObject::getAccession));
+        Collection<AccessioningObject> objectsInRepo = accessioningRepository.findByHashIn(checksums);
+        return objectsInRepo.stream().collect(Collectors.toMap(Function.identity(), a -> a.getAccession().toString()));
 
     }
 
     @Override
-    public void add(Map<AccessionObject, String> accessions) {
-        for (AccessionObject obj : accessions.keySet()) {
+    public void add(Map<AccessioningObject, String> accessions) {
+        for (AccessioningObject obj : accessions.keySet()) {
             obj.setAccession(accessions.get(obj));
         }
         accessioningRepository.save(accessions.keySet());

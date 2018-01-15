@@ -57,6 +57,11 @@ public class File implements AccessioningObject<String> {
     }
 
     @Override
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    @Override
     public String getAccession() {
         return accession;
     }

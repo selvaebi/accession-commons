@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.object;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +39,14 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=object-accession")
-public class ObjectAccessioningRestControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"services=study-accession", "accessionBy=sha1"})
+public class StudyAccessioningRestControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private ObjectAccessioningRepository objectAccessioningRepository;
+    private StudyAccessioningRepository accessioningObjectRepository;
 
     private Map<String, String> studyMap1;
     private Map<String, String> studyMap2;
@@ -66,13 +66,13 @@ public class ObjectAccessioningRestControllerTest {
     @Test
     public void testRestApi() {
 
-        AccessioningObject study1 = new AccessionObject(studyMap1);
-        AccessioningObject study2 = new AccessionObject(studyMap2);
+        AccessioningObject study1 = new Study(studyMap1);
+        AccessioningObject study2 = new Study(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<AccessionObject>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<AccessionObject>>() {
+        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -82,26 +82,26 @@ public class ObjectAccessioningRestControllerTest {
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
 
-        AccessioningObject study1 = new AccessionObject(studyMap1);
-        AccessioningObject study2 = new AccessionObject(studyMap2);
+        AccessioningObject study1 = new Study(studyMap1);
+        AccessioningObject study2 = new Study(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<AccessionObject>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<AccessionObject>>() {
+        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
-        assertEquals(2, objectAccessioningRepository.count());
+        assertEquals(2, accessioningObjectRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<AccessionObject>>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
-        assertEquals(2, objectAccessioningRepository.count());
+        assertEquals(2, accessioningObjectRepository.count());
     }
 
 }

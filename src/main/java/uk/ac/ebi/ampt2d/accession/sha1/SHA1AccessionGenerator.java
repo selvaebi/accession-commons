@@ -15,18 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.object;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
 
-import java.util.Collection;
+public class SHA1AccessionGenerator<T extends AccessioningObject> extends SingleAccessionGenerator<T, String> {
 
-@Repository
-@ConditionalOnProperty(name = "services", havingValue = "object-accession")
-public interface ObjectAccessioningRepository extends AccessioningRepository<AccessionObject, String>, CrudRepository<AccessionObject, String> {
+    @Override
+    protected String generateAccession(T object) {
+        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
+        return accession;
+    }
 
-    Collection<AccessionObject> findByHashIn(Collection<String> checksum);
 }

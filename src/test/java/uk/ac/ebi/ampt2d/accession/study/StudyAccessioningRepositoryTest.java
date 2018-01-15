@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.object;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,20 +39,20 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = "services=object-accession")
-public class ObjectAccessioningRepositoryTest {
+@TestPropertySource(properties = {"services=study-accession", "accessionBy=sha1"})
+public class StudyAccessioningRepositoryTest {
 
     @Autowired
-    private ObjectAccessioningRepository objectAccessioningRepository;
+    private StudyAccessioningRepository StudyRepository;
 
-    private AccessionGenerator<AccessionObject, String> generator;
+    private AccessionGenerator<Study, String> generator;
 
-    private AccessionGenerator<AccessionObject, String> alternativeGenerator;
+    private AccessionGenerator<Study, String> alternativeGenerator;
 
     private Map<String, String> studyMap1;
     private Map<String, String> studyMap2;
-    private AccessionObject accessionObject1;
-    private AccessionObject accessionObject2;
+    private Study accessionObject1;
+    private Study accessionObject2;
 
     @Before
     public void setUp() throws Exception {
@@ -67,27 +67,27 @@ public class ObjectAccessioningRepositoryTest {
         studyMap2.put("title", "Title2");
         studyMap2.put("type", "Type2");
         studyMap2.put("submitterEmail", "Email2");
-        accessionObject1 = new AccessionObject(studyMap1);
-        accessionObject2 = new AccessionObject(studyMap2);
+        accessionObject1 = new Study(studyMap1);
+        accessionObject2 = new Study(studyMap2);
 
     }
 
     @Test
     public void testStudiesAreStoredInTheRepository() throws Exception {
 
-        Map<AccessionObject, String> accessionedStudies = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
+        Map<Study, String> accessionedStudies = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
 
-        for (Map.Entry<AccessionObject, String> entry : accessionedStudies.entrySet()) {
+        for (Map.Entry<Study, String> entry : accessionedStudies.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
-        objectAccessioningRepository.save(accessionedStudies.keySet());
+        StudyRepository.save(accessionedStudies.keySet());
 
-        assertEquals(2, objectAccessioningRepository.count());
+        assertEquals(2, StudyRepository.count());
 
         Collection<String> hashes = new ArrayList<>();
         hashes.add(accessionObject1.getHash());
         hashes.add(accessionObject2.getHash());
-        Collection<AccessionObject> accessionsFromRepository = objectAccessioningRepository.findByHashIn(hashes);
+        Collection<Study> accessionsFromRepository = StudyRepository.findByHashIn(hashes);
         assertEquals(accessionsFromRepository.stream().sorted((e1, e2) -> e1.getHash().compareTo(e2.getHash())).collect(Collectors.toList()),
                 new ArrayList<>(accessionedStudies.keySet()).stream().sorted((e1, e2) -> e1.getHash().compareTo(e2.getHash())).collect(Collectors.toList()));
     }
@@ -95,38 +95,38 @@ public class ObjectAccessioningRepositoryTest {
     @Test
     public void addingTheSameStudiesWithDifferentAccessionsOverwritesInTheRepository() throws Exception {
 
-        HashSet<AccessionObject> fileSet = new HashSet<>(Arrays.asList(accessionObject1, accessionObject2));
+        HashSet<Study> Studys = new HashSet<>(Arrays.asList(accessionObject1, accessionObject2));
 
         // Store the studies with the initial accessions
-        Map<AccessionObject, String> accessionedStudies = generator.generateAccessions(fileSet);
-        for (Map.Entry<AccessionObject, String> entry : accessionedStudies.entrySet()) {
+        Map<Study, String> accessionedStudies = generator.generateAccessions(Studys);
+        for (Map.Entry<Study, String> entry : accessionedStudies.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
-        objectAccessioningRepository.save(accessionedStudies.keySet());
-        assertEquals(2, objectAccessioningRepository.count());
+        StudyRepository.save(accessionedStudies.keySet());
+        assertEquals(2, StudyRepository.count());
 
         // Storing again the same studies with new accessions overwrites the existing ones
-        Map<AccessionObject, String> alternativeAccesionedStudies = alternativeGenerator.generateAccessions(fileSet);
-        for (Map.Entry<AccessionObject, String> entry : alternativeAccesionedStudies.entrySet()) {
+        Map<Study, String> alternativeAccesionedStudies = alternativeGenerator.generateAccessions(Studys);
+        for (Map.Entry<Study, String> entry : alternativeAccesionedStudies.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
-        objectAccessioningRepository.save(alternativeAccesionedStudies.keySet());
-        assertEquals(2, objectAccessioningRepository.count());
+        StudyRepository.save(alternativeAccesionedStudies.keySet());
+        assertEquals(2, StudyRepository.count());
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void cantStoreFileWithoutAccession() {
-        objectAccessioningRepository.save(accessionObject1);
+    public void cantStoreOnjectsWithoutAccession() {
+        StudyRepository.save(accessionObject1);
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
     public void cantStoreMultipleStudiesWithSameAccession() {
 
         accessionObject1.setAccession("randomString");
-        objectAccessioningRepository.save(accessionObject1);
-        assertEquals(1, objectAccessioningRepository.count());
+        StudyRepository.save(accessionObject1);
+        assertEquals(1, StudyRepository.count());
 
         accessionObject2.setAccession(accessionObject1.getAccession());
-        objectAccessioningRepository.save(accessionObject2);
+        StudyRepository.save(accessionObject2);
     }
 }

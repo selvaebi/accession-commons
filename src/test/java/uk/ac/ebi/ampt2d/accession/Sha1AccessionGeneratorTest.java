@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.accession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.ac.ebi.ampt2d.accession.file.File;
+import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 
 import java.util.Arrays;
 import java.util.Collections;

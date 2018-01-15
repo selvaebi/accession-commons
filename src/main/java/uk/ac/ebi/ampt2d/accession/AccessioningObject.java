@@ -23,4 +23,8 @@ public interface AccessioningObject<T> {
 
     T getAccession();
 
+    void setHash(String hash);
+
+    void setAccession(T accession);
+
 }

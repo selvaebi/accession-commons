@@ -26,4 +26,6 @@ import java.util.Collection;
 public interface AccessioningRepository<T, U> {
 
     Collection<T> findByHashIn(Collection<U> checksum);
+
+    <S extends T> Iterable<S> save(Iterable<S> var1);
 }

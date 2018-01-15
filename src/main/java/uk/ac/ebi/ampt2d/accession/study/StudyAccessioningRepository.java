@@ -15,16 +15,19 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.study;
 
-import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-public class SHA1AccessionGenerator<T extends AccessioningObject> extends SingleAccessionGenerator<T, String> {
+import java.util.Collection;
 
-    @Override
-    protected String generateAccession(T object) {
-        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
-        return accession;
-    }
+@Repository
+@ConditionalOnProperty(name = "services", havingValue = "study-accession")
+public interface StudyAccessioningRepository extends AccessioningRepository<Study, String>, CrudRepository<Study, String> {
+
+    Collection<Study> findByHashIn(Collection<String> checksum);
 
 }

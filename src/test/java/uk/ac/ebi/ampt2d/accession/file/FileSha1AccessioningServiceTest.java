@@ -25,6 +25,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,13 +38,13 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan(basePackages = "uk.ac.ebi.ampt2d.accession.file")
-@TestPropertySource(properties = "services=file-accession")
+@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.file", "uk.ac.ebi.ampt2d.accession.sha1"})
+@TestPropertySource(properties = {"services=file-accession", "accessionBy=sha1"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class FileAccessioningServiceTest {
+public class FileSha1AccessioningServiceTest {
 
     @Autowired
-    private FileAccessioningService service;
+    private AccessioningService accessioningService;
 
     @Test
     public void sameAccessionsAreReturnedForIdenticalFiles() throws Exception {
@@ -52,12 +53,12 @@ public class FileAccessioningServiceTest {
         File fileA = new File(checksumA);
         File fileB = new File(checksumB);
 
-        Map<File, String> generatedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> generatedAccessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
 
         fileA = new File(checksumA);
         fileB = new File(checksumB);
 
-        Map<File, String> retrievedAccessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> retrievedAccessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(generatedAccessions.get(fileA), retrievedAccessions.get(fileA));
         assertEquals(generatedAccessions.get(fileB), retrievedAccessions.get(fileB));
@@ -66,7 +67,7 @@ public class FileAccessioningServiceTest {
     @Test
     public void everyNewObjectReceiveOneAccession() throws Exception {
         List<File> newObjects = Arrays.asList(new File("checksumA"), new File("checksumB"), new File("checksumC"));
-        Map<File, String> accessions = service.getAccessions(newObjects);
+        Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         for (File object : newObjects) {
             assertNotNull(accessions.get(object));
@@ -80,7 +81,7 @@ public class FileAccessioningServiceTest {
         File fileB = new File("checksumA");
 
         List<File> newObjects = Arrays.asList(fileA, fileB);
-        Map<File, String> accessions = service.getAccessions(newObjects);
+        Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
         String anotherAccession1 = accessions.get(fileB);
@@ -94,7 +95,7 @@ public class FileAccessioningServiceTest {
         File fileB = new File("checksumB");
 
         List<File> newObjects = Arrays.asList(fileA, fileB);
-        Map<File, String> accessions = service.getAccessions(newObjects);
+        Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
         String anotherAccession1 = accessions.get(fileB);
@@ -108,12 +109,12 @@ public class FileAccessioningServiceTest {
         File fileB = new File("checksumB");
 
         List<File> newObjects = Arrays.asList(fileA, fileB);
-        Map<File, String> accessions = service.getAccessions(newObjects);
+        Map<File, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
         String anotherAccession1 = accessions.get(fileB);
 
-        Map<File, String> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> accessionsFromSecondServiceCall = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));
         assertEquals(anotherAccession1, accessionsFromSecondServiceCall.get(fileB));
@@ -124,7 +125,7 @@ public class FileAccessioningServiceTest {
         File fileA = new File("checksumA");
         File fileB = new File("checksumB");
 
-        Map<File, String> accessions = service.getAccessions(Arrays.asList(fileA, fileB));
+        Map<File, String> accessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
 
         String accession1 = accessions.get(fileA);
         String accession2 = accessions.get(fileB);
@@ -133,7 +134,7 @@ public class FileAccessioningServiceTest {
         File fileD = new File("checksumD");
 
         List<File> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
-        Map<File, String> accessionsFromSecondServiceCall = service
+        Map<File, String> accessionsFromSecondServiceCall = accessioningService
                 .getAccessions(objectsToAccession);
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));

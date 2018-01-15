@@ -15,10 +15,9 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.object;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.apache.commons.lang3.StringUtils;
 import uk.ac.ebi.ampt2d.accession.AccessioningObject;
 
 import javax.persistence.Column;
@@ -29,9 +28,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
-public class AccessionObject implements AccessioningObject<String> {
+public class Study implements AccessioningObject<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,7 +40,7 @@ public class AccessionObject implements AccessioningObject<String> {
 
     @NotNull
     @ElementCollection
-    private Map<String, String> accessionObject;
+    private Map<String, String> study;
 
     @Column(nullable = false, unique = true)
     private String accession;
@@ -49,16 +49,13 @@ public class AccessionObject implements AccessioningObject<String> {
     @Column(nullable = false, unique = true)
     private String hash;
 
-    AccessionObject() {
+    Study() {
     }
 
-    AccessionObject(Map<String, String> accessionObject) {
-        this.accessionObject = accessionObject;
+    Study(Map<String, String> study) {
+        super();
+        this.study = study;
         this.hash = getHash();
-    }
-
-    public Map<String, String> getAccessionObject() {
-        return accessionObject;
     }
 
     public Long getId() {
@@ -66,10 +63,15 @@ public class AccessionObject implements AccessioningObject<String> {
     }
 
     public String getHash() {
-        return StringUtils.join(this.accessionObject.values().toArray());
+
+        return this.study.values().stream().collect(Collectors.joining(","));
     }
 
-    void setHash(String hash) {
+    public Map<String, String> getStudy() {
+        return study;
+    }
+
+    public void setHash(String hash) {
         this.hash = hash;
     }
 
@@ -78,7 +80,7 @@ public class AccessionObject implements AccessioningObject<String> {
         return accession;
     }
 
-    void setAccession(String accession) {
+    public void setAccession(String accession) {
         this.accession = accession;
     }
 
@@ -87,9 +89,9 @@ public class AccessionObject implements AccessioningObject<String> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        AccessionObject AccessionObject = (AccessionObject) o;
+        Study that = (Study) o;
 
-        return getHash().equals(AccessionObject.getHash());
+        return getHash().equals(that.getHash());
     }
 
     @Override

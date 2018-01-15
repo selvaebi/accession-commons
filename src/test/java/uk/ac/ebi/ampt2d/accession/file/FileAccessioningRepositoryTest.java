@@ -25,7 +25,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.SHA1AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = "services=file-accession")
+@TestPropertySource(properties = {"services=file-accession", "accessionBy=sha1"})
 public class FileAccessioningRepositoryTest {
 
     @Autowired
@@ -57,8 +58,8 @@ public class FileAccessioningRepositoryTest {
 
     @Test
     public void testFilesAreStoredInTheRepository() throws Exception {
-        List<File> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
-        Map<File, String> accessionedFiles = generator.generateAccessions(new HashSet<>(files));
+        List<AccessioningObject> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
+        Map<File, String> accessionedFiles = generator.generateAccessions(new HashSet(files));
         for (Map.Entry<File, String> entry : accessionedFiles.entrySet()) {
             entry.getKey().setAccession(entry.getValue());
         }
@@ -75,8 +76,8 @@ public class FileAccessioningRepositoryTest {
 
     @Test
     public void addingTheSameFilesWillReplaceTheAccessionsInTheRepository() throws Exception {
-        List<File> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
-        HashSet<File> fileSet = new HashSet<>(files);
+        List<AccessioningObject> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
+        HashSet<File> fileSet = new HashSet(files);
 
         // Store the files with the initial accessions
         Map<File, String> accessionedFiles = generator.generateAccessions(fileSet);
