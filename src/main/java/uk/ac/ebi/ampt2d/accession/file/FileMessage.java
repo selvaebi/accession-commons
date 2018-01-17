@@ -17,38 +17,19 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class FileMessage implements AccessionedObject<String> {
 
-@Entity
-public class File implements AccessioningObject<String> {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private Long id;
-
-    @Column(nullable = false, unique = true)
     private String hash;
 
-    @Column(nullable = false, unique = true)
     private String accession;
 
-    File() {
+    FileMessage() {
     }
 
-    public File(String hash) {
+    public FileMessage(String hash) {
         this.hash = hash;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     @Override
@@ -56,7 +37,6 @@ public class File implements AccessioningObject<String> {
         return hash;
     }
 
-    @Override
     public void setHash(String hash) {
         this.hash = hash;
     }
@@ -73,11 +53,10 @@ public class File implements AccessioningObject<String> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        AccessionedObject file = (AccessionedObject) o;
 
-        File file = (File) o;
-
-        return hash.equals(file.hash);
+        return getHash().equals(file.getHash());
     }
 
     @Override

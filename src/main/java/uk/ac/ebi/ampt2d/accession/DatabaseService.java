@@ -17,14 +17,17 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-public interface AccessioningObject<T> {
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-    String getHash();
+public interface DatabaseService<T> {
 
-    T getAccession();
+    Collection<T> findObjectsInDB(List<T> hashes);
 
-    void setHash(String hash);
+    void save(Set<T> accessioningObjects);
 
-    void setAccession(T accession);
+    long count();
 
+    public void save(T accessioningObject);
 }

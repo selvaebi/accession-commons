@@ -38,9 +38,8 @@ public class FileAccessioningRestController {
     private AccessioningService accessioningService;
 
     @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public Set<File> accessionFiles(@RequestBody List<File> files) {
-
-        Map<File, String> accessions = accessioningService.getAccessions(files);
+    public Set<FileMessage> accessionFiles(@RequestBody List<FileMessage> files) {
+        Map<FileMessage, String> accessions = accessioningService.getAccessions(files);
         return accessions.keySet();
     }
 }

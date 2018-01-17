@@ -15,60 +15,38 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.study;
+package uk.ac.ebi.ampt2d.accession.file;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Entity
-public class Study implements AccessioningObject<String> {
+public class FileEntity implements AccessionedObject<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonIgnore
     private Long id;
 
-    @NotNull
-    @ElementCollection
-    private Map<String, String> study;
-
-    @Column(nullable = false, unique = true)
-    private String accession;
-
-    @JsonIgnore
     @Column(nullable = false, unique = true)
     private String hash;
 
-    Study() {
-    }
-
-    Study(Map<String, String> study) {
-        super();
-        this.study = study;
-        this.hash = getHash();
-    }
+    @Column(nullable = false, unique = true)
+    private String accession;
 
     public Long getId() {
         return id;
     }
 
+    @Override
     public String getHash() {
-
-        return this.study.values().stream().collect(Collectors.joining(","));
-    }
-
-    public Map<String, String> getStudy() {
-        return study;
+        return hash;
     }
 
     public void setHash(String hash) {
@@ -87,15 +65,13 @@ public class Study implements AccessioningObject<String> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Study that = (Study) o;
-
-        return getHash().equals(that.getHash());
+        if (o == null) return false;
+        FileEntity file = (FileEntity) o;
+        return hash.equals(file.getHash());
     }
 
     @Override
     public int hashCode() {
-        return getHash().hashCode();
+        return hash.hashCode();
     }
 }

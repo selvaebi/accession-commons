@@ -26,7 +26,7 @@ import java.util.Collection;
 
 @Repository
 @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-public interface FileAccessioningRepository extends AccessioningRepository<File, String>, CrudRepository<File, String> {
+public interface FileAccessioningRepository extends AccessioningRepository<FileEntity, String>, CrudRepository<FileEntity, String> {
 
-    Collection<File> findByHashIn(Collection<String> checksum);
+    Collection<FileEntity> findByHashIn(Collection<String> checksum);
 }

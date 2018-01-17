@@ -29,7 +29,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,14 +65,13 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        AccessionedObject study1 = new StudyMessage(studyMap1);
+        AccessionedObject study2 = new StudyMessage(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
+        ResponseEntity<Set<StudyMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -81,14 +80,13 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        AccessionedObject study1 = new StudyMessage(studyMap1);
+        AccessionedObject study2 = new StudyMessage(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<Study>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
+        ResponseEntity<Set<StudyMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -96,7 +94,7 @@ public class StudyAccessioningRestControllerTest {
         assertEquals(2, accessioningObjectRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<Study>>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

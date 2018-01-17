@@ -29,7 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
+import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -49,14 +49,14 @@ public class FileAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-        AccessioningObject fileA = new File("checksumA");
-        AccessioningObject fileB = new File("checksumB");
-        AccessioningObject fileC = new File("checksumC");
+        AccessionedObject fileA = new FileMessage("checksumA");
+        AccessionedObject fileB = new FileMessage("checksumB");
+        AccessionedObject fileC = new FileMessage("checksumC");
 
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<Set<File>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
+        ResponseEntity<Set<FileMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<FileMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -65,14 +65,14 @@ public class FileAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        AccessioningObject fileA = new File("checksumA");
-        AccessioningObject fileB = new File("checksumB");
-        AccessioningObject fileC = new File("checksumC");
+        AccessionedObject fileA = new FileMessage("checksumA");
+        AccessionedObject fileB = new FileMessage("checksumB");
+        AccessionedObject fileC = new FileMessage("checksumC");
 
         String url = "/v1/accession/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
-        ResponseEntity<Set<File>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
+        ResponseEntity<Set<FileMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<FileMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -80,7 +80,7 @@ public class FileAccessioningRestControllerTest {
         assertEquals(3, fileAccessioningRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<File>>() {
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<FileMessage>>() {
         });
 
         assertEquals(HttpStatus.OK, response.getStatusCode());

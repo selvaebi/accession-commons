@@ -24,105 +24,88 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = {"services=file-accession", "accessionBy=sha1"})
+@TestPropertySource(properties = {"services=file-accession"})
 public class FileAccessioningRepositoryTest {
 
     @Autowired
-    private FileAccessioningRepository accessionRepository;
+    FileAccessioningRepository fileAccessioningRepository;
 
-    private AccessionGenerator<File, String> generator;
-
-    private AccessionGenerator<File, String> alternativeGenerator;
+    private FileEntity accessionObject1;
+    private FileEntity accessionObject2;
 
     @Before
     public void setUp() throws Exception {
-        generator = new SHA1AccessionGenerator<>();
-        alternativeGenerator = new SHA1AccessionGenerator<>();
 
+        accessionObject1 = new FileEntity();
+        accessionObject1.setHash("file1");
+        accessionObject1.setAccession("file1accession");
+        accessionObject2 = new FileEntity();
+        accessionObject2.setHash("file2");
+        accessionObject2.setAccession("file2accession");
     }
 
     @Test
     public void testFilesAreStoredInTheRepository() throws Exception {
-        List<AccessioningObject> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
-        Map<File, String> accessionedFiles = generator.generateAccessions(new HashSet(files));
-        for (Map.Entry<File, String> entry : accessionedFiles.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        accessionRepository.save(accessionedFiles.keySet());
+        List<FileEntity> accessionObjects = new ArrayList<>();
+        accessionObjects.add(accessionObject1);
+        accessionObjects.add(accessionObject2);
 
-        assertEquals(2, accessionRepository.count());
+        fileAccessioningRepository.save(accessionObjects);
+        assertEquals(2, fileAccessioningRepository.count());
 
-        Collection<String> checksums = new ArrayList<>();
-        checksums.add("checksumA");
-        checksums.add("checksumB");
-        Collection<File> accessionsFromRepository = accessionRepository.findByHashIn(checksums);
-        assertEquals(new ArrayList<>(accessionedFiles.keySet()), accessionsFromRepository);
+        FileEntity accessionObject3 = new FileEntity();
+        accessionObject3.setHash("file3");
+        accessionObject3.setAccession("file3accession");
+
+        fileAccessioningRepository.save(accessionObject3);
+        assertEquals(3, fileAccessioningRepository.count());
     }
 
     @Test
-    public void addingTheSameFilesWillReplaceTheAccessionsInTheRepository() throws Exception {
-        List<AccessioningObject> files = Arrays.asList(new File("checksumA"), new File("checksumB"));
-        HashSet<File> fileSet = new HashSet(files);
+    public void testFindObjectsInRepository() throws Exception {
+        assertEquals(0, fileAccessioningRepository.count());
 
-        // Store the files with the initial accessions
-        Map<File, String> accessionedFiles = generator.generateAccessions(fileSet);
-        for (Map.Entry<File, String> entry : accessionedFiles.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        accessionRepository.save(accessionedFiles.keySet());
-        assertEquals(2, accessionRepository.count());
+        List<FileEntity> accessionObjects = new ArrayList<>();
+        accessionObjects.add(accessionObject1);
+        accessionObjects.add(accessionObject2);
 
-        // Storing again the same files with new accessions overwrites the existing ones
-        Map<File, String> alternativeAccesionedFiles = alternativeGenerator.generateAccessions(fileSet);
-        for (Map.Entry<File, String> entry : alternativeAccesionedFiles.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        accessionRepository.save(alternativeAccesionedFiles.keySet());
-        assertEquals(2, accessionRepository.count());
+        fileAccessioningRepository.save(accessionObjects);
+        assertEquals(2, fileAccessioningRepository.count());
+
+        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHash()).collect(Collectors.toList());
+
+        Collection<FileEntity> objectsInRepo = fileAccessioningRepository.findByHashIn(hashes);
+        assertEquals(2, objectsInRepo.size());
+
+        hashes = accessionObjects.stream().map(obj -> obj.getAccession()).collect(Collectors.toList());
+        objectsInRepo = fileAccessioningRepository.findByHashIn(hashes);
+        assertEquals(0, objectsInRepo.size());
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void cantStoreFileWithoutAccession() {
-        File file = new File("cantStoreFileWithoutAccession");
-        accessionRepository.save(file);
+    public void testSavingObjectsWithoutAccession() throws Exception {
+        FileEntity accessionObject = new FileEntity();
+        accessionObject.setHash("file");
+        fileAccessioningRepository.save(accessionObject);
+
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void cantStoreMultipleFilesWithSameHash() {
-        File originalFile = new File("cantStoreMultipleFilesWithSameHash");
-        originalFile.setAccession("randomString");
-        accessionRepository.save(originalFile);
-        assertEquals(1, accessionRepository.count());
-
-        File newFile = new File(originalFile.getHash());
-        newFile.setAccession("anotherRandomString");
-        accessionRepository.save(newFile);
+    public void testSavingObjectsWithoutHash() throws Exception {
+        FileEntity accessionObject = new FileEntity();
+        accessionObject.setAccession("fileAccession");
+        fileAccessioningRepository.save(accessionObject);
     }
 
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void cantStoreMultipleFilesWithSameAccession() {
-        File originalFile = new File("cantStoreMultipleFilesWithSameAccession1");
-        originalFile.setAccession("randomString");
-        accessionRepository.save(originalFile);
-        assertEquals(1, accessionRepository.count());
 
-        File newFile = new File("cantStoreMultipleFilesWithSameAccession2");
-        newFile.setAccession(originalFile.getAccession());
-        accessionRepository.save(newFile);
-    }
 }

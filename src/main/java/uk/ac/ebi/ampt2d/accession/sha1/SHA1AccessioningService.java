@@ -20,9 +20,9 @@ package uk.ac.ebi.ampt2d.accession.sha1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
+import uk.ac.ebi.ampt2d.accession.DatabaseService;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,31 +32,26 @@ import java.util.stream.Collectors;
 
 @Service("sha1-accession")
 @ConditionalOnProperty(name = "accessionBy", havingValue = "sha1")
-public class SHA1AccessioningService extends AccessioningService<AccessioningObject, String> {
+public class SHA1AccessioningService extends AccessioningService<AccessionedObject, String> {
 
     @Autowired
-    private AccessioningRepository accessioningRepository;
+    private DatabaseService dbService;
 
     public SHA1AccessioningService() {
         super(new SHA1AccessionGenerator());
     }
 
     @Override
-    public Map<AccessioningObject, String> get(List<AccessioningObject> AccessionObjects) {
-        List<String> checksums = AccessionObjects.stream().map(obj -> {
-            obj.setHash(obj.getHash());
-            return obj.getHash();
-        }).collect(Collectors.toList());
-        Collection<AccessioningObject> objectsInRepo = accessioningRepository.findByHashIn(checksums);
-        return objectsInRepo.stream().collect(Collectors.toMap(Function.identity(), a -> a.getAccession().toString()));
-
+    public Map<AccessionedObject, String> get(List<AccessionedObject> accessionObjects) {
+        Collection<AccessionedObject> objectsInRepo = dbService.findObjectsInDB(accessionObjects);
+        return objectsInRepo.stream().collect(Collectors.toMap(Function.identity(), objs -> objs.getAccession().toString()));
     }
 
     @Override
-    public void add(Map<AccessioningObject, String> accessions) {
-        for (AccessioningObject obj : accessions.keySet()) {
+    public void add(Map<AccessionedObject, String> accessions) {
+        for (AccessionedObject obj : accessions.keySet()) {
             obj.setAccession(accessions.get(obj));
         }
-        accessioningRepository.save(accessions.keySet());
+        dbService.save(accessions.keySet());
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.study;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +26,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningObject;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
+import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @TestPropertySource(properties = {"services=study-accession", "accessionBy=sha1"})
-@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.sha1", "uk.ac.ebi.ampt2d.accession.sha1"})
+@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.study", "uk.ac.ebi.ampt2d.accession.sha1"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class StudySha1AccessioningServiceTest {
 
@@ -66,16 +66,15 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void sameAccessionsAreReturnedForIdenticalStudies() throws Exception {
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        Map<StudyMessage, String> generatedAccessions = service.getAccessions(Arrays.asList(study1, study2));
 
-        Map<AccessioningObject, String> generatedAccessions = service.getAccessions(Arrays.asList(study1, study2));
+        study1 = new StudyMessage(studyMap1);
+        study2 = new StudyMessage(studyMap2);
 
-        study1 = new Study(studyMap1);
-        study2 = new Study(studyMap2);
-
-        Map<AccessioningObject, String> retrievedAccessions = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> retrievedAccessions = service.getAccessions(Arrays.asList(study1, study2));
 
         assertEquals(generatedAccessions.get(study1), retrievedAccessions.get(study1));
         assertEquals(generatedAccessions.get(study2), retrievedAccessions.get(study2));
@@ -83,28 +82,26 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void everyNewObjectReceiveOneAccession() throws Exception {
-
         Map<String, String> studyMap3 = new HashMap<>();
         studyMap3.put("title", "Title2");
         studyMap3.put("type", "Type2");
         studyMap3.put("submitterEmail", "Email1");
 
-        List<AccessioningObject> newAccessionObjects = Arrays.asList(new Study(studyMap1),
-                new Study(studyMap2), new Study(studyMap3));
-        Map<AccessioningObject, String> accessions = service.getAccessions(newAccessionObjects);
+        List<StudyMessage> newAccessionObjects = Arrays.asList(new StudyMessage(studyMap1),
+                new StudyMessage(studyMap2), new StudyMessage(studyMap3));
+        Map<StudyMessage, String> accessions = service.getAccessions(newAccessionObjects);
 
-        for (AccessioningObject AccessionObject : newAccessionObjects) {
+        for (StudyMessage AccessionObject : newAccessionObjects) {
             assertNotNull(accessions.get(AccessionObject));
         }
     }
 
     @Test
     public void sameObjectsGetSameAccession() throws Exception {
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage anotherStudy1 = new StudyMessage(studyMap1);
 
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject anotherStudy1 = new Study(studyMap1);
-
-        Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, anotherStudy1));
+        Map<StudyMessage, String> accessions = service.getAccessions(Arrays.asList(study1, anotherStudy1));
 
         String accession1 = accessions.get(study1);
         String anotherAccession1 = accessions.get(anotherStudy1);
@@ -114,10 +111,10 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void differentObjectsGetDifferentAccessions() throws Exception {
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
-        Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
         String accession2 = accessions.get(study2);
@@ -127,15 +124,15 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void differentCallsToTheServiceUsingSameObjectsWillReturnSameAccessions() throws Exception {
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
-        Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
         String accession2 = accessions.get(study2);
 
-        Map<AccessioningObject, String> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> accessionsFromSecondServiceCall = service.getAccessions(Arrays.asList(study1, study2));
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(study1));
         assertEquals(accession2, accessionsFromSecondServiceCall.get(study2));
@@ -143,10 +140,10 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void mixingAlreadyAccessionedAndNewObjectsIsAllowed() throws Exception {
-        AccessioningObject study1 = new Study(studyMap1);
-        AccessioningObject study2 = new Study(studyMap2);
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
-        Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
         String accession2 = accessions.get(study2);
@@ -155,10 +152,10 @@ public class StudySha1AccessioningServiceTest {
         studyMap3.put("title", "Title2");
         studyMap3.put("type", "Type2");
         studyMap3.put("submitterEmail", "Email1");
-        AccessioningObject study3 = new Study(studyMap3);
+        StudyMessage study3 = new StudyMessage(studyMap3);
 
-        List<AccessioningObject> objectsToAccession = Arrays.asList(study1, study2, study3);
-        Map<AccessioningObject, String> accessionsFromSecondServiceCall = service
+        List<StudyMessage> objectsToAccession = Arrays.asList(study1, study2, study3);
+        Map<StudyMessage, String> accessionsFromSecondServiceCall = service
                 .getAccessions(objectsToAccession);
 
         assertEquals(accession1, accessionsFromSecondServiceCall.get(study1));
@@ -171,17 +168,16 @@ public class StudySha1AccessioningServiceTest {
 
     @Test
     public void sameStudySubmittedByDifferentSubmitterGetsDifferentAccession() throws Exception {
-
         studyMap1.put("title", "Title1");
         studyMap1.put("type", "Type1");
         studyMap1.put("submitterEmail", "Email1");
-        AccessioningObject study1 = new Study(studyMap1);
+        StudyMessage study1 = new StudyMessage(studyMap1);
         studyMap2.put("title", "Title1");
         studyMap2.put("type", "Type1");
         studyMap2.put("submitterEmail", "Email2");
-        AccessioningObject study2 = new Study(studyMap2);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
-        Map<AccessioningObject, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
+        Map<StudyMessage, String> accessions = service.getAccessions(Arrays.asList(study1, study2));
 
         String accession1 = accessions.get(study1);
         String accession2 = accessions.get(study2);

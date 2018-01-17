@@ -38,9 +38,8 @@ public class StudyAccessioningRestController {
     private AccessioningService accessioningService;
 
     @RequestMapping(value = "/study", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public Set<Study> accessionStudies(@RequestBody List<Study> studyList) {
-
-        Map<Study, String> accessions = accessioningService.getAccessions(studyList);
+    public Set<StudyMessage> accessionStudies(@RequestBody List<StudyMessage> studyMessageList) {
+        Map<StudyMessage, String> accessions = accessioningService.getAccessions(studyMessageList);
         return accessions.keySet();
     }
 }

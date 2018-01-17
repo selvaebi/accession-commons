@@ -15,18 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.study;
+package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+public interface AccessionedObject<T> {
 
-import java.util.Collection;
+    String getHash();
 
-@Repository
-@ConditionalOnProperty(name = "services", havingValue = "study-accession")
-public interface StudyAccessioningRepository extends AccessioningRepository<StudyEntity, String>, CrudRepository<StudyEntity, String> {
+    T getAccession();
 
-    Collection<StudyEntity> findByHashIn(Collection<String> checksum);
+    void setAccession(T accession);
+
 }

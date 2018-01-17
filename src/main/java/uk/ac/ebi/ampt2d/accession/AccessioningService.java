@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @param <T> Object class
  */
-public abstract class AccessioningService<T, U> {
+public abstract class AccessioningService<T extends AccessionedObject, U > {
 
     private AccessionGenerator<T, U> accessionGenerator;
 

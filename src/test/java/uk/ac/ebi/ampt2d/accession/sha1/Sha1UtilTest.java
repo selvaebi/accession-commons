@@ -15,16 +15,16 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.utils;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.junit.Assert;
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.accession.sha1.Sha1Util;
 
 public class Sha1UtilTest {
 
     @Test
     public void testGenerateAccession() {
-
         String object1 = "Object1";
         String object2 = "Object2";
 

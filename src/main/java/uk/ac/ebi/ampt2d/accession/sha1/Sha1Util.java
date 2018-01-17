@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.utils;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,6 @@ public class Sha1Util {
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(Sha1Util.class);
 
     public static String generateSha1Accession(byte[] nameBytes) {
-
         return DatatypeConverter.printHexBinary(toSHA1(nameBytes));
     }
 
