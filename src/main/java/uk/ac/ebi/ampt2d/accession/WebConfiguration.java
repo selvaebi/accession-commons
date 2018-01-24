@@ -22,6 +22,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ebi.ampt2d.accession.file.FileAccessioningDatabaseService;
 import uk.ac.ebi.ampt2d.accession.file.FileMessage;
+import uk.ac.ebi.ampt2d.accession.sample.SampleAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.sample.SampleMessage;
 import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningDatabaseService;
 import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
@@ -51,6 +53,18 @@ public class WebConfiguration {
     @ConditionalOnProperty(name = "services", havingValue = "study-accession")
     public StudyAccessioningDatabaseService studyAccessioningDatabaseService() {
         return new StudyAccessioningDatabaseService();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
+    public AccessioningService<SampleMessage, String> sampleAccessionService() {
+        return new AccessioningService<>(new SHA1AccessionGenerator<>(), sampleAccessioningDatabaseService());
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
+    public SampleAccessioningDatabaseService sampleAccessioningDatabaseService() {
+        return new SampleAccessioningDatabaseService();
     }
 
 }
