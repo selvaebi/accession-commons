@@ -31,5 +31,5 @@ public interface ContinuousIdBlockRepository extends CrudRepository<ContinuousId
 
     Stream<ContinuousIdBlock> findAllByCategoryIdAndInstanceIdOrderByEndAsc(String categoryId, String instanceId);
 
-    ContinuousIdBlock findFirstByCategoryIdOrderByEnd(String categoryId);
+    ContinuousIdBlock findFirstByCategoryIdOrderByEndDesc(String categoryId);
 }

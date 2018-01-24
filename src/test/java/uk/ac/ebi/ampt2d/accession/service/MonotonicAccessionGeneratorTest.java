@@ -22,10 +22,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRange;
 import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContinuousIdBlock;
 import uk.ac.ebi.ampt2d.accession.serial.block.persistence.repositories.ContinuousIdBlockRepository;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -45,7 +49,7 @@ public class MonotonicAccessionGeneratorTest {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
 
         assertEquals(1, repository.count());
-        ContinuousIdBlock block = repository.findFirstByCategoryIdOrderByEnd(CATEGORY_ID);
+        ContinuousIdBlock block = repository.findFirstByCategoryIdOrderByEndDesc(CATEGORY_ID);
         assertEquals(0, block.getStart());
         assertEquals(BLOCK_SIZE - 1, block.getEnd());
         assertEquals(-1, block.getLastCommitted());
@@ -281,13 +285,16 @@ public class MonotonicAccessionGeneratorTest {
         ContinuousIdBlock block = repository.findFirstByCategoryIdAndInstanceIdOrderByEndDesc(CATEGORY_ID,
                 INSTANCE_ID);
         assertEquals(-1, block.getLastCommitted());
+        assertFalse(generatorRecovering.getAvailableRanges().isEmpty());
+        assertThat(generatorRecovering.getAvailableRanges(),
+                contains(new MonotonicRange(0, 1), new MonotonicRange(4, 4), new MonotonicRange(6, BLOCK_SIZE - 1)));
     }
 
     @Test
     public void assertRecoverPendingCommit() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         long[] accessions1 = generator.generateAccessions(BLOCK_SIZE);
-        generator.commit(0,1);
+        generator.commit(0, 1);
         // Now assume that the db layer has stored some elements and that the application has died and restarted.
 
         MonotonicAccessionGenerator generatorRecovering = new MonotonicAccessionGenerator(BLOCK_SIZE, CATEGORY_ID,
@@ -298,6 +305,8 @@ public class MonotonicAccessionGeneratorTest {
         ContinuousIdBlock block = repository.findFirstByCategoryIdAndInstanceIdOrderByEndDesc(CATEGORY_ID,
                 INSTANCE_ID);
         assertEquals(3, block.getLastCommitted());
+        assertThat(generatorRecovering.getAvailableRanges(),
+                contains(new MonotonicRange(4, 4), new MonotonicRange(6, BLOCK_SIZE - 1)));
     }
 
 

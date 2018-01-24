@@ -88,4 +88,5 @@ public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
     public long getTotalOfValuesInQueue() {
         return totalOfValuesInQueue;
     }
+
 }

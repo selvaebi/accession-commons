@@ -146,7 +146,7 @@ public class MonotonicAccessionGenerator implements InitializingBean {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     protected synchronized void reserveNewBlockBlock(String categoryId, String instanceId, long size) {
-        ContinuousIdBlock lastBlock = continuousIdBlockRepository.findFirstByCategoryIdOrderByEnd(categoryId);
+        ContinuousIdBlock lastBlock = continuousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
         if (lastBlock == null) {
             addBlock(continuousIdBlockRepository.save(new ContinuousIdBlock(categoryId, instanceId, 0, size)));
         } else {
@@ -166,7 +166,7 @@ public class MonotonicAccessionGenerator implements InitializingBean {
     public synchronized void recoverState(long[] committedElements) {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);
         List<MonotonicRange> newAvailableRanges = new ArrayList<>();
-        for (MonotonicRange monotonicRange : newAvailableRanges) {
+        for (MonotonicRange monotonicRange : this.availableRanges) {
             newAvailableRanges.addAll(monotonicRange.exclude(ranges));
         }
 
