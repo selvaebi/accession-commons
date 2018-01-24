@@ -17,13 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.accession.sha1;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import uk.ac.ebi.ampt2d.accession.file.FileMessage;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
@@ -36,22 +37,38 @@ public class Sha1AccessionGeneratorTest {
 
     private static Random randomGenerator;
 
+    private Map<String, String> studyMap1;
+    private Map<String, String> studyMap2;
+    private StudyMessage accessionObject1;
+    private StudyMessage accessionObject2;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         randomGenerator = new Random();
     }
 
+    @Before
+    public void setUp() throws Exception {
+        studyMap1 = new HashMap<>();
+        studyMap1.put("title", "Title1");
+        studyMap1.put("type", "Type1");
+        studyMap1.put("submitterEmail", "Email1");
+        studyMap2 = new HashMap<>();
+        studyMap2.put("title", "Title2");
+        studyMap2.put("type", "Type2");
+        studyMap2.put("submitterEmail", "Email2");
+        accessionObject1 = new StudyMessage(studyMap1);
+        accessionObject2 = new StudyMessage(studyMap2);
+    }
+
     @Test
     public void differentAccessionsAreGeneratedForDifferentInputs() throws Exception {
-        FileMessage file1 = new FileMessage(randomChecksum());
-        FileMessage file2 = new FileMessage(randomChecksum());
+        SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
 
-        SHA1AccessionGenerator<FileMessage> generator = new SHA1AccessionGenerator<>();
+        Map<StudyMessage, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
 
-        Map<FileMessage, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(file1, file2)));
-
-        String accession1 = accessions.get(file1);
-        String accession2 = accessions.get(file2);
+        String accession1 = accessions.get(accessionObject1);
+        String accession2 = accessions.get(accessionObject2);
 
         assertTrue(accession1 != null);
         assertTrue(accession2 != null);
@@ -61,33 +78,29 @@ public class Sha1AccessionGeneratorTest {
 
     @Test
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
-        FileMessage file = new FileMessage(randomChecksum());
+        SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
 
-        SHA1AccessionGenerator<FileMessage> generator = new SHA1AccessionGenerator<>();
+        Map<StudyMessage, String> accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
+        String accession1 = accessions.get(accessionObject1);
 
-        Map<FileMessage, String> accessions = generator.generateAccessions(Collections.singleton(file));
-        String accession1 = accessions.get(file);
+        accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
+        String anotherAccession1 = accessions.get(accessionObject1);
 
-        accessions = generator.generateAccessions(Collections.singleton(file));
-        String accession2 = accessions.get(file);
-
-        assertEquals(accession1, accession2);
+        assertEquals(accession1, anotherAccession1);
     }
 
     @Test
     public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
-        FileMessage file = new FileMessage(randomChecksum());
+        SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
 
-        SHA1AccessionGenerator<FileMessage> generator = new SHA1AccessionGenerator<>();
+        Map<StudyMessage, String> accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
+        String accession1 = accessions.get(accessionObject1);
 
-        Map<FileMessage, String> accessions = generator.generateAccessions(Collections.singleton(file));
-        String accession1 = accessions.get(file);
+        SHA1AccessionGenerator<StudyMessage> generator2 = new SHA1AccessionGenerator<>();
+        accessions = generator2.generateAccessions(Collections.singleton(accessionObject1));
+        String anotherAccession1 = accessions.get(accessionObject1);
 
-        SHA1AccessionGenerator<FileMessage> generator2 = new SHA1AccessionGenerator<>();
-        accessions = generator2.generateAccessions(Collections.singleton(file));
-        String accession2 = accessions.get(file);
-
-        assertEquals(accession1, accession2);
+        assertEquals(accession1, anotherAccession1);
     }
 
     private String randomChecksum() {

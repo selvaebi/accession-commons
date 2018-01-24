@@ -17,14 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.accession.sha1;
 
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
+import uk.ac.ebi.ampt2d.accession.HashableMessage;
 import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
 
-public class SHA1AccessionGenerator<T extends AccessionedObject> extends SingleAccessionGenerator<T, String> {
+public class SHA1AccessionGenerator<T extends HashableMessage<String>> extends SingleAccessionGenerator<T, String> {
 
     @Override
     protected String generateAccession(T object) {
-        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
+        String accession = Sha1Util.generateSha1Accession(object.getHashableMessage().getBytes());
         return accession;
     }
 

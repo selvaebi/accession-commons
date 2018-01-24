@@ -17,19 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import java.util.List;
-import java.util.Map;
+import uk.ac.ebi.ampt2d.accession.AccessionableMessage;
+import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
 
-public interface DatabaseService<MESSAGE_TYPE, ENTITY_TYPE> {
+public class BasicAccessionGenerator<T extends AccessionableMessage<String>> extends SingleAccessionGenerator<T, String> {
 
-    Map<MESSAGE_TYPE, String> findObjectsInDB(List<MESSAGE_TYPE> hashes);
-
-    void save(Map<MESSAGE_TYPE, String> accessioningObjects);
-
-    MESSAGE_TYPE toMessage(ENTITY_TYPE studyEntity);
-
-    ENTITY_TYPE toEntity(Map.Entry<MESSAGE_TYPE, String> entry);
-
-    String hashMessage(String message);
+    @Override
+    protected String generateAccession(T object) {
+        return object.getAccession();
+    }
 
 }

@@ -18,15 +18,11 @@
 package uk.ac.ebi.ampt2d.accession.study;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-import java.util.Collection;
-
 @Repository
 @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-public interface StudyAccessioningRepository extends AccessioningRepository<StudyEntity, String>, CrudRepository<StudyEntity, String> {
+public interface StudyAccessioningRepository extends AccessioningRepository<StudyEntity, String> {
 
-    Collection<StudyEntity> findByHashIn(Collection<String> checksum);
 }

@@ -15,18 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.sha1;
+package uk.ac.ebi.ampt2d.accession.file;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.file.FileMessage;
+import uk.ac.ebi.ampt2d.accession.WebConfiguration;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,10 +38,9 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.file", "uk.ac.ebi.ampt2d.accession.sha1"})
-@TestPropertySource(properties = {"services=file-accession", "accessionBy=sha1"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
-public class FileSha1AccessioningServiceTest {
+@TestPropertySource(properties = "services=file-accession")
+@ContextConfiguration(classes = WebConfiguration.class)
+public class FileBasicAccessioningServiceTest {
 
     @Autowired
     private AccessioningService accessioningService;

@@ -24,10 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -38,36 +40,29 @@ import static org.junit.Assert.assertEquals;
 public class FileAccessioningRepositoryTest {
 
     @Autowired
-    FileAccessioningRepository fileAccessioningRepository;
+    private AccessioningRepository fileAccessioningRepository;
 
     private FileEntity accessionObject1;
     private FileEntity accessionObject2;
+    private Set<FileEntity> accessionObjects;
 
     @Before
     public void setUp() throws Exception {
-
-        accessionObject1 = new FileEntity();
-        accessionObject1.setHash("file1");
-        accessionObject1.setAccession("file1accession");
-        accessionObject2 = new FileEntity();
-        accessionObject2.setHash("file2");
-        accessionObject2.setAccession("file2accession");
+        accessionObject1 = new FileEntity("file1", "file1");
+        accessionObject2 = new FileEntity("file2", "file2");
+        accessionObjects = new HashSet<>();
+        accessionObjects.add(accessionObject1);
+        accessionObjects.add(accessionObject2);
     }
 
     @Test
     public void testFilesAreStoredInTheRepository() throws Exception {
-        List<FileEntity> accessionObjects = new ArrayList<>();
-        accessionObjects.add(accessionObject1);
-        accessionObjects.add(accessionObject2);
-
         fileAccessioningRepository.save(accessionObjects);
         assertEquals(2, fileAccessioningRepository.count());
 
-        FileEntity accessionObject3 = new FileEntity();
-        accessionObject3.setHash("file3");
-        accessionObject3.setAccession("file3accession");
-
-        fileAccessioningRepository.save(accessionObject3);
+        FileEntity accessionObject3 = new FileEntity("file3", "file3");
+        accessionObjects.add(accessionObject3);
+        fileAccessioningRepository.save(accessionObjects);
         assertEquals(3, fileAccessioningRepository.count());
     }
 
@@ -75,37 +70,28 @@ public class FileAccessioningRepositoryTest {
     public void testFindObjectsInRepository() throws Exception {
         assertEquals(0, fileAccessioningRepository.count());
 
-        List<FileEntity> accessionObjects = new ArrayList<>();
-        accessionObjects.add(accessionObject1);
-        accessionObjects.add(accessionObject2);
-
         fileAccessioningRepository.save(accessionObjects);
         assertEquals(2, fileAccessioningRepository.count());
 
-        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHash()).collect(Collectors.toList());
+        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
 
-        Collection<FileEntity> objectsInRepo = fileAccessioningRepository.findByHashIn(hashes);
+        Collection<FileEntity> objectsInRepo = fileAccessioningRepository.findByHashedMessageIn(hashes);
         assertEquals(2, objectsInRepo.size());
-
-        hashes = accessionObjects.stream().map(obj -> obj.getAccession()).collect(Collectors.toList());
-        objectsInRepo = fileAccessioningRepository.findByHashIn(hashes);
-        assertEquals(0, objectsInRepo.size());
     }
 
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void testSavingObjectsWithoutAccession() throws Exception {
-        FileEntity accessionObject = new FileEntity();
-        accessionObject.setHash("file");
-        fileAccessioningRepository.save(accessionObject);
-
+        accessionObjects.clear();
+        accessionObjects.add(new FileEntity("file1", null));
+        fileAccessioningRepository.save(accessionObjects);
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
     public void testSavingObjectsWithoutHash() throws Exception {
-        FileEntity accessionObject = new FileEntity();
-        accessionObject.setAccession("fileAccession");
-        fileAccessioningRepository.save(accessionObject);
+        accessionObjects.clear();
+        accessionObjects.add(new FileEntity(null, "accession"));
+        fileAccessioningRepository.save(accessionObjects);
+        fileAccessioningRepository.flush();
     }
-
 
 }

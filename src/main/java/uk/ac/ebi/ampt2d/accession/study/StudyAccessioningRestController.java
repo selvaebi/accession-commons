@@ -27,7 +27,6 @@ import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/v1/accession")
@@ -38,9 +37,8 @@ public class StudyAccessioningRestController {
     private AccessioningService accessioningService;
 
     @RequestMapping(value = "/study", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public Set<StudyMessage> accessionStudies(@RequestBody List<StudyMessage> studyMessageList) {
-        Map<StudyMessage, String> accessions = accessioningService.getAccessions(studyMessageList);
-        return accessions.keySet();
+    public Map<StudyMessage, String> accessionStudies(@RequestBody List<StudyMessage> studyMessageList) {
+        return accessioningService.getAccessions(studyMessageList);
     }
 }
 

@@ -23,10 +23,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
+import uk.ac.ebi.ampt2d.accession.WebConfiguration;
 import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
 
 import java.util.Arrays;
@@ -41,9 +43,9 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = {"services=study-accession", "accessionBy=sha1"})
-@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.study", "uk.ac.ebi.ampt2d.accession.sha1"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+@TestPropertySource(properties = "services=study-accession")
+@ComponentScan(basePackageClasses = AccessioningRepository.class)
+@ContextConfiguration(classes = WebConfiguration.class)
 public class StudySha1AccessioningServiceTest {
 
     @Autowired

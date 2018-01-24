@@ -21,21 +21,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A service that provides accessions for objects
+ * A service that provides accessions for objects\
  *
- * @param <T> Object class
+ * @param <MESSAGE_TYPE>
+ * @param <ACCESION_TYPE>
  */
-public abstract class AccessioningService<T extends AccessionedObject, U > {
+public class AccessioningService<MESSAGE_TYPE, ACCESION_TYPE> {
 
-    private AccessionGenerator<T, U> accessionGenerator;
+    private AccessionGenerator<MESSAGE_TYPE, ACCESION_TYPE> accessionGenerator;
+
+    private DatabaseService dbService;
 
     /**
      * Constructs a service that will retrieve existing accessions, and create new ones if necessary.
      *
      * @param accessionGenerator Generator that creates new accessions for not accessioned objects
      */
-    public AccessioningService(AccessionGenerator<T, U> accessionGenerator) {
+    public AccessioningService(AccessionGenerator<MESSAGE_TYPE, ACCESION_TYPE> accessionGenerator, DatabaseService dbService) {
         this.accessionGenerator = accessionGenerator;
+        this.dbService = dbService;
     }
 
     /**
@@ -45,17 +49,17 @@ public abstract class AccessioningService<T extends AccessionedObject, U > {
      * @param objects List of objects to accession
      * @return Objects to accessions map
      */
-    public Map<T, U> getAccessions(List<T> objects) {
+    public Map<MESSAGE_TYPE, ACCESION_TYPE> getAccessions(List<MESSAGE_TYPE> objects) {
         // look for accessions for those objects in the repository
-        Map<T, U> storedAccessions = this.get(objects);
+        Map<MESSAGE_TYPE, ACCESION_TYPE> storedAccessions = this.get(objects);
 
         // get all objects that are not in the repository
-        Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
-                                               .collect(Collectors.toSet());
+        Set<MESSAGE_TYPE> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
+                .collect(Collectors.toSet());
 
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
-            Map<T, U> newAccessions = accessionGenerator.generateAccessions(objectsNotInRepository);
+            Map<MESSAGE_TYPE, ACCESION_TYPE> newAccessions = accessionGenerator.generateAccessions(objectsNotInRepository);
             this.add(newAccessions);
             storedAccessions.putAll(newAccessions);
         }
@@ -63,8 +67,12 @@ public abstract class AccessioningService<T extends AccessionedObject, U > {
         return storedAccessions;
     }
 
-    public abstract Map<T, U> get(List<T> objects);
+    public Map<MESSAGE_TYPE, ACCESION_TYPE> get(List<MESSAGE_TYPE> accessionObjects) {
+        return dbService.findObjectsInDB(accessionObjects);
+    }
 
-    public abstract void add(Map<T, U> accessions);
+    public void add(Map<MESSAGE_TYPE, ACCESION_TYPE> accessions) {
+        dbService.save(accessions);
+    }
 
 }

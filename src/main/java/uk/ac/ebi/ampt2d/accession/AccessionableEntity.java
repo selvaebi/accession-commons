@@ -17,19 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import java.util.List;
-import java.util.Map;
+public interface AccessionableEntity {
 
-public interface DatabaseService<MESSAGE_TYPE, ENTITY_TYPE> {
-
-    Map<MESSAGE_TYPE, String> findObjectsInDB(List<MESSAGE_TYPE> hashes);
-
-    void save(Map<MESSAGE_TYPE, String> accessioningObjects);
-
-    MESSAGE_TYPE toMessage(ENTITY_TYPE studyEntity);
-
-    ENTITY_TYPE toEntity(Map.Entry<MESSAGE_TYPE, String> entry);
-
-    String hashMessage(String message);
+    String getAccession();
 
 }

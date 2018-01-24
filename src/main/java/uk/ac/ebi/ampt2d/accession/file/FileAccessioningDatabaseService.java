@@ -17,63 +17,24 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-import uk.ac.ebi.ampt2d.accession.DatabaseService;
+import uk.ac.ebi.ampt2d.accession.GenericDatabaseService;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-@Service
-@ConditionalOnProperty(name = "services", havingValue = "file-accession")
-public class FileAccessioningDatabaseService implements DatabaseService<FileMessage> {
-
-    @Autowired
-    FileAccessioningRepository fileAccessioningRepository;
+public class FileAccessioningDatabaseService extends GenericDatabaseService<FileMessage, FileEntity> {
 
     @Override
-    public Collection<FileMessage> findObjectsInDB(List<FileMessage> accessionObjects) {
-        List<String> checksums = accessionObjects.stream().map(obj ->
-                obj.getHash()).collect(Collectors.toList());
-        Collection<FileEntity> fileEntities = fileAccessioningRepository.findByHashIn(checksums);
-        Map<FileEntity, String> fileEntityStringMap = fileEntities.stream().collect(Collectors.toMap(Function.identity(), FileEntity::getAccession));
-
-        return accessionObjects.stream().filter(object -> fileEntityStringMap.containsKey(object)).
-                map(obj -> {
-                    obj.setAccession(fileEntityStringMap.get(obj));
-                    return obj;
-                }).collect(Collectors.toSet());
-
+    public FileMessage toMessage(FileEntity fileEntity) {
+        return new FileMessage(fileEntity.getHashedMessage());
     }
 
     @Override
-    public void save(Set<FileMessage> accessioningObjects) {
-        HashSet<FileEntity> fileSet = new HashSet<>();
-        accessioningObjects.forEach(accObj -> {
-            FileEntity fileEntity = new FileEntity();
-            fileEntity.setAccession(accObj.getAccession());
-            fileEntity.setHash(accObj.getHash());
-            fileSet.add(fileEntity);
-        });
-        fileAccessioningRepository.save(fileSet);
+    public FileEntity toEntity(Map.Entry<FileMessage, String> entry) {
+        return new FileEntity(hashMessage(entry.getKey().getHash()), entry.getValue());
     }
 
     @Override
-    public void save(FileMessage accObj) {
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setAccession(accObj.getAccession());
-        fileEntity.setHash(accObj.getHash());
-        fileAccessioningRepository.save(fileEntity);
-    }
-
-    @Override
-    public long count() {
-        return fileAccessioningRepository.count();
+    public String hashMessage(String message) {
+        return message;
     }
 }

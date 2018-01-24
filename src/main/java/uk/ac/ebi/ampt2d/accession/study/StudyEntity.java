@@ -17,56 +17,60 @@
  */
 package uk.ac.ebi.ampt2d.accession.study;
 
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
+import uk.ac.ebi.ampt2d.accession.AccessionableEntity;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
+import java.util.Map;
 
 @Entity
-public class StudyEntity implements AccessionedObject<String> {
+public class StudyEntity implements AccessionableEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
+    @Size(max = 230, min = 0)
     private String accession;
 
-    @Column(nullable = false, unique = true)
-    private String hash;
+    @ElementCollection
+    private Map<String, String> study;
 
-    @Override
-    public String getHash() {
-        return this.hash;
+    @Column(nullable = false, unique = true)
+    private String hashedMessage;
+
+    StudyEntity() {
     }
 
-    @Override
+    public StudyEntity(Map<String, String> study, String accession, String hashedMessage) {
+        this.study = study;
+        this.accession = accession;
+        this.hashedMessage = hashedMessage;
+    }
+
     public String getAccession() {
         return this.accession;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setHashedMessage(String hashedMessage) {
+        this.hashedMessage = hashedMessage;
     }
 
-    @Override
+    public String getHashedMessage() {
+        return hashedMessage;
+    }
+
     public void setAccession(String accession) {
         this.accession = accession;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        StudyEntity that = (StudyEntity) o;
-        return getHash().equals(that.getHash());
+    public Map<String, String> getStudy() {
+        return study;
     }
 
-    @Override
-    public int hashCode() {
-        return getHash().hashCode();
+    public void setStudy(Map<String, String> study) {
+        this.study = study;
     }
+
 }

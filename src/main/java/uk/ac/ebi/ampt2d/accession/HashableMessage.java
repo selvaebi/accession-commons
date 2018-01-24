@@ -17,12 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-public interface AccessionedObject<T> {
+public interface HashableMessage<T> {
 
-    String getHash();
-
-    T getAccession();
-
-    void setAccession(T accession);
+    T getHashableMessage();
 
 }

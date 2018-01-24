@@ -23,23 +23,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"services=study-accession", "accessionBy=sha1"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=study-accession")
 public class StudyAccessioningRestControllerTest {
 
     @Autowired
@@ -65,14 +62,13 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-        AccessionedObject study1 = new StudyMessage(studyMap1);
-        AccessionedObject study2 = new StudyMessage(studyMap2);
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<StudyMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
-        });
+        ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
@@ -80,22 +76,20 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        AccessionedObject study1 = new StudyMessage(studyMap1);
-        AccessionedObject study2 = new StudyMessage(studyMap2);
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
 
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
 
-        ResponseEntity<Set<StudyMessage>> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
-        });
+        ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals(2, accessioningObjectRepository.count());
 
         //Accessing Post Request again with same files
-        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Set<StudyMessage>>() {
-        });
+        response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());

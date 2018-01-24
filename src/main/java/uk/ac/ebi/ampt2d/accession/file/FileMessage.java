@@ -17,13 +17,13 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import uk.ac.ebi.ampt2d.accession.AccessionableMessage;
+import uk.ac.ebi.ampt2d.accession.Message;
 
-public class FileMessage implements AccessionedObject<String> {
+public class FileMessage implements AccessionableMessage<String>, Message {
 
     private String hash;
-
-    private String accession;
 
     FileMessage() {
     }
@@ -32,35 +32,41 @@ public class FileMessage implements AccessionedObject<String> {
         this.hash = hash;
     }
 
-    @Override
     public String getHash() {
         return hash;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    @Override
+    @JsonIgnore
+    public String getAccession() {
+        return hash;
     }
 
     @Override
-    public String getAccession() {
-        return accession;
-    }
-
-    public void setAccession(String accession) {
-        this.accession = accession;
+    @JsonIgnore
+    public String getMessage() {
+        return hash;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        AccessionedObject file = (AccessionedObject) o;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        return getHash().equals(file.getHash());
+        FileMessage that = (FileMessage) o;
+
+        return getHash() != null ? getHash().equals(that.getHash()) : that.getHash() == null;
     }
 
     @Override
     public int hashCode() {
-        return hash.hashCode();
+        return getHash() != null ? getHash().hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "hash='" + hash + '\'' +
+                '}';
     }
 }

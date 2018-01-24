@@ -18,15 +18,11 @@
 package uk.ac.ebi.ampt2d.accession.file;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-import java.util.Collection;
-
 @Repository
 @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-public interface FileAccessioningRepository extends AccessioningRepository<FileEntity, String>, CrudRepository<FileEntity, String> {
+public interface FileAccessioningRepository extends AccessioningRepository<FileEntity, String> {
 
-    Collection<FileEntity> findByHashIn(Collection<String> checksum);
 }

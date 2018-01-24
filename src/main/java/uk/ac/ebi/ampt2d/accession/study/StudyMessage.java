@@ -18,19 +18,15 @@
 package uk.ac.ebi.ampt2d.accession.study;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
+import uk.ac.ebi.ampt2d.accession.HashableMessage;
+import uk.ac.ebi.ampt2d.accession.Message;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StudyMessage implements AccessionedObject<String> {
+public class StudyMessage implements HashableMessage<String>, Message {
 
     private Map<String, String> study;
-
-    private String accession;
-
-    @JsonIgnore
-    private String hash;
 
     StudyMessage() {
     }
@@ -40,7 +36,8 @@ public class StudyMessage implements AccessionedObject<String> {
     }
 
     @Override
-    public String getHash() {
+    @JsonIgnore
+    public String getHashableMessage() {
         return this.study.values().stream().collect(Collectors.joining(","));
     }
 
@@ -49,24 +46,30 @@ public class StudyMessage implements AccessionedObject<String> {
     }
 
     @Override
-    public String getAccession() {
-        return accession;
-    }
-
-    public void setAccession(String accession) {
-        this.accession = accession;
+    @JsonIgnore
+    public String getMessage() {
+        return getHashableMessage();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        AccessionedObject that = (AccessionedObject) o;
-        return getHash().equals(that.getHash());
+        if (o == null || getClass() != o.getClass()) return false;
+
+        StudyMessage that = (StudyMessage) o;
+
+        return getHashableMessage() != null ? getHashableMessage().equals(that.getHashableMessage()) : that.getHashableMessage() == null;
     }
 
     @Override
     public int hashCode() {
-        return getHash().hashCode();
+        return getHashableMessage() != null ? getHashableMessage().hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "study=" + study +
+                '}';
     }
 }

@@ -17,43 +17,40 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import uk.ac.ebi.ampt2d.accession.AccessionedObject;
+import uk.ac.ebi.ampt2d.accession.AccessionableEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 
 @Entity
-public class FileEntity implements AccessionedObject<String> {
+public class FileEntity implements AccessionableEntity {
+
+    @Column(nullable = false, unique = true)
+    private String hashedMessage;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String hash;
-
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 230)
+    @Size(max = 230, min = 0)
     private String accession;
 
-    public Long getId() {
-        return id;
+    FileEntity() {
     }
 
-    @Override
-    public String getHash() {
-        return hash;
+    public FileEntity(String hashedMessage, String accession) {
+        this.hashedMessage = hashedMessage;
+        this.accession = accession;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setHashedMessage(String hashedMessage) {
+        this.hashedMessage = hashedMessage;
     }
 
-    @Override
+    public String getHashedMessage() {
+        return hashedMessage;
+    }
+
     public String getAccession() {
         return accession;
     }
@@ -62,16 +59,4 @@ public class FileEntity implements AccessionedObject<String> {
         this.accession = accession;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        FileEntity file = (FileEntity) o;
-        return hash.equals(file.getHash());
-    }
-
-    @Override
-    public int hashCode() {
-        return hash.hashCode();
-    }
 }

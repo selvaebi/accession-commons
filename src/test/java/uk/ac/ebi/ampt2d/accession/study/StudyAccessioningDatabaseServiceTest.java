@@ -22,11 +22,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.DatabaseService;
+import uk.ac.ebi.ampt2d.accession.WebConfiguration;
 import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
-@TestPropertySource(properties = {"services=study-accession", "accessionBy=sha1"})
-@ComponentScan(basePackages = {"uk.ac.ebi.ampt2d.accession.sha1", "uk.ac.ebi.ampt2d.accession.study"})
+@TestPropertySource(properties = "services=study-accession")
+@ContextConfiguration(classes = WebConfiguration.class)
 public class StudyAccessioningDatabaseServiceTest {
 
     @Autowired
@@ -75,56 +76,22 @@ public class StudyAccessioningDatabaseServiceTest {
     }
 
     @Test
-    public void testStudiesAreStoredInTheRepository() throws Exception {
+    public void testStudiesAreStoredInTheRepositoryAndRetrived() throws Exception {
         Map<StudyMessage, String> accessionedStudies = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
-
-        for (Map.Entry<StudyMessage, String> entry : accessionedStudies.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        studyDatabaseService.save(accessionedStudies.keySet());
-
-        assertEquals(2, studyDatabaseService.count());
+        studyDatabaseService.save(accessionedStudies);
 
         Collection<String> hashes = new ArrayList<>();
-        hashes.add(accessionObject1.getHash());
-        hashes.add(accessionObject2.getHash());
-        Collection<StudyMessage> accessionsFromRepository = studyDatabaseService.findObjectsInDB(Arrays.asList(accessionObject1, accessionObject2));
-        assertEquals(2, studyDatabaseService.count());
+        hashes.add(accessionObject1.getHashableMessage());
+        hashes.add(accessionObject2.getHashableMessage());
+        Map<StudyMessage, String> accessionsFromRepository = studyDatabaseService.findObjectsInDB(Arrays.asList(accessionObject1, accessionObject2));
+        assertEquals(2, accessionsFromRepository.size());
     }
 
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void addingTheSameStudiesWithSameAccessionsTwiceGivesConstraintViolationException() throws Exception {
-        HashSet<StudyMessage> studies = new HashSet<>(Arrays.asList(accessionObject1, accessionObject2));
-
-        // Store the studies with the initial accessions
-        Map<StudyMessage, String> accessionedStudies = generator.generateAccessions(studies);
-        for (Map.Entry<StudyMessage, String> entry : accessionedStudies.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        studyDatabaseService.save(accessionedStudies.keySet());
-        assertEquals(2, studyDatabaseService.count());
-
-        // Storing again the same studies with new accessions overwrites the existing ones
-        Map<StudyMessage, String> alternativeAccesionedStudies = alternativeGenerator.generateAccessions(studies);
-        for (Map.Entry<StudyMessage, String> entry : alternativeAccesionedStudies.entrySet()) {
-            entry.getKey().setAccession(entry.getValue());
-        }
-        studyDatabaseService.save(alternativeAccesionedStudies.keySet());
-        assertEquals(2, studyDatabaseService.count());
-    }
-
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    //JpaSystemException is due to the id of entity being null
+    @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void cantStoreObjectsWithoutAccession() {
-        studyDatabaseService.save(new HashSet<StudyMessage>(Arrays.asList(accessionObject1)));
-    }
-
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
-    public void cantStoreMultipleStudiesWithSameAccession() {
-        accessionObject1.setAccession("randomString");
-        studyDatabaseService.save(new HashSet<StudyMessage>(Arrays.asList(accessionObject1)));
-        assertEquals(1, studyDatabaseService.count());
-
-        accessionObject2.setAccession(accessionObject1.getAccession());
-        studyDatabaseService.save(new HashSet<StudyMessage>(Arrays.asList(accessionObject2)));
+        Map<StudyMessage, String> accessionedStudies = new HashMap<>();
+        accessionedStudies.put(accessionObject1, null);
+        studyDatabaseService.save(accessionedStudies);
     }
 }
