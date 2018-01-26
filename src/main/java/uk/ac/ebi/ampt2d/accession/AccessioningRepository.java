@@ -1,5 +1,6 @@
 /*
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ *
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +16,22 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.Repository;
+
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
-/**
- * Accessioning repository
- *
- * @param <T> Object class
- */
+@NoRepositoryBean
+public interface AccessioningRepository<ENTITY_TYPE extends AccessionableEntity, ID_TYPE extends Serializable>
+        extends Repository<ENTITY_TYPE, ID_TYPE> {
 
-public interface AccessioningRepository<T, U> {
+    Collection<ENTITY_TYPE> findByHashedMessageIn(List<ID_TYPE> hashes);
 
-    Collection<T> findByHashIn(Collection<U> checksum);
+    <S extends ENTITY_TYPE> Iterable<S> save(Iterable<S> var1);
+
+    long count();
+
+    void flush();
 }

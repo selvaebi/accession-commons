@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,16 +30,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/v1/accession")
-@ConditionalOnProperty(name = "services", havingValue = "file-accession")
-public class FileAccessioningRestController {
+@ConditionalOnProperty(name = "services", havingValue = "study-accession")
+public class StudyAccessioningRestController {
 
     @Autowired
     private AccessioningService accessioningService;
 
-    @RequestMapping(value = "/file", method = RequestMethod.POST, produces = "application/json",
-            consumes = "application/json")
-    public Map<FileMessage, String> accessionFiles(@RequestBody List<FileMessage> fileMessages) {
-        return accessioningService.getAccessions(fileMessages);
+    @RequestMapping(value = "/study", method = RequestMethod.POST, produces = "application/json", consumes =
+            "application/json")
+    public Map<StudyMessage, String> accessionStudies(@RequestBody List<StudyMessage> studyMessages) {
+        return accessioningService.getAccessions(studyMessages);
     }
 }
 

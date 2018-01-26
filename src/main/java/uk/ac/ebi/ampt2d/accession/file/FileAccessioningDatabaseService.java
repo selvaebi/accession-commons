@@ -15,14 +15,26 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.file;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.ac.ebi.ampt2d.accession.GenericDatabaseService;
 
-@SpringBootApplication
-public class AccessioningRepositoryApplication {
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(AccessioningRepositoryApplication.class, args);
+import java.util.Map;
+
+public class FileAccessioningDatabaseService extends GenericDatabaseService<FileMessage, FileEntity> {
+
+    @Override
+    public FileMessage toMessage(FileEntity fileEntity) {
+        return new FileMessage(fileEntity.getHashedMessage());
+    }
+
+    @Override
+    public FileEntity toEntity(Map.Entry<FileMessage, String> entry) {
+        return new FileEntity(hashMessage(entry.getKey().getHash()), entry.getValue());
+    }
+
+    @Override
+    public String hashMessage(String message) {
+        return message;
     }
 }

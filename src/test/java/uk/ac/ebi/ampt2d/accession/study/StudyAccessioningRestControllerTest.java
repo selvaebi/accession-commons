@@ -15,8 +15,9 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.file;
+package uk.ac.ebi.ampt2d.accession.study;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,55 +30,62 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=file-accession")
-public class FileAccessioningRestControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=study-accession")
+public class StudyAccessioningRestControllerTest {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private FileAccessioningRepository fileAccessioningRepository;
+    private StudyAccessioningRepository accessioningObjectRepository;
+
+    private Map<String, String> studyMap1;
+    private Map<String, String> studyMap2;
+
+    @Before
+    public void setup() {
+        studyMap1 = new HashMap<>();
+        studyMap1.put("title", "Title1");
+        studyMap1.put("type", "Type1");
+        studyMap1.put("submitterEmail", "Email1");
+        studyMap2 = new HashMap<>();
+        studyMap2.put("title", "Title2");
+        studyMap2.put("type", "Type2");
+        studyMap2.put("submitterEmail", "Email2");
+    }
 
     @Test
     public void testRestApi() {
-        FileMessage fileA = new FileMessage("checksumA");
-        FileMessage fileB = new FileMessage("checksumB");
-        FileMessage fileC = new FileMessage("checksumC");
-
-        String url = "/v1/accession/file";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
-
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
+        String url = "/v1/accession/study";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
+        assertEquals(2, response.getBody().size());
     }
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        FileMessage fileA = new FileMessage("checksumA");
-        FileMessage fileB = new FileMessage("checksumB");
-        FileMessage fileC = new FileMessage("checksumC");
-
-        String url = "/v1/accession/file";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
-
+        StudyMessage study1 = new StudyMessage(studyMap1);
+        StudyMessage study2 = new StudyMessage(studyMap2);
+        String url = "/v1/accession/study";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
-        assertEquals(3, fileAccessioningRepository.count());
+        assertEquals(2, response.getBody().size());
+        assertEquals(2, accessioningObjectRepository.count());
 
         //Accessing Post Request again with same files
         response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
-        assertEquals(3, fileAccessioningRepository.count());
+        assertEquals(2, response.getBody().size());
+        assertEquals(2, accessioningObjectRepository.count());
     }
 }

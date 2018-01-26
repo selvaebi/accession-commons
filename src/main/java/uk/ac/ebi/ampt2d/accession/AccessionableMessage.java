@@ -17,12 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+/**
+ * Message Classes needs to extend this Interface
+ */
+public interface AccessionableMessage<T> {
 
-@SpringBootApplication
-public class AccessioningRepositoryApplication {
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(AccessioningRepositoryApplication.class, args);
-    }
+    T getAccession();
+
 }

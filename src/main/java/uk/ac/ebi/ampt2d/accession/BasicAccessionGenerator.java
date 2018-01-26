@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import uk.ac.ebi.ampt2d.accession.utils.Sha1Util;
+import uk.ac.ebi.ampt2d.accession.AccessionableMessage;
+import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
 
-public class SHA1AccessionGenerator<T extends AccessioningObject> extends SingleAccessionGenerator<T, String> {
+public class BasicAccessionGenerator<T extends AccessionableMessage<String>> extends SingleAccessionGenerator<T,
+        String> {
 
     @Override
     protected String generateAccession(T object) {
-        String accession = Sha1Util.generateSha1Accession(object.getHash().getBytes());
-        return accession;
+        return object.getAccession();
     }
 
 }

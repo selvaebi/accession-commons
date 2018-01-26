@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.study;
 
-public interface AccessioningObject<T> {
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
 
-    String getHash();
-
-    T getAccession();
+@Repository
+@ConditionalOnProperty(name = "services", havingValue = "study-accession")
+public interface StudyAccessioningRepository extends AccessioningRepository<StudyEntity, String> {
 
 }

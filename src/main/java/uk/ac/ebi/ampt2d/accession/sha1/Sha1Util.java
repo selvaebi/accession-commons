@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.utils;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +31,7 @@ public class Sha1Util {
 
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(Sha1Util.class);
 
-    public static String generateSha1Accession(byte[] nameBytes) {
-
+    public static String generateSha1FromBytes(byte[] nameBytes) {
         return DatatypeConverter.printHexBinary(toSHA1(nameBytes));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,24 @@ import java.util.stream.Collectors;
 /**
  * A service that provides accessions for objects
  *
- * @param <T> Object class
+ * @param <MESSAGE_TYPE>
+ * @param <ACCESSION_TYPE>
  */
-public abstract class AccessioningService<T, U> {
+public class AccessioningService<MESSAGE_TYPE, ACCESSION_TYPE> {
 
-    private AccessionGenerator<T, U> accessionGenerator;
+    private AccessionGenerator<MESSAGE_TYPE, ACCESSION_TYPE> accessionGenerator;
+
+    private DatabaseService dbService;
 
     /**
      * Constructs a service that will retrieve existing accessions, and create new ones if necessary.
      *
      * @param accessionGenerator Generator that creates new accessions for not accessioned objects
      */
-    public AccessioningService(AccessionGenerator<T, U> accessionGenerator) {
+    public AccessioningService(AccessionGenerator<MESSAGE_TYPE, ACCESSION_TYPE> accessionGenerator, DatabaseService
+            dbService) {
         this.accessionGenerator = accessionGenerator;
+        this.dbService = dbService;
     }
 
     /**
@@ -45,17 +50,18 @@ public abstract class AccessioningService<T, U> {
      * @param objects List of objects to accession
      * @return Objects to accessions map
      */
-    public Map<T, U> getAccessions(List<T> objects) {
+    public Map<MESSAGE_TYPE, ACCESSION_TYPE> getAccessions(List<MESSAGE_TYPE> objects) {
         // look for accessions for those objects in the repository
-        Map<T, U> storedAccessions = this.get(objects);
+        Map<MESSAGE_TYPE, ACCESSION_TYPE> storedAccessions = this.get(objects);
 
         // get all objects that are not in the repository
-        Set<T> objectsNotInRepository = objects.stream().filter(object -> !storedAccessions.containsKey(object))
-                                               .collect(Collectors.toSet());
+        Set<MESSAGE_TYPE> objectsNotInRepository = objects.stream()
+                .filter(object -> !storedAccessions.containsKey(object)).collect(Collectors.toSet());
 
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
-            Map<T, U> newAccessions = accessionGenerator.generateAccessions(objectsNotInRepository);
+            Map<MESSAGE_TYPE, ACCESSION_TYPE> newAccessions = accessionGenerator.generateAccessions
+                    (objectsNotInRepository);
             this.add(newAccessions);
             storedAccessions.putAll(newAccessions);
         }
@@ -63,8 +69,11 @@ public abstract class AccessioningService<T, U> {
         return storedAccessions;
     }
 
-    public abstract Map<T, U> get(List<T> objects);
+    public Map<MESSAGE_TYPE, ACCESSION_TYPE> get(List<MESSAGE_TYPE> accessionObjects) {
+        return dbService.findObjectsInDB(accessionObjects);
+    }
 
-    public abstract void add(Map<T, U> accessions);
-
+    public void add(Map<MESSAGE_TYPE, ACCESSION_TYPE> accessions) {
+        dbService.save(accessions);
+    }
 }

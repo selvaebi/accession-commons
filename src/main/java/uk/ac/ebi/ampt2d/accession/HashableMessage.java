@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+public interface HashableMessage<T> {
 
-@ConfigurationProperties(prefix = "accessioning")
-public class AccessioningProperties {
+    T getHashableMessage();
 
-    private String namespace;
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
 }

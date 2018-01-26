@@ -15,14 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.accession.sha1;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.ac.ebi.ampt2d.accession.HashableMessage;
+import uk.ac.ebi.ampt2d.accession.SingleAccessionGenerator;
 
-@SpringBootApplication
-public class AccessioningRepositoryApplication {
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(AccessioningRepositoryApplication.class, args);
+public class SHA1AccessionGenerator<T extends HashableMessage<String>> extends SingleAccessionGenerator<T, String> {
+
+    @Override
+    protected String generateAccession(T object) {
+        String accession = Sha1Util.generateSha1FromBytes(object.getHashableMessage().getBytes());
+        return accession;
     }
+
 }
