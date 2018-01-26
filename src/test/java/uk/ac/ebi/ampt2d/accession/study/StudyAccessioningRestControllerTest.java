@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,12 +64,9 @@ public class StudyAccessioningRestControllerTest {
     public void testRestApi() {
         StudyMessage study1 = new StudyMessage(studyMap1);
         StudyMessage study2 = new StudyMessage(studyMap2);
-
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
-
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
     }
@@ -78,22 +75,17 @@ public class StudyAccessioningRestControllerTest {
     public void requestPostTwiceAndWeGetSameAccessions() {
         StudyMessage study1 = new StudyMessage(studyMap1);
         StudyMessage study2 = new StudyMessage(studyMap2);
-
         String url = "/v1/accession/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
-
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals(2, accessioningObjectRepository.count());
 
         //Accessing Post Request again with same files
         response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
-
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals(2, accessioningObjectRepository.count());
     }
-
 }

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,6 @@ public class StudyAccessioningDatabaseServiceTest {
     public void setUp() throws Exception {
         generator = new SHA1AccessionGenerator();
         alternativeGenerator = new SHA1AccessionGenerator();
-
         studyMap1 = new HashMap<>();
         studyMap1.put("title", "Title1");
         studyMap1.put("type", "Type1");
@@ -72,18 +71,18 @@ public class StudyAccessioningDatabaseServiceTest {
         studyMap2.put("submitterEmail", "Email2");
         accessionObject1 = new StudyMessage(studyMap1);
         accessionObject2 = new StudyMessage(studyMap2);
-
     }
 
     @Test
     public void testStudiesAreStoredInTheRepositoryAndRetrived() throws Exception {
-        Map<StudyMessage, String> accessionedStudies = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
+        Map<StudyMessage, String> accessionedStudies = generator.generateAccessions(new HashSet<>(Arrays.asList
+                (accessionObject1, accessionObject2)));
         studyDatabaseService.save(accessionedStudies);
-
         Collection<String> hashes = new ArrayList<>();
         hashes.add(accessionObject1.getHashableMessage());
         hashes.add(accessionObject2.getHashableMessage());
-        Map<StudyMessage, String> accessionsFromRepository = studyDatabaseService.findObjectsInDB(Arrays.asList(accessionObject1, accessionObject2));
+        Map<StudyMessage, String> accessionsFromRepository = studyDatabaseService.findObjectsInDB(Arrays.asList
+                (accessionObject1, accessionObject2));
         assertEquals(2, accessionsFromRepository.size());
     }
 

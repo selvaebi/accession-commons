@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class StudyAccessioningRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
-
         studyMap1 = new HashMap<>();
         studyMap1.put("title", "Title1");
         studyMap1.put("type", "Type1");
@@ -61,8 +60,8 @@ public class StudyAccessioningRepositoryTest {
         studyMap2.put("title", "Title2");
         studyMap2.put("type", "Type2");
         studyMap2.put("submitterEmail", "Email2");
-        studyEntity1 = new StudyEntity(studyMap1,"accession1","hashedmessage1");
-        studyEntity2 = new StudyEntity(studyMap2,"accession2","hashedmessage2");
+        studyEntity1 = new StudyEntity(studyMap1, "accession1", "hashedmessage1");
+        studyEntity2 = new StudyEntity(studyMap2, "accession2", "hashedmessage2");
         accessionObjects = new HashSet<>();
         accessionObjects.add(studyEntity1);
         accessionObjects.add(studyEntity2);
@@ -72,28 +71,22 @@ public class StudyAccessioningRepositoryTest {
     public void testStudiesAreStoredToRepository() throws Exception {
         accessioningRepository.save(accessionObjects);
         assertEquals(2, accessioningRepository.count());
-
         Map<String, String> studyMap3 = new HashMap<>();
         studyMap3.put("title", "Title3");
         studyMap3.put("type", "Type3");
         studyMap3.put("submitterEmail", "Email3");
-        StudyEntity accessionObject3 = new StudyEntity(studyMap3,"accession3","hashedmessage3");
-
+        StudyEntity accessionObject3 = new StudyEntity(studyMap3, "accession3", "hashedmessage3");
         accessionObjects.clear();
         accessionObjects.add(accessionObject3);
-
         accessioningRepository.save(accessionObjects);
         assertEquals(3, accessioningRepository.count());
-
     }
 
-   @Test
+    @Test
     public void testFindObjectsInRepository() throws Exception {
         accessioningRepository.save(accessionObjects);
         assertEquals(2, accessioningRepository.count());
-
         List<String> hashes = accessionObjects.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
-
         Collection<StudyEntity> objectsInRepo = accessioningRepository.findByHashedMessageIn(hashes);
         assertEquals(2, objectsInRepo.size());
     }
@@ -101,7 +94,7 @@ public class StudyAccessioningRepositoryTest {
     //JpaSystemException is due to the id of entity being null
     @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void testSavingObjectsWithoutAccession() throws Exception {
-        StudyEntity accessionObject = new StudyEntity(studyMap1,null,"hashedMessage1");
+        StudyEntity accessionObject = new StudyEntity(studyMap1, null, "hashedMessage1");
         accessionObjects.clear();
         accessionObjects.add(accessionObject);
         accessioningRepository.save(accessionObjects);
@@ -119,12 +112,11 @@ public class StudyAccessioningRepositoryTest {
     @Test
     public void testSavingObjectsWithSameAccessionOverwrites() throws Exception {
         accessionObjects.clear();
-        StudyEntity accessionObject1 = new StudyEntity(studyMap1,"accession1","hashedMessage1");
+        StudyEntity accessionObject1 = new StudyEntity(studyMap1, "accession1", "hashedMessage1");
         accessionObjects.add(accessionObject1);
-        StudyEntity accessionObject2 = new StudyEntity(studyMap2,"accession1","hashedMessage2");
+        StudyEntity accessionObject2 = new StudyEntity(studyMap2, "accession1", "hashedMessage2");
         accessionObjects.add(accessionObject2);
         accessioningRepository.save(accessionObjects);
         accessioningRepository.flush();
     }
-
 }

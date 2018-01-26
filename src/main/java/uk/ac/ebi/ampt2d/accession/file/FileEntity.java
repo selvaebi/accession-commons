@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,12 @@ public class FileEntity implements AccessionableEntity {
         this.accession = accession;
     }
 
-    public void setHashedMessage(String hashedMessage) {
-        this.hashedMessage = hashedMessage;
-    }
-
     public String getHashedMessage() {
         return hashedMessage;
+    }
+
+    public void setHashedMessage(String hashedMessage) {
+        this.hashedMessage = hashedMessage;
     }
 
     public String getAccession() {
@@ -58,5 +58,4 @@ public class FileEntity implements AccessionableEntity {
     public void setAccession(String accession) {
         this.accession = accession;
     }
-
 }

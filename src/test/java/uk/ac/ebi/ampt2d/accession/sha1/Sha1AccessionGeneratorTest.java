@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
 
@@ -27,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -35,17 +33,10 @@ import static org.junit.Assert.assertTrue;
 
 public class Sha1AccessionGeneratorTest {
 
-    private static Random randomGenerator;
-
     private Map<String, String> studyMap1;
     private Map<String, String> studyMap2;
     private StudyMessage accessionObject1;
     private StudyMessage accessionObject2;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        randomGenerator = new Random();
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -64,53 +55,33 @@ public class Sha1AccessionGeneratorTest {
     @Test
     public void differentAccessionsAreGeneratedForDifferentInputs() throws Exception {
         SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
-
-        Map<StudyMessage, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList(accessionObject1, accessionObject2)));
-
+        Map<StudyMessage, String> accessions = generator.generateAccessions(new HashSet<>(Arrays.asList
+                (accessionObject1, accessionObject2)));
         String accession1 = accessions.get(accessionObject1);
         String accession2 = accessions.get(accessionObject2);
-
         assertTrue(accession1 != null);
         assertTrue(accession2 != null);
-
         assertNotEquals(accession1, accession2);
     }
 
     @Test
     public void oneGeneratorReturnsTheSameAccessionInDifferentCallsWithTheSameInput() {
         SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
-
         Map<StudyMessage, String> accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
         String accession1 = accessions.get(accessionObject1);
-
         accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
         String anotherAccession1 = accessions.get(accessionObject1);
-
         assertEquals(accession1, anotherAccession1);
     }
 
     @Test
     public void twoDifferentGeneratorInstancesReturnTheSameAccessionForTheSameInput() {
         SHA1AccessionGenerator<StudyMessage> generator = new SHA1AccessionGenerator<>();
-
         Map<StudyMessage, String> accessions = generator.generateAccessions(Collections.singleton(accessionObject1));
         String accession1 = accessions.get(accessionObject1);
-
         SHA1AccessionGenerator<StudyMessage> generator2 = new SHA1AccessionGenerator<>();
         accessions = generator2.generateAccessions(Collections.singleton(accessionObject1));
         String anotherAccession1 = accessions.get(accessionObject1);
-
         assertEquals(accession1, anotherAccession1);
-    }
-
-    private String randomChecksum() {
-        String hexDigits = "0123456789abcdef";
-
-        char[] text = new char[32];
-        for (int i = 0; i < text.length; i++) {
-            text[i] = hexDigits.charAt(randomGenerator.nextInt(hexDigits.length()));
-        }
-
-        return new String(text);
     }
 }

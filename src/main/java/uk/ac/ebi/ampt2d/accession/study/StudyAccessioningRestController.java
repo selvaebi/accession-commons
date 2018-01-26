@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,10 @@ public class StudyAccessioningRestController {
     @Autowired
     private AccessioningService accessioningService;
 
-    @RequestMapping(value = "/study", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
-    public Map<StudyMessage, String> accessionStudies(@RequestBody List<StudyMessage> studyMessageList) {
-        return accessioningService.getAccessions(studyMessageList);
+    @RequestMapping(value = "/study", method = RequestMethod.POST, produces = "application/json", consumes =
+            "application/json")
+    public Map<StudyMessage, String> accessionStudies(@RequestBody List<StudyMessage> studyMessages) {
+        return accessioningService.getAccessions(studyMessages);
     }
 }
 

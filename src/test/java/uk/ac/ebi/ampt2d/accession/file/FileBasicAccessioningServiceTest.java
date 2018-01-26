@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,14 +58,14 @@ public class FileBasicAccessioningServiceTest {
         fileB = new FileMessage(checksumB);
 
         Map<FileMessage, String> retrievedAccessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
-
         assertEquals(generatedAccessions.get(fileA), retrievedAccessions.get(fileA));
         assertEquals(generatedAccessions.get(fileB), retrievedAccessions.get(fileB));
     }
 
     @Test
     public void everyNewObjectReceiveOneAccession() throws Exception {
-        List<FileMessage> newObjects = Arrays.asList(new FileMessage("checksumA"), new FileMessage("checksumB"), new FileMessage("checksumC"));
+        List<FileMessage> newObjects = Arrays.asList(new FileMessage("checksumA"),
+                new FileMessage("checksumB"), new FileMessage("checksumC"));
         Map<FileMessage, String> accessions = accessioningService.getAccessions(newObjects);
 
         for (FileMessage object : newObjects) {
@@ -83,7 +83,6 @@ public class FileBasicAccessioningServiceTest {
 
         String accession1 = accessions.get(fileA);
         String anotherAccession1 = accessions.get(fileB);
-
         assertEquals(accession1, anotherAccession1);
     }
 
@@ -91,13 +90,11 @@ public class FileBasicAccessioningServiceTest {
     public void differentObjectsGetDifferentAccessions() throws Exception {
         FileMessage fileA = new FileMessage("checksumA");
         FileMessage fileB = new FileMessage("checksumB");
-
         List<FileMessage> newObjects = Arrays.asList(fileA, fileB);
         Map<FileMessage, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
         String accession2 = accessions.get(fileB);
-
         assertNotEquals(accession1, accession2);
     }
 
@@ -105,15 +102,12 @@ public class FileBasicAccessioningServiceTest {
     public void differentCallsToTheServiceUsingSameObjectsWillReturnSameAccessions() throws Exception {
         FileMessage fileA = new FileMessage("checksumA");
         FileMessage fileB = new FileMessage("checksumB");
-
         List<FileMessage> newObjects = Arrays.asList(fileA, fileB);
         Map<FileMessage, String> accessions = accessioningService.getAccessions(newObjects);
 
         String accession1 = accessions.get(fileA);
         String accession2 = accessions.get(fileB);
-
         Map<FileMessage, String> accessionsFromSecondServiceCall = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
-
         assertEquals(accession1, accessionsFromSecondServiceCall.get(fileA));
         assertEquals(accession2, accessionsFromSecondServiceCall.get(fileB));
     }
@@ -122,15 +116,11 @@ public class FileBasicAccessioningServiceTest {
     public void mixingAlreadyAccessionedAndNewObjectsIsAllowed() throws Exception {
         FileMessage fileA = new FileMessage("checksumA");
         FileMessage fileB = new FileMessage("checksumB");
-
         Map<FileMessage, String> accessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
-
         String accession1 = accessions.get(fileA);
         String accession2 = accessions.get(fileB);
-
         FileMessage fileC = new FileMessage("checksumC");
         FileMessage fileD = new FileMessage("checksumD");
-
         List<FileMessage> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
         Map<FileMessage, String> accessionsFromSecondServiceCall = accessioningService
                 .getAccessions(objectsToAccession);
@@ -139,9 +129,7 @@ public class FileBasicAccessioningServiceTest {
         assertEquals(accession2, accessionsFromSecondServiceCall.get(fileB));
         assertNotNull(accessionsFromSecondServiceCall.get(fileC));
         assertNotNull(accessionsFromSecondServiceCall.get(fileD));
-
         assertEquals(objectsToAccession.size(),
                 new HashSet<>(accessionsFromSecondServiceCall.values()).size());
     }
-
 }

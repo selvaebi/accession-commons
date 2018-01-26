@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package uk.ac.ebi.ampt2d.accession.sha1;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.ampt2d.accession.sha1.Sha1Util;
 
 public class Sha1UtilTest {
 
@@ -27,15 +26,11 @@ public class Sha1UtilTest {
     public void testGenerateAccession() {
         String object1 = "Object1";
         String object2 = "Object2";
-
-        String object1Accession = Sha1Util.generateSha1Accession(object1.getBytes());
-        String object2Accession = Sha1Util.generateSha1Accession(object2.getBytes());
-        String object3Accession = Sha1Util.generateSha1Accession(object2.getBytes());
-
+        String object1Accession = Sha1Util.generateSha1FromBytes(object1.getBytes());
+        String object2Accession = Sha1Util.generateSha1FromBytes(object2.getBytes());
+        String object3Accession = Sha1Util.generateSha1FromBytes(object2.getBytes());
         Assert.assertNotEquals(object1Accession, object2Accession);
         Assert.assertEquals(object2Accession, object3Accession);
         Assert.assertEquals(40, object1Accession.length());
-
     }
-
 }

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class StudyEntity implements AccessionableEntity {
     private String accession;
 
     @ElementCollection
-    private Map<String, String> study;
+    private Map<String, String> studyProperties;
 
     @Column(nullable = false, unique = true)
     private String hashedMessage;
@@ -43,8 +43,8 @@ public class StudyEntity implements AccessionableEntity {
     StudyEntity() {
     }
 
-    public StudyEntity(Map<String, String> study, String accession, String hashedMessage) {
-        this.study = study;
+    public StudyEntity(Map<String, String> studyProperties, String accession, String hashedMessage) {
+        this.studyProperties = studyProperties;
         this.accession = accession;
         this.hashedMessage = hashedMessage;
     }
@@ -65,12 +65,12 @@ public class StudyEntity implements AccessionableEntity {
         this.accession = accession;
     }
 
-    public Map<String, String> getStudy() {
-        return study;
+    public Map<String, String> getStudyProperties() {
+        return studyProperties;
     }
 
-    public void setStudy(Map<String, String> study) {
-        this.study = study;
+    public void setStudyProperties(Map<String, String> studyProperties) {
+        this.studyProperties = studyProperties;
     }
 
 }

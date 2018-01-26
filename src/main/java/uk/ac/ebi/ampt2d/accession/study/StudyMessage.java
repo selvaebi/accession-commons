@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,23 +26,23 @@ import java.util.stream.Collectors;
 
 public class StudyMessage implements HashableMessage<String>, Message {
 
-    private Map<String, String> study;
+    private Map<String, String> studyProperties;
 
     StudyMessage() {
     }
 
-    public StudyMessage(Map<String, String> study) {
-        this.study = study;
+    public StudyMessage(Map<String, String> studyProperties) {
+        this.studyProperties = studyProperties;
     }
 
     @Override
     @JsonIgnore
     public String getHashableMessage() {
-        return this.study.values().stream().collect(Collectors.joining(","));
+        return this.studyProperties.values().stream().collect(Collectors.joining(","));
     }
 
-    public Map<String, String> getStudy() {
-        return study;
+    public Map<String, String> getStudyProperties() {
+        return studyProperties;
     }
 
     @Override
@@ -58,7 +58,8 @@ public class StudyMessage implements HashableMessage<String>, Message {
 
         StudyMessage that = (StudyMessage) o;
 
-        return getHashableMessage() != null ? getHashableMessage().equals(that.getHashableMessage()) : that.getHashableMessage() == null;
+        return getHashableMessage() != null ? getHashableMessage().equals(that.getHashableMessage()) : that
+                .getHashableMessage() == null;
     }
 
     @Override
@@ -69,7 +70,7 @@ public class StudyMessage implements HashableMessage<String>, Message {
     @Override
     public String toString() {
         return "{" +
-                "study=" + study +
+                "studyProperties=" + studyProperties +
                 '}';
     }
 }

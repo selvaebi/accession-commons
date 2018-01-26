@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this study except in compliance with the License.
@@ -25,12 +25,13 @@ public class StudyAccessioningDatabaseService extends GenericDatabaseService<Stu
 
     @Override
     public StudyMessage toMessage(StudyEntity studyEntity) {
-        return new StudyMessage(studyEntity.getStudy());
+        return new StudyMessage(studyEntity.getStudyProperties());
     }
 
     @Override
     public StudyEntity toEntity(Map.Entry<StudyMessage, String> entry) {
-        return new StudyEntity(entry.getKey().getStudy(), entry.getValue(), hashMessage( entry.getKey().getHashableMessage()));
+        return new StudyEntity(entry.getKey().getStudyProperties(), entry.getValue(), hashMessage(entry.getKey()
+                .getHashableMessage()));
     }
 
     @Override

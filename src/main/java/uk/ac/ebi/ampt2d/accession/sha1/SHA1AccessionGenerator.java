@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class SHA1AccessionGenerator<T extends HashableMessage<String>> extends S
 
     @Override
     protected String generateAccession(T object) {
-        String accession = Sha1Util.generateSha1Accession(object.getHashableMessage().getBytes());
+        String accession = Sha1Util.generateSha1FromBytes(object.getHashableMessage().getBytes());
         return accession;
     }
 
