@@ -38,7 +38,7 @@ public class SampleMessage implements HashableMessage<String>, Message {
     @Override
     @JsonIgnore
     public String getHashableMessage() {
-        return this.sampleProperties.values().stream().collect(Collectors.joining(","));
+        return this.sampleProperties.values().stream().sorted().collect(Collectors.joining(","));
     }
 
     public Map<String, String> getSampleProperties() {

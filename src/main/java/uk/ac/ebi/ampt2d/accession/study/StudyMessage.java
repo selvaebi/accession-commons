@@ -38,7 +38,7 @@ public class StudyMessage implements HashableMessage<String>, Message {
     @Override
     @JsonIgnore
     public String getHashableMessage() {
-        return this.studyProperties.values().stream().collect(Collectors.joining(","));
+        return this.studyProperties.values().stream().sorted().collect(Collectors.joining(","));
     }
 
     public Map<String, String> getStudyProperties() {
