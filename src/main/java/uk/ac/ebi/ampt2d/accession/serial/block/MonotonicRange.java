@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession.serial.block;
 
+import org.springframework.data.util.Pair;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,12 +70,9 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         return Math.toIntExact((end - start + 1));
     }
 
-    public MonotonicRange splitLeft(int numberOfElements) {
-        return new MonotonicRange(start, start + numberOfElements - 1);
-    }
-
-    public MonotonicRange splitRight(int numberOfElements) {
-        return new MonotonicRange(start + numberOfElements, end);
+    public Pair<MonotonicRange, MonotonicRange> split(int numberOfElements) {
+        return Pair.of(new MonotonicRange(start, start + numberOfElements - 1),
+                new MonotonicRange(start + numberOfElements, end));
     }
 
     public static List<MonotonicRange> convertToMonotonicRanges(long... accessions) {
@@ -105,8 +104,9 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
                 .collect(Collectors.toList());
         long i = start;
         List<MonotonicRange> result = new ArrayList<>();
-        if(intersectingRanges.isEmpty()){
-            result.add(new MonotonicRange(start,end));
+        if (intersectingRanges.isEmpty()) {
+            result.add(new MonotonicRange(start, end));
+            return result;
         }
         for (MonotonicRange range : intersectingRanges) {
             if (i == range.start) {

@@ -39,31 +39,20 @@ public class MonotonicRangeTest {
     @Test
     public void assertArrayOfOneRange() {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(1, 2);
-        assertEquals(1, ranges.size());
-        assertEquals(1, ranges.get(0).getStart());
-        assertEquals(2, ranges.get(0).getEnd());
+        assertEquals(Arrays.asList(new MonotonicRange(1, 2)), ranges);
     }
 
     @Test
     public void assertArrayOfTwoRanges() {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(1, 2, 4, 5);
-        assertEquals(2, ranges.size());
-        assertEquals(1, ranges.get(0).getStart());
-        assertEquals(2, ranges.get(0).getEnd());
-        assertEquals(4, ranges.get(1).getStart());
-        assertEquals(5, ranges.get(1).getEnd());
+        assertEquals(Arrays.asList(new MonotonicRange(1, 2), new MonotonicRange(4, 5)), ranges);
     }
 
     @Test
     public void assertArrayOfThreeRangesAndDifferentSizes() {
-        List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(1, 2, 4, 5, 6, 9, 10);
-        assertEquals(3, ranges.size());
-        assertEquals(1, ranges.get(0).getStart());
-        assertEquals(2, ranges.get(0).getEnd());
-        assertEquals(4, ranges.get(1).getStart());
-        assertEquals(6, ranges.get(1).getEnd());
-        assertEquals(9, ranges.get(2).getStart());
-        assertEquals(10, ranges.get(2).getEnd());
+        List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(1, 2, 4, 5, 6, 9, 10, 12);
+        assertEquals(Arrays.asList(new MonotonicRange(1, 2), new MonotonicRange(4, 6), new MonotonicRange(9, 10),
+                new MonotonicRange(12, 12)), ranges);
     }
 
     @Test
@@ -103,7 +92,7 @@ public class MonotonicRangeTest {
     }
 
     @Test
-    public void asserExcludeSimpleCases() {
+    public void assertExcludeSimpleCases() {
         MonotonicRange range = new MonotonicRange(0, 10);
         assertEquals(Arrays.asList(new MonotonicRange(2, 10)),
                 range.exclude(Arrays.asList(new MonotonicRange(0, 1))));
@@ -116,7 +105,7 @@ public class MonotonicRangeTest {
     }
 
     @Test
-    public void asserExcludeComplexCases() {
+    public void assertExcludeComplexCases() {
         MonotonicRange range = new MonotonicRange(0, 10);
         assertEquals(Arrays.asList(new MonotonicRange(2, 2), new MonotonicRange(7, 10)),
                 range.exclude(Arrays.asList(new MonotonicRange(0, 1), new MonotonicRange(3, 6))));
@@ -130,4 +119,10 @@ public class MonotonicRangeTest {
                 range.exclude(Arrays.asList(new MonotonicRange(1, 2), new MonotonicRange(5, 7), new MonotonicRange(10, 12))));
     }
 
+    @Test
+    public void assertNoIntersectingRegions() {
+        MonotonicRange range = new MonotonicRange(0, 10);
+        assertEquals(Arrays.asList(new MonotonicRange(0, 10)),
+                range.exclude(Arrays.asList(new MonotonicRange(12, 20))));
+    }
 }

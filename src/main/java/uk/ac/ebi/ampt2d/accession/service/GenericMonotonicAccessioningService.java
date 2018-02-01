@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.accession.service;
 
 import org.springframework.beans.factory.InitializingBean;
 import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRange;
+import uk.ac.ebi.ampt2d.accession.service.exceptions.AccessionIsNotPending;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +42,7 @@ public abstract class GenericMonotonicAccessioningService<T> implements Initiali
      * @param objects List of objects to accession
      * @return Objects to accessions map
      */
-    public Map<T, Long> getAccessions(List<T> objects) {
+    public Map<T, Long> getAccessions(List<T> objects) throws AccessionIsNotPending {
         // look for accessions for those objects in the repository
         Map<T, Long> storedAccessions = this.get(objects);
 

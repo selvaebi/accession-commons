@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.serial.block;
 
-import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
@@ -60,29 +59,6 @@ public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
             totalOfValuesInQueue -= monotonicRange.getTotalOfValues();
         }
         return monotonicRange;
-    }
-
-    /**
-     * This function returns the maximum continuous value that we can get starting from @param comitCounter.
-     * <p>
-     * We iterate over the collection, if the block can continue the natural series then we remove the block,
-     * otherwise we return the value of the counter as the maximum continuous value in the natural series.
-     *
-     * @param commitCounter
-     * @return
-     */
-    public synchronized long checkpoint(long commitCounter) {
-        Iterator<MonotonicRange> itr = iterator();
-        while (itr.hasNext()) {
-            MonotonicRange block = itr.next();
-            if (commitCounter + 1 == block.getStart()) {
-                commitCounter = block.getEnd();
-                itr.remove();
-            } else {
-                return commitCounter;
-            }
-        }
-        return commitCounter;
     }
 
     public long getTotalOfValuesInQueue() {

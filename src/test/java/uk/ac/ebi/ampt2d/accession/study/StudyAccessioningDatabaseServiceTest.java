@@ -22,13 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.DatabaseService;
-import uk.ac.ebi.ampt2d.accession.WebConfiguration;
 import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
+import uk.ac.ebi.ampt2d.test.configurationaccession.StudyAccessioningDatabaseServiceTestConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
 @TestPropertySource(properties = "services=study-accession")
-@ContextConfiguration(classes = WebConfiguration.class)
+@Import(StudyAccessioningDatabaseServiceTestConfiguration.class)
 public class StudyAccessioningDatabaseServiceTest {
 
     @Autowired

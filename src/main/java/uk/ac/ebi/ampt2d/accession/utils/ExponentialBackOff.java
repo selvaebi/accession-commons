@@ -20,59 +20,55 @@ package uk.ac.ebi.ampt2d.accession.utils;
 /**
  * Lambda functor to execute a function with a exponential backoff
  */
-public final class ExponentialBackOff {
+public interface ExponentialBackOff {
 
-    private static final int DEFAULT_TOTAL_ATTEMPTS = 7;
-    private static final int DEFAULT_TIME_BASE = 1000;
+    int DEFAULT_TOTAL_ATTEMPTS = 7;
+    int DEFAULT_TIME_BASE = 1000;
 
-    private ExponentialBackOff() {
-
-    }
-
-    public static void execute(Runnable function) {
+    static void execute(Runnable function) {
         execute(function, DEFAULT_TOTAL_ATTEMPTS, DEFAULT_TIME_BASE);
     }
 
-    public static void execute(Runnable function, int totalAttempts, int timeBase) {
-        int firstValue = 0;
-        int secondValue = 1;
+    static void execute(Runnable function, int totalAttempts, int timeBase) {
+        int previousValue = 0;
+        int currentValue = 1;
         for (int attempt = 0; attempt < totalAttempts; attempt++) {
             try {
                 function.run();
                 return;
             } catch (Exception e) {
-                doWait(attempt, timeBase);
-                int nextValue = firstValue + secondValue;
-                firstValue = secondValue;
-                secondValue = nextValue;
+                doWait(currentValue, timeBase);
+                int nextValue = previousValue + currentValue;
+                previousValue = currentValue;
+                currentValue = nextValue;
             }
         }
         throw new RuntimeException("Exponential backoff max retries have been reached");
     }
 
-    public static <T> T execute(ExecutorFunction<T> function) {
+    static <T> T execute(ExecutorFunction<T> function) {
         return execute(function, DEFAULT_TOTAL_ATTEMPTS, DEFAULT_TIME_BASE);
     }
 
-    public static <T> T execute(ExecutorFunction<T> function, int totalAttempts, int timeBase) {
-        int firstValue = 0;
-        int secondValue = 1;
+    static <T> T execute(ExecutorFunction<T> function, int totalAttempts, int timeBase) {
+        int previousValue = 0;
+        int currentValue = 1;
         for (int attempt = 0; attempt < totalAttempts; attempt++) {
             try {
                 return function.execute();
             } catch (Exception e) {
-                doWait(attempt, timeBase);
-                int nextValue = firstValue + secondValue;
-                firstValue = secondValue;
-                secondValue = nextValue;
+                doWait(currentValue, timeBase);
+                int nextValue = previousValue + currentValue;
+                previousValue = currentValue;
+                currentValue = nextValue;
             }
         }
         throw new RuntimeException("Exponential backoff max retries have been reached");
     }
 
-    private static void doWait(int attempt, int timeBase) {
+    static void doWait(int valueInTheSeries, int timeBase) {
         try {
-            Thread.sleep(attempt * timeBase);
+            Thread.sleep(valueInTheSeries * timeBase);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
