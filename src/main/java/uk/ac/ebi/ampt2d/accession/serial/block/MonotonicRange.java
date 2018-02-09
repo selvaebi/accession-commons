@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2017 EMBL - European Bioinformatics Institute
+ * Copyright 2018 EMBL - European Bioinformatics Institute
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents an inclusive range of ascending monotonic integer values
+ */
 public class MonotonicRange implements Comparable<MonotonicRange> {
 
     private final long start;
@@ -31,6 +34,10 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     private final long end;
 
     public MonotonicRange(long start, long end) {
+        if (end < start) {
+            throw new IndexOutOfBoundsException("Monotonic range, end value needs to be greater than or equal to " +
+                    "start");
+        }
         this.start = start;
         this.end = end;
     }
@@ -98,7 +105,7 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         return ranges;
     }
 
-    public List<MonotonicRange> exclude(List<MonotonicRange> ranges) {
+    public List<MonotonicRange> excludeIntersections(List<MonotonicRange> ranges) {
         //Sorted ensures that start values are sorted monotonically
         List<MonotonicRange> intersectingRanges = ranges.stream().filter(this::intersects).sorted()
                 .collect(Collectors.toList());
@@ -111,7 +118,6 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         for (MonotonicRange range : intersectingRanges) {
             if (i == range.start) {
                 i = Math.min(end, range.end + 1);
-                continue;
             } else {
                 if (i < range.start) {
                     result.add(new MonotonicRange(i, range.start - 1));
@@ -126,11 +132,7 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     }
 
     public boolean intersects(MonotonicRange monotonicRange) {
-        if (start > monotonicRange.getEnd() || end < monotonicRange.getStart()) {
-            return false;
-        } else {
-            return true;
-        }
+        return start <= monotonicRange.getEnd() && end >= monotonicRange.getStart();
     }
 
     @Override

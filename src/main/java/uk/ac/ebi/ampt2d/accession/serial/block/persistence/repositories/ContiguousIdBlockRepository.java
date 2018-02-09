@@ -19,17 +19,16 @@ package uk.ac.ebi.ampt2d.accession.serial.block.persistence.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContinuousIdBlock;
+import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContiguousIdBlock;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
-public interface ContinuousIdBlockRepository extends CrudRepository<ContinuousIdBlock, Long> {
+public interface ContiguousIdBlockRepository extends CrudRepository<ContiguousIdBlock, Long> {
 
-    ContinuousIdBlock findFirstByCategoryIdAndInstanceIdOrderByEndDesc(String categoryId, String instanceId);
+    ContiguousIdBlock findFirstByCategoryIdAndInstanceIdOrderByEndDesc(String categoryId, String instanceId);
 
-    Stream<ContinuousIdBlock> findAllByCategoryIdAndInstanceIdOrderByEndAsc(String categoryId, String instanceId);
+    Stream<ContiguousIdBlock> findAllByCategoryIdAndInstanceIdOrderByEndAsc(String categoryId, String instanceId);
 
-    ContinuousIdBlock findFirstByCategoryIdOrderByEndDesc(String categoryId);
+    ContiguousIdBlock findFirstByCategoryIdOrderByEndDesc(String categoryId);
 }

@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRange;
 import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRangePriorityQueue;
-import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContinuousIdBlock;
-import uk.ac.ebi.ampt2d.accession.serial.block.persistence.repositories.ContinuousIdBlockRepository;
+import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.accession.serial.block.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.accession.service.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accession.utils.ExponentialBackOff;
 
@@ -44,9 +44,9 @@ public class MonotonicAccessionGenerator implements InitializingBean {
 
     private String instanceId;
 
-    private ContinuousIdBlockRepository continuousIdBlockRepository;
+    private ContiguousIdBlockRepository contiguousIdBlockRepository;
 
-    private final PriorityQueue<ContinuousIdBlock> activeBlocks;
+    private final PriorityQueue<ContiguousIdBlock> activeBlocks;
 
     private final MonotonicRangePriorityQueue availableRanges;
 
@@ -54,12 +54,12 @@ public class MonotonicAccessionGenerator implements InitializingBean {
 
     private final PriorityQueue<Long> committed;
 
-    public MonotonicAccessionGenerator(long blockSize, String categoryId, String instanceId, ContinuousIdBlockRepository continuousIdBlockRepository) {
+    public MonotonicAccessionGenerator(long blockSize, String categoryId, String instanceId, ContiguousIdBlockRepository contiguousIdBlockRepository) {
         this.blockSize = blockSize;
         this.categoryId = categoryId;
         this.instanceId = instanceId;
-        this.continuousIdBlockRepository = continuousIdBlockRepository;
-        this.activeBlocks = new PriorityQueue<>(ContinuousIdBlock::compareTo);
+        this.contiguousIdBlockRepository = contiguousIdBlockRepository;
+        this.activeBlocks = new PriorityQueue<>(ContiguousIdBlock::compareTo);
         this.availableRanges = new MonotonicRangePriorityQueue();
         this.generatedIds = new HashSet<>();
         this.committed = new PriorityQueue<>(Long::compareTo);
@@ -133,9 +133,9 @@ public class MonotonicAccessionGenerator implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
-        List<ContinuousIdBlock> uncompletedBlocks = getUncompletedBlocksForThisInstanceOrdered();
+        List<ContiguousIdBlock> uncompletedBlocks = getUncompletedBlocksForThisInstanceOrdered();
         //Insert as available ranges
-        for (ContinuousIdBlock block : uncompletedBlocks) {
+        for (ContiguousIdBlock block : uncompletedBlocks) {
             addBlock(block);
         }
     }
@@ -143,24 +143,24 @@ public class MonotonicAccessionGenerator implements InitializingBean {
     /**
      * TODO this can be changed to a query to recover and avoid the filter
      */
-    private List<ContinuousIdBlock> getUncompletedBlocksForThisInstanceOrdered() {
-        try (Stream<ContinuousIdBlock> reservedBlocksOfThisInstance = continuousIdBlockRepository
+    private List<ContiguousIdBlock> getUncompletedBlocksForThisInstanceOrdered() {
+        try (Stream<ContiguousIdBlock> reservedBlocksOfThisInstance = contiguousIdBlockRepository
                 .findAllByCategoryIdAndInstanceIdOrderByEndAsc(categoryId, instanceId)) {
-            return reservedBlocksOfThisInstance.filter(ContinuousIdBlock::isNotFull).collect(Collectors.toList());
+            return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());
         }
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     protected synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
-        ContinuousIdBlock lastBlock = continuousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
+        ContiguousIdBlock lastBlock = contiguousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
         if (lastBlock == null) {
-            addBlock(continuousIdBlockRepository.save(new ContinuousIdBlock(categoryId, instanceId, 0, size)));
+            addBlock(contiguousIdBlockRepository.save(new ContiguousIdBlock(categoryId, instanceId, 0, size)));
         } else {
-            addBlock(continuousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
+            addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
         }
     }
 
-    private void addBlock(ContinuousIdBlock block) {
+    private void addBlock(ContiguousIdBlock block) {
         activeBlocks.offer(block);
         availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getEnd()));
     }
@@ -173,7 +173,7 @@ public class MonotonicAccessionGenerator implements InitializingBean {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);
         List<MonotonicRange> newAvailableRanges = new ArrayList<>();
         for (MonotonicRange monotonicRange : this.availableRanges) {
-            newAvailableRanges.addAll(monotonicRange.exclude(ranges));
+            newAvailableRanges.addAll(monotonicRange.excludeIntersections(ranges));
         }
 
         this.availableRanges.clear();
@@ -198,7 +198,7 @@ public class MonotonicAccessionGenerator implements InitializingBean {
     private synchronized void doCommit(long[] accessions) {
         addToCommited(accessions);
 
-        ContinuousIdBlock block = activeBlocks.peek();
+        ContiguousIdBlock block = activeBlocks.peek();
         long lastCommitted = block.getLastCommitted();
         while (committed.peek() != null && lastCommitted + 1 == committed.peek()) {
             lastCommitted++;
@@ -223,9 +223,9 @@ public class MonotonicAccessionGenerator implements InitializingBean {
         }
     }
 
-    private void updateBlockLastCommited(ContinuousIdBlock block, long lastCommitted) {
+    private void updateBlockLastCommited(ContiguousIdBlock block, long lastCommitted) {
         block.setLastCommitted(lastCommitted);
-        continuousIdBlockRepository.save(block);
+        contiguousIdBlockRepository.save(block);
     }
 
     public synchronized void release(long... accessions) throws AccessionIsNotPending {

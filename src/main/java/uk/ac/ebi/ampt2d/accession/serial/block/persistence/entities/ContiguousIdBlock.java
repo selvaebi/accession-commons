@@ -26,22 +26,21 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**
- * This is the block assignation class used to determine the range of values in a monotonic sequence that a specific
- * instance can assign.
+ * This class represents a block allocated by a consumer, in a monotonic sequence associated with a category.
  * <p>
  * It is defined by the start of the monotonic sequence, the end and the last committed value to the database.
  * <p>
- * The last committed value of the block is initialized as the start of the block minus one position to simplify
- * calculus logic in the application.
+ * The last committed value of the block is initialized as the start position of the block minus one, to simplify the
+ * application logic that implements the calculations.
  */
 @Entity
 @Table(
-        name = "continuous_id_blocks",
+        name = "contiguous_id_blocks",
         indexes = {
                 @Index(name = "CATEGORY_INDEX", columnList = "categoryId")
         }
 )
-public class ContinuousIdBlock implements Comparable<ContinuousIdBlock> {
+public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -61,11 +60,11 @@ public class ContinuousIdBlock implements Comparable<ContinuousIdBlock> {
 
     // Create / update dates
 
-    ContinuousIdBlock() {
+    ContiguousIdBlock() {
         //Hibernate default constructor
     }
 
-    public ContinuousIdBlock(String categoryId, String instanceId, long start, long size) {
+    public ContiguousIdBlock(String categoryId, String instanceId, long start, long size) {
         this.categoryId = categoryId;
         this.instanceId = instanceId;
         this.start = start;
@@ -73,8 +72,8 @@ public class ContinuousIdBlock implements Comparable<ContinuousIdBlock> {
         this.lastCommitted = start - 1;
     }
 
-    public ContinuousIdBlock nextBlock(String instanceId, long size) {
-        return new ContinuousIdBlock(categoryId, instanceId, end + 1, size);
+    public ContiguousIdBlock nextBlock(String instanceId, long size) {
+        return new ContiguousIdBlock(categoryId, instanceId, end + 1, size);
     }
 
     public long getId() {
@@ -102,7 +101,7 @@ public class ContinuousIdBlock implements Comparable<ContinuousIdBlock> {
     }
 
     @Override
-    public int compareTo(ContinuousIdBlock continuousIdBlock) {
-        return Long.compare(start, continuousIdBlock.getStart());
+    public int compareTo(ContiguousIdBlock contiguousIdBlock) {
+        return Long.compare(start, contiguousIdBlock.getStart());
     }
 }
