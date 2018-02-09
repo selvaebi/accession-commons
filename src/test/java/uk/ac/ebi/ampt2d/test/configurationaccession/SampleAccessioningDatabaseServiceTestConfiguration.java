@@ -15,45 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession;
+package uk.ac.ebi.ampt2d.test.configurationaccession;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.accession.file.FileAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.file.FileMessage;
+import uk.ac.ebi.ampt2d.accession.AccessioningService;
 import uk.ac.ebi.ampt2d.accession.sample.SampleAccessioningDatabaseService;
 import uk.ac.ebi.ampt2d.accession.sample.SampleMessage;
 import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
 
-@Configuration
-public class WebConfiguration {
-
-    @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-    public AccessioningService<FileMessage, String> fileAccessionService() {
-        return new AccessioningService<>(new BasicAccessionGenerator<>(), fileAccessioningDatabaseService());
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-    public FileAccessioningDatabaseService fileAccessioningDatabaseService() {
-        return new FileAccessioningDatabaseService();
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-    public AccessioningService<StudyMessage, String> studyAccessionService() {
-        return new AccessioningService<>(new SHA1AccessionGenerator<>(), studyAccessioningDatabaseService());
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-    public StudyAccessioningDatabaseService studyAccessioningDatabaseService() {
-        return new StudyAccessioningDatabaseService();
-    }
+@TestConfiguration
+public class SampleAccessioningDatabaseServiceTestConfiguration {
 
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
@@ -64,7 +37,7 @@ public class WebConfiguration {
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
     public SampleAccessioningDatabaseService sampleAccessioningDatabaseService() {
+        StudyAccessioningDatabaseServiceTestConfiguration gre = new StudyAccessioningDatabaseServiceTestConfiguration();
         return new SampleAccessioningDatabaseService();
     }
-
 }

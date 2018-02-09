@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.study;
+package uk.ac.ebi.ampt2d.accession.sample;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.ac.ebi.ampt2d.accession.HashableMessage;
@@ -24,25 +24,25 @@ import uk.ac.ebi.ampt2d.accession.Message;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StudyMessage implements HashableMessage<String>, Message {
+public class SampleMessage implements HashableMessage<String>, Message {
 
-    private Map<String, String> studyProperties;
+    private Map<String, String> sampleProperties;
 
-    StudyMessage() {
+    SampleMessage() {
     }
 
-    public StudyMessage(Map<String, String> studyProperties) {
-        this.studyProperties = studyProperties;
+    public SampleMessage(Map<String, String> sampleProperties) {
+        this.sampleProperties = sampleProperties;
     }
 
     @Override
     @JsonIgnore
     public String getHashableMessage() {
-        return this.studyProperties.values().stream().sorted().collect(Collectors.joining(","));
+        return this.sampleProperties.values().stream().sorted().collect(Collectors.joining(","));
     }
 
-    public Map<String, String> getStudyProperties() {
-        return studyProperties;
+    public Map<String, String> getSampleProperties() {
+        return sampleProperties;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class StudyMessage implements HashableMessage<String>, Message {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        StudyMessage that = (StudyMessage) o;
+        SampleMessage that = (SampleMessage) o;
 
         return getHashableMessage() != null ? getHashableMessage().equals(that.getHashableMessage()) : that
                 .getHashableMessage() == null;
@@ -70,7 +70,7 @@ public class StudyMessage implements HashableMessage<String>, Message {
     @Override
     public String toString() {
         return "{" +
-                "studyProperties=" + studyProperties +
+                "sampleProperties=" + sampleProperties +
                 '}';
     }
 }
