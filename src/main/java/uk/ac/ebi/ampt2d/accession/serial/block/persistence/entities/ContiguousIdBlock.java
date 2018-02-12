@@ -50,7 +50,7 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
     private String categoryId;
 
     @Column(nullable = false, length = 255)
-    private String instanceId;
+    private String applicationInstanceId;
 
     private long start;
 
@@ -64,9 +64,9 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         //Hibernate default constructor
     }
 
-    public ContiguousIdBlock(String categoryId, String instanceId, long start, long size) {
+    public ContiguousIdBlock(String categoryId, String applicationInstanceId, long start, long size) {
         this.categoryId = categoryId;
-        this.instanceId = instanceId;
+        this.applicationInstanceId = applicationInstanceId;
         this.start = start;
         this.end = start + size - 1;
         this.lastCommitted = start - 1;

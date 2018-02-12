@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.accession.service.exceptions;
 public class AccessionIsNotPending extends Exception {
 
     public AccessionIsNotPending(long accession) {
-        super("Accesion '" + accession + "' is not pending confirmation.");
+        super("Accession '" + accession + "' is not pending confirmation.");
     }
 
 }

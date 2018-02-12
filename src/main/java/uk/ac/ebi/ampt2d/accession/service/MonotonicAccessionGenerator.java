@@ -17,126 +17,52 @@
  */
 package uk.ac.ebi.ampt2d.accession.service;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.data.util.Pair;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRange;
 import uk.ac.ebi.ampt2d.accession.serial.block.MonotonicRangePriorityQueue;
 import uk.ac.ebi.ampt2d.accession.serial.block.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.accession.serial.block.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.accession.service.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accession.utils.ExponentialBackOff;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public class MonotonicAccessionGenerator implements InitializingBean {
+/**
+ * Monotonic accession, generates blocks of ids on database with a blocking serialized transaction. Each block
+ * contains a applicationInstanceId that identifies which application instance has created the block and a categoryId
+ * to identify the type of resource. After acquiring a block, the application stores the counter in the block with a
+ * non blocking operation. To reduce the load in the database, the application uses a cache in memory with the
+ * current state of block usage.
+ */
+public class MonotonicAccessionGenerator {
 
     private long blockSize;
 
     private String categoryId;
 
-    private String instanceId;
+    private String applicationInstanceId;
 
     private ContiguousIdBlockRepository contiguousIdBlockRepository;
 
-    private final PriorityQueue<ContiguousIdBlock> activeBlocks;
+    private final BlockState blockState;
 
-    private final MonotonicRangePriorityQueue availableRanges;
-
-    private final HashSet<Long> generatedIds;
-
-    private final PriorityQueue<Long> committed;
-
-    public MonotonicAccessionGenerator(long blockSize, String categoryId, String instanceId, ContiguousIdBlockRepository contiguousIdBlockRepository) {
+    public MonotonicAccessionGenerator(long blockSize, String categoryId, String applicationInstanceId,
+                                       ContiguousIdBlockRepository contiguousIdBlockRepository) {
         this.blockSize = blockSize;
         this.categoryId = categoryId;
-        this.instanceId = instanceId;
+        this.applicationInstanceId = applicationInstanceId;
         this.contiguousIdBlockRepository = contiguousIdBlockRepository;
-        this.activeBlocks = new PriorityQueue<>(ContiguousIdBlock::compareTo);
-        this.availableRanges = new MonotonicRangePriorityQueue();
-        this.generatedIds = new HashSet<>();
-        this.committed = new PriorityQueue<>(Long::compareTo);
+        this.blockState = new BlockState();
+        loadIncompleteBlocks();
     }
 
-    public synchronized long[] generateAccessions(int totalAccessionsToGenerate) {
-        long[] accessions = new long[totalAccessionsToGenerate];
-        increaseAvailableRangesUntilSizeIs(totalAccessionsToGenerate);
-
-        int i = 0;
-        while (i != totalAccessionsToGenerate) {
-            int remainingAccessionsToGenerate = totalAccessionsToGenerate - i;
-            MonotonicRange monotonicRange = pollNextMonotonicRange(remainingAccessionsToGenerate);
-            int idsInRange = monotonicRange.getTotalOfValues();
-            System.arraycopy(monotonicRange.getIds(), 0, accessions, i, idsInRange);
-            i += idsInRange;
-        }
-
-        generatedIds.addAll(LongStream.of(accessions).boxed().collect(Collectors.toList()));
-        return accessions;
-    }
-
-    public synchronized List<MonotonicRange> generateAccessionRanges(int totalAccessionsToGenerate) {
-        List<MonotonicRange> accessionRanges = new ArrayList<>();
-        increaseAvailableRangesUntilSizeIs(totalAccessionsToGenerate);
-
-        int i = 0;
-        while (i != totalAccessionsToGenerate) {
-            int remainingAccessionsToGenerate = totalAccessionsToGenerate - i;
-            MonotonicRange monotonicRange = pollNextMonotonicRange(remainingAccessionsToGenerate);
-            accessionRanges.add(monotonicRange);
-            i += monotonicRange.getTotalOfValues();
-        }
-        return accessionRanges;
-    }
-
-    /**
-     * Polls the next monotonic range to use, if the next available range contains more values than needed, splits
-     * the range and returns the excess to available ranges.
-     *
-     * @param totalValuesNeeded
-     * @return
-     */
-    private synchronized MonotonicRange pollNextMonotonicRange(int totalValuesNeeded) {
-        MonotonicRange monotonicRange = availableRanges.poll();
-        if (monotonicRange.getTotalOfValues() > totalValuesNeeded) {
-            Pair<MonotonicRange, MonotonicRange> splitResult = monotonicRange.split(totalValuesNeeded);
-            monotonicRange = splitResult.getFirst();
-            availableRanges.add(splitResult.getSecond());
-        }
-        return monotonicRange;
-    }
-
-    /**
-     * Ensures that the available ranges queue hold @param totalAccessionsToGenerate or more elements
-     *
-     * @param totalAccessionsToGenerate
-     */
-    private synchronized void increaseAvailableRangesUntilSizeIs(int totalAccessionsToGenerate) {
-        while (availableRanges.getTotalOfValuesInQueue() < totalAccessionsToGenerate) {
-            try {
-                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, instanceId, blockSize), 10, 30);
-            } catch (RuntimeException e) {
-                // Ignore, max backoff have been reached, we will try again until we can reserve blocks
-            }
-        }
-    }
-
-    /**
-     * Initialize the block service loading previously reserved blocks
-     */
-    @Override
-    public void afterPropertiesSet() {
+    private void loadIncompleteBlocks() {
         List<ContiguousIdBlock> uncompletedBlocks = getUncompletedBlocksForThisInstanceOrdered();
         //Insert as available ranges
         for (ContiguousIdBlock block : uncompletedBlocks) {
-            addBlock(block);
+            blockState.addBlock(block);
         }
     }
 
@@ -145,97 +71,74 @@ public class MonotonicAccessionGenerator implements InitializingBean {
      */
     private List<ContiguousIdBlock> getUncompletedBlocksForThisInstanceOrdered() {
         try (Stream<ContiguousIdBlock> reservedBlocksOfThisInstance = contiguousIdBlockRepository
-                .findAllByCategoryIdAndInstanceIdOrderByEndAsc(categoryId, instanceId)) {
+                .findAllByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, applicationInstanceId)) {
             return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());
+        }
+    }
+
+    /**
+     * This function will recover the internal state of committed elements and will remove them from the available
+     * ranges.
+     *
+     * @param committedElements
+     * @throws AccessionIsNotPending
+     */
+    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPending {
+        blockState.recoverState(committedElements);
+    }
+
+    public synchronized long[] generateAccessions(int numAccessionsToGenerate) {
+        long[] accessions = new long[numAccessionsToGenerate];
+        reserveNewBlocksUntilSizeIs(numAccessionsToGenerate);
+
+        int i = 0;
+        while (i < numAccessionsToGenerate) {
+            int remainingAccessionsToGenerate = numAccessionsToGenerate - i;
+            long[] ids = blockState.pollNextMonotonicValues(remainingAccessionsToGenerate);
+            System.arraycopy(ids, 0, accessions, i, ids.length);
+            i += ids.length;
+        }
+        assert (i == numAccessionsToGenerate);
+
+        return accessions;
+    }
+
+    /**
+     * Ensures that the available ranges queue hold @param totalAccessionsToGenerate or more elements
+     *
+     * @param totalAccessionsToGenerate
+     */
+    private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
+        while (blockState.isAvailableSpaceLessThan(totalAccessionsToGenerate)) {
+            try {
+                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
+            } catch (RuntimeException e) {
+                // Ignore, max backoff have been reached, we will try again until we can reserve blocks
+            }
         }
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     protected synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
         ContiguousIdBlock lastBlock = contiguousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
-        if (lastBlock == null) {
-            addBlock(contiguousIdBlockRepository.save(new ContiguousIdBlock(categoryId, instanceId, 0, size)));
+        if (lastBlock != null) {
+            blockState.addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
         } else {
-            addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
+            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, 0, size);
+            blockState.addBlock(contiguousIdBlockRepository.save(newBlock));
         }
-    }
-
-    private void addBlock(ContiguousIdBlock block) {
-        activeBlocks.offer(block);
-        availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getEnd()));
-    }
-
-    public MonotonicRangePriorityQueue getAvailableRanges() {
-        return availableRanges;
-    }
-
-    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPending {
-        List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);
-        List<MonotonicRange> newAvailableRanges = new ArrayList<>();
-        for (MonotonicRange monotonicRange : this.availableRanges) {
-            newAvailableRanges.addAll(monotonicRange.excludeIntersections(ranges));
-        }
-
-        this.availableRanges.clear();
-        this.availableRanges.addAll(newAvailableRanges);
-        doCommit(committedElements);
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPending {
-        assertAccessionIsPending(accessions);
-
-        doCommit(accessions);
-    }
-
-    private void assertAccessionIsPending(long[] accessions) throws AccessionIsNotPending {
-        for(long accession: accessions){
-            if(!generatedIds.contains(accession)){
-                throw new AccessionIsNotPending(accession);
-            }
-        }
-    }
-
-    private synchronized void doCommit(long[] accessions) {
-        addToCommited(accessions);
-
-        ContiguousIdBlock block = activeBlocks.peek();
-        long lastCommitted = block.getLastCommitted();
-        while (committed.peek() != null && lastCommitted + 1 == committed.peek()) {
-            lastCommitted++;
-            committed.poll();
-            if (lastCommitted == block.getEnd()) {
-                activeBlocks.poll();
-                updateBlockLastCommited(block, lastCommitted);
-                block = activeBlocks.peek();
-                lastCommitted = block.getLastCommitted();
-            }
-        }
-
-        if (lastCommitted != block.getLastCommitted()) {
-            updateBlockLastCommited(block, lastCommitted);
-        }
-    }
-
-    private void addToCommited(long[] accessions) {
-        for (long accession : accessions) {
-            committed.offer(accession);
-            generatedIds.remove(accession);
-        }
-    }
-
-    private void updateBlockLastCommited(ContiguousIdBlock block, long lastCommitted) {
-        block.setLastCommitted(lastCommitted);
-        contiguousIdBlockRepository.save(block);
+        contiguousIdBlockRepository.save(blockState.commit(accessions));
     }
 
     public synchronized void release(long... accessions) throws AccessionIsNotPending {
-        assertAccessionIsPending(accessions);
-        doRelease(accessions);
+        blockState.release(accessions);
     }
 
-    private synchronized void doRelease(long[] accessions) {
-        availableRanges.addAll(MonotonicRange.convertToMonotonicRanges(accessions));
-        generatedIds.removeAll(LongStream.of(accessions).boxed().collect(Collectors.toList()));
+    public synchronized MonotonicRangePriorityQueue getAvailableRanges() {
+        return blockState.getAvailableRanges();
     }
 
 }

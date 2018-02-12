@@ -39,8 +39,10 @@ public abstract class GenericMonotonicAccessioningService<T> implements Initiali
      * Get accessions for a list of objects. It looks for the object's accessions in a repository, and it they don't
      * exist, generate new ones, storing them in the repository
      *
-     * @param objects List of objects to accession
-     * @return Objects to accessions map
+     * @param objects
+     * @return
+     * @throws AccessionIsNotPending when an accession is being confirmed or released and it has been already
+     * confirmed, released or wasn't generated before
      */
     public Map<T, Long> getAccessions(List<T> objects) throws AccessionIsNotPending {
         // look for accessions for those objects in the repository
@@ -52,8 +54,8 @@ public abstract class GenericMonotonicAccessioningService<T> implements Initiali
 
         if (!objectsNotInRepository.isEmpty()) {
             // generate accessions for all the new objects, adding them to the repository
-            List<MonotonicRange> accessions = accessionGenerator.generateAccessionRanges(objectsNotInRepository.size());
-            StoreMonotonicAccessionsResponse<T> response = this.add(accessions, objectsNotInRepository);
+            long[] accessionIds = accessionGenerator.generateAccessions(objectsNotInRepository.size());
+            StoreMonotonicAccessionsResponse<T> response = this.add(accessionIds, objectsNotInRepository);
             accessionGenerator.commit(response.getUsedIds());
             accessionGenerator.release(response.getUnusedIds());
             storedAccessions.putAll(response.getObjectsToAccessions());
@@ -62,7 +64,7 @@ public abstract class GenericMonotonicAccessioningService<T> implements Initiali
         return storedAccessions;
     }
 
-    protected abstract StoreMonotonicAccessionsResponse<T> add(List<MonotonicRange> accessions, List<T> objects);
+    protected abstract StoreMonotonicAccessionsResponse<T> add(long[] accessions, List<T> objects);
 
     public abstract Map<T, Long> get(List<T> objects);
 
@@ -70,8 +72,8 @@ public abstract class GenericMonotonicAccessioningService<T> implements Initiali
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Collection<MonotonicRange> unconfirmedAccessionRanges = accessionGenerator.getAvailableRanges();
-        accessionGenerator.recoverState(getExistingIds(unconfirmedAccessionRanges));
+        Collection<MonotonicRange> availableRanges = accessionGenerator.getAvailableRanges();
+        accessionGenerator.recoverState(getExistingIds(availableRanges));
     }
 
 }
