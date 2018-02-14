@@ -45,7 +45,7 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     @Override
     public int compareTo(MonotonicRange monotonicRange) {
         int value = Long.compare(start, monotonicRange.start);
-        if(value==0){
+        if (value == 0) {
             return Long.compare(end, monotonicRange.end);
         }
         return value;
@@ -120,16 +120,20 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
             return result;
         }
         for (MonotonicRange range : intersectingRanges) {
-            if (i == range.start) {
-                i = Math.min(end, range.end + 1);
-            } else {
-                if (i < range.start) {
-                    result.add(new MonotonicRange(i, range.start - 1));
-                }
-                i = range.end + 1;
+            // If the rest of the elements will be excluded stop now
+            if (i > range.end) {
+                break;
             }
+            if (i < range.start) {
+                result.add(new MonotonicRange(i, range.start - 1));
+            }
+            if (i > range.start) {
+                i = Math.max(i, range.end + 1);
+                continue;
+            }
+            i = range.end + 1;
         }
-        if (i < end) {
+        if (i <= end) {
             result.add(new MonotonicRange(i, end));
         }
         return result;

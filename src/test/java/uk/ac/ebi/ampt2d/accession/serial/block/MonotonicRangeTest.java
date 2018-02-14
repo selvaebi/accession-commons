@@ -120,6 +120,26 @@ public class MonotonicRangeTest {
     }
 
     @Test
+    public void assertExcludeAllButFirst() {
+        MonotonicRange range = new MonotonicRange(0, 5);
+        assertEquals(Arrays.asList(new MonotonicRange(1, 5)),
+                range.excludeIntersections(Arrays.asList(new MonotonicRange(0, 0))));
+    }
+    @Test
+    public void assertExcludeAllButLast() {
+        MonotonicRange range = new MonotonicRange(0, 5);
+        assertEquals(Arrays.asList(new MonotonicRange(0, 4)),
+                range.excludeIntersections(Arrays.asList(new MonotonicRange(5, 5))));
+    }
+
+    @Test
+    public void assertExcludeNestedRanges() {
+        MonotonicRange range = new MonotonicRange(0, 5);
+        assertEquals(Arrays.asList(new MonotonicRange(0, 0), new MonotonicRange(5, 5)),
+                range.excludeIntersections(Arrays.asList(new MonotonicRange(1, 4), new MonotonicRange(2, 3))));
+    }
+
+    @Test
     public void assertNoIntersectingRegions() {
         MonotonicRange range = new MonotonicRange(0, 10);
         assertEquals(Arrays.asList(new MonotonicRange(0, 10)),

@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accession.utils;
 
+import java.util.function.Supplier;
+
 /**
  * Lambda functor to execute a function with a exponential backoff
  */
@@ -46,16 +48,16 @@ public interface ExponentialBackOff {
         throw new RuntimeException("Exponential backoff max retries have been reached");
     }
 
-    static <T> T execute(ExecutorFunction<T> function) {
+    static <T> T execute(Supplier<T> function) {
         return execute(function, DEFAULT_TOTAL_ATTEMPTS, DEFAULT_TIME_BASE);
     }
 
-    static <T> T execute(ExecutorFunction<T> function, int totalAttempts, int timeBase) {
+    static <T> T execute(Supplier<T> function, int totalAttempts, int timeBase) {
         int previousValue = 0;
         int currentValue = 1;
         for (int attempt = 0; attempt < totalAttempts; attempt++) {
             try {
-                return function.execute();
+                return function.get();
             } catch (Exception e) {
                 doWait(currentValue, timeBase);
                 int nextValue = previousValue + currentValue;
