@@ -118,10 +118,10 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     public List<MonotonicRange> excludeIntersection(MonotonicRange range) {
         List<MonotonicRange> result = new ArrayList<>();
         if (!this.intersects(range)) {
-            result.add(this);
             // Nothing was excluded, return this
+            result.add(this);
         } else {
-            if (range.start > start)
+            if (range.start > start) {
                 if (range.end >= end) {
                     //Return left
                     result.add(new MonotonicRange(start, range.start - 1));
@@ -130,7 +130,7 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
                     result.add(new MonotonicRange(start, range.start - 1));
                     result.add(new MonotonicRange(range.end + 1, end));
                 }
-            else {
+            } else {
                 if (range.end < end) {
                     //Return right
                     result.add(new MonotonicRange(range.end + 1, end));
