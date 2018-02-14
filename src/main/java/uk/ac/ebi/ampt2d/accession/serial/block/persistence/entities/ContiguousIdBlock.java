@@ -26,7 +26,8 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 
 /**
- * This class represents a block allocated by a consumer, in a monotonic sequence associated with a category.
+ * This class represents a block allocated by an application instance, in a monotonic sequence associated with a 
+ * category.
  * <p>
  * It is defined by the start of the monotonic sequence, the end and the last committed value to the database.
  * <p>

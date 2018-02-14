@@ -21,24 +21,24 @@ import java.util.PriorityQueue;
 
 public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
 
-    private long totalOfValuesInQueue;
+    private long numOfValuesInQueue;
 
     public MonotonicRangePriorityQueue() {
         super(MonotonicRange::compareTo);
-        totalOfValuesInQueue = 0;
+        numOfValuesInQueue = 0;
     }
 
     @Override
     public void clear() {
         super.clear();
-        totalOfValuesInQueue = 0;
+        numOfValuesInQueue = 0;
     }
 
     @Override
     public boolean offer(MonotonicRange monotonicRange) {
         boolean status = super.offer(monotonicRange);
         if (status) {
-            totalOfValuesInQueue += monotonicRange.getTotalOfValues();
+            numOfValuesInQueue += monotonicRange.getTotalOfValues();
         }
         return status;
     }
@@ -47,7 +47,7 @@ public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
     public boolean remove(Object o) {
         boolean status = super.remove(o);
         if (status) {
-            totalOfValuesInQueue -= ((MonotonicRange) o).getTotalOfValues();
+            numOfValuesInQueue -= ((MonotonicRange) o).getTotalOfValues();
         }
         return status;
     }
@@ -56,13 +56,13 @@ public class MonotonicRangePriorityQueue extends PriorityQueue<MonotonicRange> {
     public MonotonicRange poll() {
         MonotonicRange monotonicRange = super.poll();
         if (monotonicRange != null) {
-            totalOfValuesInQueue -= monotonicRange.getTotalOfValues();
+            numOfValuesInQueue -= monotonicRange.getTotalOfValues();
         }
         return monotonicRange;
     }
 
-    public long getTotalOfValuesInQueue() {
-        return totalOfValuesInQueue;
+    public long getNumOfValuesInQueue() {
+        return numOfValuesInQueue;
     }
 
 }

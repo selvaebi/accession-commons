@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class MonotonicRangeTest {
 
     @Test
-    public void assertThatNoAccessions() {
+    public void assertNoRangesGeneratedWhenNoValuesProvided() {
         assertTrue(MonotonicRange.convertToMonotonicRanges().isEmpty());
     }
 

@@ -35,8 +35,8 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
 
     public MonotonicRange(long start, long end) {
         if (end < start) {
-            throw new IndexOutOfBoundsException("Monotonic range, end value needs to be greater than or equal to " +
-                    "start");
+            throw new IndexOutOfBoundsException("In a monotonically increasing range the end value must be equals or " +
+                    "greater than the start.");
         }
         this.start = start;
         this.end = end;
@@ -44,7 +44,11 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
 
     @Override
     public int compareTo(MonotonicRange monotonicRange) {
-        return Long.compare(start, monotonicRange.start);
+        int value = Long.compare(start, monotonicRange.start);
+        if(value==0){
+            return Long.compare(end, monotonicRange.end);
+        }
+        return value;
     }
 
     /**

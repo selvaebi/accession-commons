@@ -52,7 +52,7 @@ class BlockState {
     }
 
     public void addBlock(ContiguousIdBlock block) {
-        assignedBlocks.offer(block);
+        assignedBlocks.add(block);
         availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getEnd()));
     }
 
@@ -61,9 +61,9 @@ class BlockState {
     }
 
     /**
-     * Polls the next continuous array of monotonic values. Array size will be less or equal than @param maxValues
+     * Polls the next continuous array of monotonic values.
      *
-     * @param maxValues
+     * @param maxValues Max array size returned by the function
      * @return
      */
     public long[] pollNextMonotonicValues(int maxValues) {
@@ -74,12 +74,10 @@ class BlockState {
     }
 
     /**
-     * Polls the next monotonic range to use. If the next available range is larger than @param maxSize, then splits
-     * the range and returns the left part with @param maxSize elements and returns the right part to the pool of
-     * available ranges.
+     * Polls the next monotonic range to use.
      *
-     * @param maxSize
-     * @return
+     * @param maxSize max size of returned {@link MonotonicRange}
+     * @return Next available range, if larger than maxSize, then the range is split and only the left part is returned.
      */
     private MonotonicRange pollNextMonotonicRange(int maxSize) {
         MonotonicRange monotonicRange = availableRanges.poll();
@@ -93,12 +91,12 @@ class BlockState {
     }
 
     public boolean isAvailableSpaceLessThan(int totalAccessionsToGenerate) {
-        return availableRanges.getTotalOfValuesInQueue() < totalAccessionsToGenerate;
+        return availableRanges.getNumOfValuesInQueue() < totalAccessionsToGenerate;
     }
 
     private void addToCommitted(long[] accessions) {
         for (long accession : accessions) {
-            committedAccessions.offer(accession);
+            committedAccessions.add(accession);
             generatedAccessions.remove(accession);
         }
     }
