@@ -5,16 +5,25 @@ import com.datastax.driver.core.ConsistencyLevel
 import org.apache.jmeter.samplers.AbstractSampler
 import org.apache.jmeter.samplers.Entry
 import org.apache.jmeter.samplers.SampleResult
+import org.apache.jmeter.util.JMeterUtils
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 class CassandraWriteSampler() extends AbstractSampler {
 
+  val defaultBatchSize = 100
+  var cassandraTestParams: CassandraConnectionParams = _
+  var batch: BatchStatement = _
+
   override def sample(entry: Entry): SampleResult = {
+    cassandraTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[CassandraConnectionParams]
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
-        val numReadsPerThread = this.getPropertyAsInt("numOpsPerThread")
+        val numInsertsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
-        var batch: BatchStatement = getBatchStmt
-        (1 to numReadsPerThread).foreach(i => insertData(threadNum, batch, i))
+        batch = getBatchStmt
+        insertData(threadNum, counter = 0, numInsertsPerThread)
       })
   }
 
@@ -25,18 +34,26 @@ class CassandraWriteSampler() extends AbstractSampler {
     batch
   }
 
-  private def insertData(threadNum: Int, batch: BatchStatement, i: Int): Unit = {
-    batch.add(
-      CassandraConnection.stmt.bind(
-        "eva_hsapiens_grch37", "" + threadNum,
-        new Integer(i + 100),
-        "ent_%d_%d".format(threadNum, i),
-        "acc_%d_%d".format(threadNum, i),
-        new Integer(i)
-      ))
-    if (i % 10 == 0) {
-      CassandraConnection.session.execute(batch)
-      batch.clear
+  @annotation.tailrec
+  private def insertData(threadNum: Int, counter: Int, numInsertsPerThread: Int): Unit = {
+    def batchWrite = {
+      cassandraTestParams.session.execute(batch)
+      batch.clear()
+    }
+
+    if (counter != numInsertsPerThread) {
+      val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
+      if (timeForBatchWrite) {
+        batchWrite
+      }
+      batch.add(cassandraTestParams.insertStmt.bind(
+        "eva_hsapiens_grch37", "" + threadNum, new Integer(counter + 100),
+        "ent_%d_%d".format(threadNum, counter), "acc_%d_%d".format(threadNum, counter),
+        new Integer(counter)))
+      insertData(threadNum, counter + 1, numInsertsPerThread)
+    }
+    else {
+      batchWrite
     }
   }
 }

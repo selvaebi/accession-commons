@@ -9,7 +9,7 @@ object DBSamplerProcessor {
     sampleResult.setSampleLabel(sampler.getName)
     sampleResult.sampleStart()
     try {
-      databaseAction
+      databaseAction()
     } catch {
       case ex: Exception =>
         ex.printStackTrace()

@@ -1,43 +1,39 @@
 package uk.ac.ebi.eva.BenchmarkingSuite
 
-import com.datastax.driver.core.BatchStatement
-import com.datastax.driver.core.ConsistencyLevel
+import com.datastax.driver.core.{BatchStatement, ConsistencyLevel, ResultSet, Row}
 import org.apache.jmeter.samplers.AbstractSampler
 import org.apache.jmeter.samplers.Entry
 import org.apache.jmeter.samplers.SampleResult
+import org.apache.jmeter.util.JMeterUtils
 
 class CassandraReadSampler() extends AbstractSampler {
 
+  var cassandraTestParams: CassandraConnectionParams = _
+  val blockReadSize = 100
+
   override def sample(entry: Entry): SampleResult = {
+    cassandraTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[CassandraConnectionParams]
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
         val numReadsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
-        var batch: BatchStatement = getBatchStmt
-        (1 to numReadsPerThread).foreach(i => readData(threadNum, batch, i, (i / 1000) + 1))
+        val randomNumGen = scala.util.Random
+        (1 to numReadsPerThread).foreach(i => readData(threadNum, randomNumGen, i))
       })
 
   }
 
-  private def getBatchStmt = {
-    var batch = new BatchStatement(BatchStatement.Type.LOGGED)
-    batch.setConsistencyLevel(ConsistencyLevel.QUORUM)
-    batch.setReadTimeoutMillis(600000)
-    batch
-  }
+  private def readData(threadNum: Int, randomNumGen: scala.util.Random, i: Int): Unit = {
+    val chromosome = randomNumGen.nextInt(16)
+    val start_pos = randomNumGen.nextInt(1e9.toInt/16)
+    val rows: ResultSet = cassandraTestParams.session.execute(cassandraTestParams.blockReadStmt.bind(
+      "eva_hsapiens_grch37",
+      ""+chromosome,
+      new Integer(start_pos),
+      new Integer(start_pos + blockReadSize)
+    ))
 
-  private def readData(threadNum: Int, batch: BatchStatement, i: Int, j: Int): Unit = {
-    batch.add(
-      CassandraConnection.stmt.bind(
-        "eva_hsapiens_grch37", "" + j,
-        new Integer(i + 100),
-        "ent_par_%d_%d".format(threadNum, i),
-        "acc_par_%d_%d".format(threadNum, i),
-        new Integer(i)
-      ))
-    if (i % 1000 == 0) {
-      CassandraConnection.session.execute(batch)
-      batch.clear
+    //rows.iterator().forEachRemaining(row => row.get)
+
     }
-  }
 }
