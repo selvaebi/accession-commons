@@ -109,33 +109,60 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         return ranges;
     }
 
+    /**
+     * Returns the result of excluding a range of values of the current range.
+     *
+     * @param range
+     * @return Returns empty, one, two (ordered), or the original range
+     */
+    public List<MonotonicRange> excludeIntersection(MonotonicRange range) {
+        List<MonotonicRange> result = new ArrayList<>();
+        if (!this.intersects(range)) {
+            result.add(this);
+            // Nothing was excluded, return this
+        } else {
+            if (range.start > start)
+                if (range.end >= end) {
+                    //Return left
+                    result.add(new MonotonicRange(start, range.start - 1));
+                } else {
+                    //Return left & right
+                    result.add(new MonotonicRange(start, range.start - 1));
+                    result.add(new MonotonicRange(range.end + 1, end));
+                }
+            else {
+                if (range.end < end) {
+                    //Return right
+                    result.add(new MonotonicRange(range.end + 1, end));
+                }
+                // Else excluded the full range, return empty list
+            }
+
+        }
+        return result;
+    }
+
     public List<MonotonicRange> excludeIntersections(List<MonotonicRange> ranges) {
         //Sorted ensures that start values are sorted monotonically
-        List<MonotonicRange> intersectingRanges = ranges.stream().filter(this::intersects).sorted()
+        List<MonotonicRange> orderedRanges = ranges.stream().sorted()
                 .collect(Collectors.toList());
-        long i = start;
         List<MonotonicRange> result = new ArrayList<>();
-        if (intersectingRanges.isEmpty()) {
-            result.add(new MonotonicRange(start, end));
-            return result;
-        }
-        for (MonotonicRange range : intersectingRanges) {
-            // If the rest of the elements will be excluded stop now
-            if (i > range.end) {
-                break;
+        MonotonicRange iterator = this;
+        for (MonotonicRange range : orderedRanges) {
+            List<MonotonicRange> temp = iterator.excludeIntersection(range);
+            if (temp.isEmpty()) {
+                // No more range space to intersect, exit prematurely
+                return result;
+            } else {
+                if (temp.size() > 1) {
+                    result.add(temp.get(0));
+                    iterator = temp.get(1);
+                } else {
+                    iterator = temp.get(0);
+                }
             }
-            if (i < range.start) {
-                result.add(new MonotonicRange(i, range.start - 1));
-            }
-            if (i > range.start) {
-                i = Math.max(i, range.end + 1);
-                continue;
-            }
-            i = range.end + 1;
         }
-        if (i <= end) {
-            result.add(new MonotonicRange(i, end));
-        }
+        result.add(iterator);
         return result;
     }
 
