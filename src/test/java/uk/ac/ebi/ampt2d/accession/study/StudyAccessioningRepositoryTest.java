@@ -17,24 +17,24 @@
  */
 package uk.ac.ebi.ampt2d.accession.study;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import org.springframework.test.context.transaction.TestTransaction;
+import uk.ac.ebi.ampt2d.accession.study.persistence.StudyAccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.study.persistence.StudyEntity;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.ampt2d.test.utils.TestHelper.generateStudyEntities;
+import static uk.ac.ebi.ampt2d.test.utils.TestHelper.generateStudyMap;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
@@ -42,81 +42,44 @@ import static org.junit.Assert.assertEquals;
 public class StudyAccessioningRepositoryTest {
 
     @Autowired
-    private AccessioningRepository accessioningRepository;
-
-    private Map<String, String> studyMap1;
-    private Map<String, String> studyMap2;
-    private StudyEntity studyEntity1;
-    private StudyEntity studyEntity2;
-    private Set<StudyEntity> accessionObjects;
-
-    @Before
-    public void setUp() throws Exception {
-        studyMap1 = new HashMap<>();
-        studyMap1.put("title", "Title1");
-        studyMap1.put("type", "Type1");
-        studyMap1.put("submitterEmail", "Email1");
-        studyMap2 = new HashMap<>();
-        studyMap2.put("title", "Title2");
-        studyMap2.put("type", "Type2");
-        studyMap2.put("submitterEmail", "Email2");
-        studyEntity1 = new StudyEntity(studyMap1, "accession1", "hashedmessage1");
-        studyEntity2 = new StudyEntity(studyMap2, "accession2", "hashedmessage2");
-        accessionObjects = new HashSet<>();
-        accessionObjects.add(studyEntity1);
-        accessionObjects.add(studyEntity2);
-    }
+    private StudyAccessioningRepository repository;
 
     @Test
     public void testStudiesAreStoredToRepository() throws Exception {
-        accessioningRepository.save(accessionObjects);
-        assertEquals(2, accessioningRepository.count());
-        Map<String, String> studyMap3 = new HashMap<>();
-        studyMap3.put("title", "Title3");
-        studyMap3.put("type", "Type3");
-        studyMap3.put("submitterEmail", "Email3");
-        StudyEntity accessionObject3 = new StudyEntity(studyMap3, "accession3", "hashedmessage3");
-        accessionObjects.clear();
-        accessionObjects.add(accessionObject3);
-        accessioningRepository.save(accessionObjects);
-        assertEquals(3, accessioningRepository.count());
+        repository.save(generateStudyEntities(1, 2));
+        assertEquals(2, repository.count());
+        repository.save(generateStudyEntities(3));
+        assertEquals(3, repository.count());
     }
 
     @Test
     public void testFindObjectsInRepository() throws Exception {
-        accessioningRepository.save(accessionObjects);
-        assertEquals(2, accessioningRepository.count());
-        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
-        Collection<StudyEntity> objectsInRepo = accessioningRepository.findByHashedMessageIn(hashes);
+        final List<StudyEntity> entities = generateStudyEntities(1, 2);
+        repository.save(entities);
+        assertEquals(2, repository.count());
+        List<String> hashes = entities.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
+        Collection<StudyEntity> objectsInRepo = repository.findByHashedMessageIn(hashes);
         assertEquals(2, objectsInRepo.size());
     }
 
     //JpaSystemException is due to the id of entity being null
     @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void testSavingObjectsWithoutAccession() throws Exception {
-        StudyEntity accessionObject = new StudyEntity(studyMap1, null, "hashedMessage1");
-        accessionObjects.clear();
-        accessionObjects.add(accessionObject);
-        accessioningRepository.save(accessionObjects);
+        StudyEntity entity = new StudyEntity(generateStudyMap(1), null, "hashedMessage1");
+        repository.save(entity);
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    @Commit
     public void testSavingObjectsWithoutHashedMessage() throws Exception {
-        studyEntity1.setHashedMessage(null);
-        accessionObjects.clear();
-        accessionObjects.add(studyEntity1);
-        accessioningRepository.save(accessionObjects);
-        accessioningRepository.flush();
+        StudyEntity entity = new StudyEntity(generateStudyMap(1), "accession1", null);
+        repository.save(entity);
+        TestTransaction.end();
     }
 
     @Test
     public void testSavingObjectsWithSameAccessionOverwrites() throws Exception {
-        accessionObjects.clear();
-        StudyEntity accessionObject1 = new StudyEntity(studyMap1, "accession1", "hashedMessage1");
-        accessionObjects.add(accessionObject1);
-        StudyEntity accessionObject2 = new StudyEntity(studyMap2, "accession1", "hashedMessage2");
-        accessionObjects.add(accessionObject2);
-        accessioningRepository.save(accessionObjects);
-        accessioningRepository.flush();
+        repository.save(generateStudyEntities(1, 1));
+        assertEquals(1, repository.count());
     }
 }

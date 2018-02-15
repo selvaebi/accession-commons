@@ -17,27 +17,30 @@
  */
 package uk.ac.ebi.ampt2d.test.configurationaccession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.BasicAccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.file.FileAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.file.FileMessage;
+import uk.ac.ebi.ampt2d.accession.file.FileAccessioningService;
+import uk.ac.ebi.ampt2d.accession.file.persistence.FileAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.file.persistence.FileAccessioningRepository;
 
 @TestConfiguration
 public class FileAccessioningServiceTestConfiguration {
 
+    @Autowired
+    private FileAccessioningRepository repository;
+
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "file-accession")
-    public AccessioningService<FileMessage, String> fileAccessionService() {
-        return new AccessioningService<>(new BasicAccessionGenerator<>(), fileAccessioningDatabaseService());
+    public FileAccessioningService fileAccessionService() {
+        return new FileAccessioningService(fileAccessioningDatabaseService());
     }
 
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "file-accession")
     public FileAccessioningDatabaseService fileAccessioningDatabaseService() {
-        return new FileAccessioningDatabaseService();
+        return new FileAccessioningDatabaseService(repository);
     }
 
 }

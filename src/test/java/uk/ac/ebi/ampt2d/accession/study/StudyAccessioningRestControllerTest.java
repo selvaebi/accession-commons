@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.study;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accession.study.persistence.StudyAccessioningRepository;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.ampt2d.test.utils.TestHelper.generateStudyDTOs;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "services=study-accession")
@@ -45,27 +44,10 @@ public class StudyAccessioningRestControllerTest {
     @Autowired
     private StudyAccessioningRepository accessioningObjectRepository;
 
-    private Map<String, String> studyMap1;
-    private Map<String, String> studyMap2;
-
-    @Before
-    public void setup() {
-        studyMap1 = new HashMap<>();
-        studyMap1.put("title", "Title1");
-        studyMap1.put("type", "Type1");
-        studyMap1.put("submitterEmail", "Email1");
-        studyMap2 = new HashMap<>();
-        studyMap2.put("title", "Title2");
-        studyMap2.put("type", "Type2");
-        studyMap2.put("submitterEmail", "Email2");
-    }
-
     @Test
     public void testRestApi() {
-        StudyMessage study1 = new StudyMessage(studyMap1);
-        StudyMessage study2 = new StudyMessage(studyMap2);
-        String url = "/v1/accession/study";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
+        String url = "/v1/study/generateAccession";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(generateStudyDTOs(1, 2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
@@ -73,10 +55,8 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        StudyMessage study1 = new StudyMessage(studyMap1);
-        StudyMessage study2 = new StudyMessage(studyMap2);
-        String url = "/v1/accession/study";
-        HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(study1, study2));
+        String url = "/v1/study/generateAccession";
+        HttpEntity<Object> requestEntity = new HttpEntity<>(generateStudyDTOs(1, 2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());

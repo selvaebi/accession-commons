@@ -17,27 +17,30 @@
  */
 package uk.ac.ebi.ampt2d.test.configurationaccession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.sample.SampleAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.sample.SampleMessage;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.sample.SampleAccessioningService;
+import uk.ac.ebi.ampt2d.accession.sample.persistence.SampleAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.sample.persistence.SampleAccessioningRepository;
 
 @TestConfiguration
 public class SampleAccessioningDatabaseServiceTestConfiguration {
 
+    @Autowired
+    private SampleAccessioningRepository repository;
+
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
-    public AccessioningService<SampleMessage, String> sampleAccessionService() {
-        return new AccessioningService<>(new SHA1AccessionGenerator<>(), sampleAccessioningDatabaseService());
+    public SampleAccessioningService sampleAccessionService() {
+        return new SampleAccessioningService(sampleAccessioningDatabaseService());
     }
 
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
     public SampleAccessioningDatabaseService sampleAccessioningDatabaseService() {
-        StudyAccessioningDatabaseServiceTestConfiguration gre = new StudyAccessioningDatabaseServiceTestConfiguration();
-        return new SampleAccessioningDatabaseService();
+        return new SampleAccessioningDatabaseService(repository);
     }
+
 }

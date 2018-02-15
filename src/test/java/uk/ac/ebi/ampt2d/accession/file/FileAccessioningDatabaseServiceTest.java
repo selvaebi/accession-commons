@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +24,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.BasicAccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.DatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.accession.file.persistence.FileAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.file.rest.FileDTO;
 import uk.ac.ebi.ampt2d.test.configurationaccession.FileAccessioningServiceTestConfiguration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -46,55 +42,55 @@ import static org.junit.Assert.assertEquals;
 @Import(FileAccessioningServiceTestConfiguration.class)
 public class FileAccessioningDatabaseServiceTest {
 
+    private static final String CHECKSUM_A = "checksumA";
+    private static final String CHECKSUM_B = "checksumB";
+
     @Autowired
-    private DatabaseService fileDatabaseService;
-
-    private AccessionGenerator<FileMessage, String> generator;
-
-    private AccessionGenerator<FileMessage, String> alternativeGenerator;
-
-    private Map<FileMessage, String> fileMessageAccessionMap;
-
-    @Before
-    public void setUp() throws Exception {
-        generator = new BasicAccessionGenerator<>();
-        alternativeGenerator = new BasicAccessionGenerator<>();
-    }
+    private FileAccessioningDatabaseService databaseService;
 
     @Test
-    public void testFilesAreStoredInTheRepositoryAndRetrived() throws Exception {
-        List<FileMessage> files = Arrays.asList(new FileMessage("checksumA"), new FileMessage("checksumB"));
-        Map<FileMessage, String> accessionedFiles = generator.generateAccessions(new HashSet(files));
-        fileDatabaseService.save(accessionedFiles);
+    public void testFileAccessionsAreStoredInTheRepositoryAndRetrived() throws Exception {
+        List<ModelHashAccession<FileModel, String, String>> fileAccessionsToStore = Arrays.asList(
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_A), CHECKSUM_A, CHECKSUM_A),
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_B), CHECKSUM_B, CHECKSUM_B)
+        );
 
-        Collection<String> checksums = new ArrayList<>();
-        checksums.add("checksumA");
-        boolean checksumB = checksums.add("checksumB");
-        Map<FileMessage, String> accessionsFromRepository = fileDatabaseService.findObjectsInDB(files);
-        assertEquals(accessionedFiles.keySet(), accessionsFromRepository.keySet());
+        databaseService.save(fileAccessionsToStore);
+
+        Collection<String> messageHashes = Arrays.asList(CHECKSUM_A, CHECKSUM_B);
+        Map<String, ? extends FileModel> accessionsFromRepository =
+                databaseService.findAllAccessionByMessageHash(messageHashes);
+
+        assertTrue(accessionsFromRepository.containsKey(CHECKSUM_A));
+        assertTrue(accessionsFromRepository.containsKey(CHECKSUM_B));
     }
 
     @Test
     public void addingTheSameFilesWithSameAccessionsTwiceOverwritesObject() throws Exception {
-        List<FileMessage> files = Arrays.asList(new FileMessage("checksumA"), new FileMessage("checksumB"));
-        HashSet<FileMessage> fileSet = new HashSet(files);
+        List<ModelHashAccession<FileModel, String, String>> fileAccessionsToStore = Arrays.asList(
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_A), CHECKSUM_A, CHECKSUM_A),
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_B), CHECKSUM_B, CHECKSUM_B)
+        );
 
-        // Store the files with the initial accessions
-        Map<FileMessage, String> accessionedFiles = generator.generateAccessions(fileSet);
-        fileDatabaseService.save(accessionedFiles);
+        databaseService.save(fileAccessionsToStore);
+        databaseService.save(fileAccessionsToStore);
 
-        // Storing again the same files with new accessions overwrites the existing ones
-        Map<FileMessage, String> alternativeAccesionedFiles = alternativeGenerator.generateAccessions(fileSet);
-        fileDatabaseService.save(alternativeAccesionedFiles);
-        Map<FileMessage, String> accessionsFromRepository = fileDatabaseService.findObjectsInDB(files);
-        assertEquals(accessionedFiles.keySet(), accessionsFromRepository.keySet());
+        Collection<String> messageHashes = Arrays.asList(CHECKSUM_A, CHECKSUM_B);
+        Map<String, ? extends FileModel> accessionsFromRepository =
+                databaseService.findAllAccessionByMessageHash(messageHashes);
+
+        assertTrue(accessionsFromRepository.containsKey(CHECKSUM_A));
+        assertTrue(accessionsFromRepository.containsKey(CHECKSUM_B));
     }
 
     //JpaSystemException is due to the id of entity being null
     @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void cantStoreFileWithoutAccession() {
-        fileMessageAccessionMap = new HashMap<>();
-        fileMessageAccessionMap.put(new FileMessage("cantStoreFileWithoutAccession"), null);
-        fileDatabaseService.save(fileMessageAccessionMap);
+        List<ModelHashAccession<FileModel, String, String>> fileAccessionsToStore = Arrays.asList(
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_A), CHECKSUM_A, null),
+                ModelHashAccession.of((FileModel) new FileDTO(CHECKSUM_B), CHECKSUM_B, CHECKSUM_B)
+        );
+
+        databaseService.save(fileAccessionsToStore);
     }
 }
