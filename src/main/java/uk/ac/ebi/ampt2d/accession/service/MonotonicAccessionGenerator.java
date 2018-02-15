@@ -30,11 +30,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Monotonic accession, generates blocks of ids on database with a blocking serialized transaction. Each block
- * contains a applicationInstanceId that identifies which application instance has created the block and a categoryId
- * to identify the type of resource. After acquiring a block, the application stores the counter in the block with a
- * non blocking operation. To reduce the load in the database, the application uses a cache in memory with the
- * current state of block usage.
+ * Generates monotonically increasing ids for type of objects across multiple application instances. Each
+ * application reserves blocks with a serialized transaction. Each reserved block contains an id of the application
+ * instance, an id for type of object and a counter to keep track of the confirmed generated ids.
+ *
+ * In case of application restart, the previous application state can be loaded with {@link #recoverState(long[])}
+ *
  */
 public class MonotonicAccessionGenerator {
 
@@ -46,7 +47,7 @@ public class MonotonicAccessionGenerator {
 
     private ContiguousIdBlockRepository contiguousIdBlockRepository;
 
-    private final BlockState blockState;
+    private final BlockManager blockManager;
 
     public MonotonicAccessionGenerator(long blockSize, String categoryId, String applicationInstanceId,
                                        ContiguousIdBlockRepository contiguousIdBlockRepository) {
@@ -54,7 +55,7 @@ public class MonotonicAccessionGenerator {
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
         this.contiguousIdBlockRepository = contiguousIdBlockRepository;
-        this.blockState = new BlockState();
+        this.blockManager = new BlockManager();
         loadIncompleteBlocks();
     }
 
@@ -62,7 +63,7 @@ public class MonotonicAccessionGenerator {
         List<ContiguousIdBlock> uncompletedBlocks = getUncompletedBlocksForThisInstanceOrdered();
         //Insert as available ranges
         for (ContiguousIdBlock block : uncompletedBlocks) {
-            blockState.addBlock(block);
+            blockManager.addBlock(block);
         }
     }
 
@@ -84,7 +85,7 @@ public class MonotonicAccessionGenerator {
      * @throws AccessionIsNotPending
      */
     public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPending {
-        blockState.recoverState(committedElements);
+        blockManager.recoverState(committedElements);
     }
 
     public synchronized long[] generateAccessions(int numAccessionsToGenerate) {
@@ -94,7 +95,7 @@ public class MonotonicAccessionGenerator {
         int i = 0;
         while (i < numAccessionsToGenerate) {
             int remainingAccessionsToGenerate = numAccessionsToGenerate - i;
-            long[] ids = blockState.pollNextMonotonicValues(remainingAccessionsToGenerate);
+            long[] ids = blockManager.pollNext(remainingAccessionsToGenerate);
             System.arraycopy(ids, 0, accessions, i, ids.length);
             i += ids.length;
         }
@@ -109,7 +110,7 @@ public class MonotonicAccessionGenerator {
      * @param totalAccessionsToGenerate
      */
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
-        while (blockState.isAvailableSpaceLessThan(totalAccessionsToGenerate)) {
+        while (!blockManager.hasAvailableSpace(totalAccessionsToGenerate)) {
             try {
                 ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
             } catch (RuntimeException e) {
@@ -122,23 +123,23 @@ public class MonotonicAccessionGenerator {
     protected synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
         ContiguousIdBlock lastBlock = contiguousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
         if (lastBlock != null) {
-            blockState.addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
+            blockManager.addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
         } else {
             ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, 0, size);
-            blockState.addBlock(contiguousIdBlockRepository.save(newBlock));
+            blockManager.addBlock(contiguousIdBlockRepository.save(newBlock));
         }
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPending {
-        contiguousIdBlockRepository.save(blockState.commit(accessions));
+        contiguousIdBlockRepository.save(blockManager.commit(accessions));
     }
 
     public synchronized void release(long... accessions) throws AccessionIsNotPending {
-        blockState.release(accessions);
+        blockManager.release(accessions);
     }
 
     public synchronized MonotonicRangePriorityQueue getAvailableRanges() {
-        return blockState.getAvailableRanges();
+        return blockManager.getAvailableRanges();
     }
 
 }

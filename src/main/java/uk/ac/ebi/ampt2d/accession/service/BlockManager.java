@@ -34,7 +34,7 @@ import java.util.stream.LongStream;
  * This class holds the state of the monotonic id blocks used at this moment on the application.
  * This class is not thread safe.
  */
-class BlockState {
+class BlockManager {
 
     private final PriorityQueue<ContiguousIdBlock> assignedBlocks;
 
@@ -44,7 +44,7 @@ class BlockState {
 
     private final PriorityQueue<Long> committedAccessions;
 
-    public BlockState() {
+    public BlockManager() {
         this.assignedBlocks = new PriorityQueue<>(ContiguousIdBlock::compareTo);
         this.availableRanges = new MonotonicRangePriorityQueue();
         this.generatedAccessions = new HashSet<>();
@@ -66,7 +66,7 @@ class BlockState {
      * @param maxValues Max array size returned by the function
      * @return
      */
-    public long[] pollNextMonotonicValues(int maxValues) {
+    public long[] pollNext(int maxValues) {
         MonotonicRange monotonicRange = pollNextMonotonicRange(maxValues);
         long[] ids = monotonicRange.getIds();
         generatedAccessions.addAll(LongStream.of(ids).boxed().collect(Collectors.toList()));
@@ -90,8 +90,8 @@ class BlockState {
         return monotonicRange;
     }
 
-    public boolean isAvailableSpaceLessThan(int totalAccessionsToGenerate) {
-        return availableRanges.getNumOfValuesInQueue() < totalAccessionsToGenerate;
+    public boolean hasAvailableSpace(int spaceNeeded) {
+        return availableRanges.getNumOfValuesInQueue() >= spaceNeeded;
     }
 
     private void addToCommitted(long[] accessions) {
@@ -102,11 +102,11 @@ class BlockState {
     }
 
     public List<ContiguousIdBlock> commit(long[] accessions) throws AccessionIsNotPending {
-        assertAccessionIsPending(accessions);
+        assertAccessionsArePending(accessions);
         return doCommit(accessions);
     }
 
-    private void assertAccessionIsPending(long[] accessions) throws AccessionIsNotPending {
+    private void assertAccessionsArePending(long[] accessions) throws AccessionIsNotPending {
         for (long accession : accessions) {
             if (!generatedAccessions.contains(accession)) {
                 throw new AccessionIsNotPending(accession);
@@ -142,7 +142,7 @@ class BlockState {
     }
 
     public void release(long[] accessions) throws AccessionIsNotPending {
-        assertAccessionIsPending(accessions);
+        assertAccessionsArePending(accessions);
         doRelease(accessions);
     }
 
