@@ -90,8 +90,8 @@ class BlockManager {
         return monotonicRange;
     }
 
-    public boolean hasAvailableSpace(int spaceNeeded) {
-        return availableRanges.getNumOfValuesInQueue() >= spaceNeeded;
+    public boolean hasAvailableAccessions(int accessionsNeeded) {
+        return availableRanges.getNumOfValuesInQueue() >= accessionsNeeded;
     }
 
     private void addToCommitted(long[] accessions) {

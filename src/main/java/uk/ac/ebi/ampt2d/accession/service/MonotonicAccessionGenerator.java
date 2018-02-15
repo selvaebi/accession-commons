@@ -110,7 +110,7 @@ public class MonotonicAccessionGenerator {
      * @param totalAccessionsToGenerate
      */
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
-        while (!blockManager.hasAvailableSpace(totalAccessionsToGenerate)) {
+        while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
                 ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
             } catch (RuntimeException e) {
