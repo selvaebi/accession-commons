@@ -21,23 +21,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
+import uk.ac.ebi.ampt2d.accession.BasicAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.file.FileAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.file.FileMessage;
 
 @TestConfiguration
-public class StudyAccessioningDatabaseServiceTestConfiguration {
+public class FileAccessioningServiceTestConfiguration {
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-    public AccessioningService<StudyMessage, String> studyAccessionService() {
-        return new AccessioningService<>(new SHA1AccessionGenerator<>(), studyAccessioningDatabaseService());
+    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
+    public AccessioningService<FileMessage, String> fileAccessionService() {
+        return new AccessioningService<>(new BasicAccessionGenerator<>(), fileAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-    public StudyAccessioningDatabaseService studyAccessioningDatabaseService() {
-        return new StudyAccessioningDatabaseService();
+    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
+    public FileAccessioningDatabaseService fileAccessioningDatabaseService() {
+        return new FileAccessioningDatabaseService();
     }
 
 }
