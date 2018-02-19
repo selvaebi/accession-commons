@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
@@ -36,16 +37,13 @@ public class VariantAccessioningRestController {
     @Autowired
     private AccessioningService accessioningService;
 
-    @RequestMapping(value = "/getAccessions", method = RequestMethod.POST, produces = "application/json",
-            consumes =
-                    "application/json")
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public Map<VariantMessage, String> accessionVariants(@RequestBody List<VariantMessage> variantMessages) {
         return accessioningService.getAccessions(variantMessages);
     }
 
-    @RequestMapping(value = "/getVariants", method = RequestMethod.POST, produces = "application/json", consumes =
-            "application/json")
-    public Map<String, VariantMessage> getVariants(@RequestBody List<String> accessions) {
+    @RequestMapping(value = "/getVariants", method = RequestMethod.GET, produces = "application/json")
+    public Map<String, VariantMessage> getVariants(@RequestParam("accession") List<String> accessions) {
         return accessioningService.getObjectsFromAccessions(accessions);
     }
 }

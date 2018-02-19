@@ -31,10 +31,9 @@ public class VariantAccessioningDatabaseService extends GenericDatabaseService<V
 
     @Override
     public VariantEntity toEntity(Map.Entry<VariantMessage, String> entry) {
-        VariantEntity variantEntity = new VariantEntity(entry.getKey().getAssemblyAccession(), entry.getKey()
-                .getProjectAccession(),
-                entry.getKey()
-                        .getChromosome(), entry.getKey().getStart(), entry.getKey().getType());
+        VariantEntity variantEntity = new VariantEntity(entry.getKey().getAssemblyAccession(),
+                entry.getKey().getProjectAccession(), entry.getKey().getChromosome(),
+                entry.getKey().getStart(), entry.getKey().getType());
         variantEntity.setAccession(entry.getValue());
         variantEntity.setHashedMessage(hashMessage(entry.getKey().getHashableMessage()));
 

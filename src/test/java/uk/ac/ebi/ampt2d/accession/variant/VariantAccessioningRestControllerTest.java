@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-        String url = "/v1/accession/variant/getAccessions";
+        String url = "/v1/accession/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -56,7 +55,7 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        String url = "/v1/accession/variant/getAccessions";
+        String url = "/v1/accession/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -72,17 +71,15 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void testGetVariantsRestApi() {
-        String getAccessionsUrl = "/v1/accession/variant/getAccessions";
+        String getAccessionsUrl = "/v1/accession/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> getAccessionsResponse = testRestTemplate.exchange(getAccessionsUrl, HttpMethod.POST,
                 requestEntity, Map.class);
         assertEquals(HttpStatus.OK, getAccessionsResponse.getStatusCode());
         assertEquals(2, getAccessionsResponse.getBody().size());
-
-        String getVariantsUrl = "/v1/accession/variant/getVariants";
-        HttpEntity<Object> listOfAccessions = new HttpEntity<>(Arrays.asList(getAccessionsResponse.getBody().values().toArray()));
-        ResponseEntity<Map> getVariantsResponse = testRestTemplate.exchange(getVariantsUrl, HttpMethod.POST,
-                listOfAccessions, Map.class);
+        String getVariantsUrl = "/v1/accession/variant/getVariants?accession=" + getAccessionsResponse.getBody().values
+                ().toArray()[0] + "&accession=" + getAccessionsResponse.getBody().values().toArray()[1];
+        ResponseEntity<Map> getVariantsResponse = testRestTemplate.getForEntity(getVariantsUrl, Map.class);
         assertEquals(HttpStatus.OK, getVariantsResponse.getStatusCode());
         assertEquals(2, getVariantsResponse.getBody().size());
     }
