@@ -1,4 +1,4 @@
-name := "benchmarking_suite"
+name := "database_benchmarking_suite"
 
 version := "0.1"
 

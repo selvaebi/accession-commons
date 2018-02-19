@@ -1,6 +1,7 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite.cassandra
 
 import com.datastax.driver.core.{Cluster, PreparedStatement, Session}
+import uk.ac.ebi.eva.benchmarking_suite.DBConnectionParams
 
 object CassandraConnectionParams {
     def apply(cluster: Cluster, session: Session, insertStmt: PreparedStatement,

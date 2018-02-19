@@ -1,9 +1,10 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite.mongodb
 
-import org.mongodb.scala.model._
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
 import org.mongodb.scala.Document
+import org.mongodb.scala.model._
+import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -35,13 +36,13 @@ class MongoDBWriteSampler() extends AbstractSampler {
         Duration.Inf)
     }
 
-    if (counter != numInsertsPerThread) {
-      val timestamp = System.currentTimeMillis()
-      val accession_id = "acc_%d_%d_%s".format(threadNum, counter, timestamp)
+    if (counter <= numInsertsPerThread) {
+      val timeStamp = System.currentTimeMillis()
+      val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
       val documentToInsert: doc = InsertOneModel(Document(
-        "_id" -> accession_id, "species" -> "eva_hsapiens_grch37", "chromosome" -> ("" + threadNum),
+        "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> ("" + threadNum),
         "start_pos" -> (counter + 100), "entity_id" -> "ent_%d_%d".format(threadNum, counter),
-        "accession_id" -> accession_id, "raw_numeric_id" -> counter)
+        "accession_id" -> accessionId, "raw_numeric_id" -> counter)
       )
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
       if (timeForBatchWrite) {

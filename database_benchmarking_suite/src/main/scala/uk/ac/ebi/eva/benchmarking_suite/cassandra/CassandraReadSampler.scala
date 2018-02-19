@@ -1,10 +1,9 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite.cassandra
 
-import com.datastax.driver.core.{BatchStatement, ConsistencyLevel, ResultSet, Row}
-import org.apache.jmeter.samplers.AbstractSampler
-import org.apache.jmeter.samplers.Entry
-import org.apache.jmeter.samplers.SampleResult
+import com.datastax.driver.core.ResultSet
+import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
+import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
 
 class CassandraReadSampler() extends AbstractSampler {
 
@@ -27,12 +26,12 @@ class CassandraReadSampler() extends AbstractSampler {
 
   private def readData(): Unit = {
     val chromosome = randomNumGen.nextInt(16)
-    val start_pos = randomNumGen.nextInt(1e9.toInt/16)
+    val startPos = randomNumGen.nextInt(1e9.toInt/16)
     val rows: ResultSet = cassandraTestParams.session.execute(cassandraTestParams.blockReadStmt.bind(
       "eva_hsapiens_grch37",
-      ""+chromosome,
-      new Integer(start_pos),
-      new Integer(start_pos + blockReadSize)
+      chromosome.toString,
+      new Integer(startPos),
+      new Integer(startPos + blockReadSize)
     ))
     rows.iterator().forEachRemaining(row => row.getInt("start_pos")) //Force row retrieval by getting one attribute
     }

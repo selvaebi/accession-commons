@@ -1,4 +1,4 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite
 
 import org.apache.jmeter.reporters.{ResultCollector, Summariser}
 import org.apache.jmeter.samplers.SampleEvent

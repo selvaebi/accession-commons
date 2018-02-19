@@ -1,8 +1,9 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite.mongodb
 
-import org.mongodb.scala.model.Filters._
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
+import org.mongodb.scala.model.Filters._
+import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
 
 class MongoDBReadSampler() extends AbstractSampler {
 
@@ -25,10 +26,10 @@ class MongoDBReadSampler() extends AbstractSampler {
 
   def readData(): Unit = {
     val chromosome = randomNumGen.nextInt(16)
-    val start_pos = randomNumGen.nextInt(1e9.toInt/16)
+    val startPos = randomNumGen.nextInt(1e9.toInt/16)
     mongoDBTestParams.mongoCollection.find(
       and(equal("chromosome", chromosome),
-        gt("start_pos", start_pos),
-        lt("start_pos", start_pos + blockReadSize))).foreach(doc => doc.get("start_pos")) //Force document retrieval by getting one attribute
+        gt("start_pos", startPos),
+        lte("start_pos", startPos + blockReadSize))).foreach(doc => doc.get("start_pos")) //Force document retrieval by getting one attribute
   }
 }

@@ -1,4 +1,4 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite
 
 trait DBConnectionParams {
   def cleanup(): Unit

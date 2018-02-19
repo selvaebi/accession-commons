@@ -1,6 +1,7 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite.mongodb
 
 import org.mongodb.scala.{Document, MongoClient, MongoCollection, MongoDatabase}
+import uk.ac.ebi.eva.benchmarking_suite.DBConnectionParams
 
 object MongoDBConnectionParams {
   def apply(mongoClient: MongoClient, mongoDatabase: MongoDatabase,

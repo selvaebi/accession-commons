@@ -1,12 +1,15 @@
-package uk.ac.ebi.eva.BenchmarkingSuite
+package uk.ac.ebi.eva.benchmarking_suite
 
-import com.datastax.driver.core.{Cluster, PreparedStatement, SimpleStatement}
+import com.datastax.driver.core.{Cluster, ConsistencyLevel, PreparedStatement, SimpleStatement}
+import com.mongodb.ReadConcern
 import org.mongodb.scala.{Document, MongoClient, MongoCollection, WriteConcern}
 import org.apache.jmeter.control.LoopController
 import org.apache.jmeter.samplers.{AbstractSampler, Sampler}
 import org.apache.jmeter.threads.ThreadGroup
 import org.apache.jmeter.util.JMeterUtils
 import org.rogach.scallop._
+import uk.ac.ebi.eva.benchmarking_suite.cassandra.{CassandraConnectionParams, CassandraReadSampler, CassandraWriteSampler}
+import uk.ac.ebi.eva.benchmarking_suite.mongodb.{MongoDBConnectionParams, MongoDBReadSampler, MongoDBWriteSampler}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -14,13 +17,13 @@ import scala.concurrent.duration.Duration
 object BenchmarkingMain extends App {
 
   //Supported databases
-  val validDatabases = List("cassandra", "mongodb", "postgres")
+  val validDatabases = List("cassandra", "mongodb")
 
   //Parse command line arguments
   val config = new BenchmarkingArgParser(args, validDatabases)
 
   //Stateful JMeter initialization
-  initJMeterEnv(config.JMeterHome())
+  initJMeterEnvironment(config.JMeterHome())
   var jmeterProperties = JMeterUtils.getJMeterProperties
 
   //Database initialization
@@ -68,19 +71,22 @@ object BenchmarkingMain extends App {
 
   def getCassandraConnectionParams(connectionString: String, keyspaceName: String, variantTableName: String):
   CassandraConnectionParams = {
-    val cassandra_nodes = connectionString.split(",")
-    val cassandra_cluster = Cluster.builder().addContactPoints(cassandra_nodes: _*).build()
-    val cassandra_session = cassandra_cluster.connect(keyspaceName)
-    cassandra_session.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
+    val cassandraNodes = connectionString.split(",")
+    val cassandraCluster = Cluster.builder().addContactPoints(cassandraNodes: _*).build()
+    val cassandraSession = cassandraCluster.connect(keyspaceName)
+
     val insertEntityString = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
       .format(variantTableName) +
       "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
-    val preparedInsertStatement: PreparedStatement = cassandra_session.prepare(insertEntityString)
-    val blockReadStatement: PreparedStatement = cassandra_session.prepare(blockReadString)
+    val preparedInsertStatement: PreparedStatement = cassandraSession.prepare(insertEntityString)
+    val blockReadStatement: PreparedStatement = cassandraSession.prepare(blockReadString)
+      .setConsistencyLevel(ConsistencyLevel.QUORUM)
 
-    CassandraConnectionParams(cassandra_cluster, cassandra_session, preparedInsertStatement, blockReadStatement)
+    cassandraSession.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
+
+    CassandraConnectionParams(cassandraCluster, cassandraSession, preparedInsertStatement, blockReadStatement)
   }
 
   def getMongoDBConnectionParams(connectionString: String, databaseName: String, collectionName: String):
@@ -89,16 +95,17 @@ object BenchmarkingMain extends App {
     val mongoDatabase = mongoClient.getDatabase(databaseName)
     var mongoCollection: MongoCollection[Document] = mongoDatabase.getCollection(collectionName)
       .withWriteConcern(WriteConcern.MAJORITY)
+
     Await.result(mongoCollection.deleteMany(Document()).toFuture(), Duration.Inf)
+
     MongoDBConnectionParams(mongoClient, mongoDatabase, mongoCollection)
   }
 
   def getJMeterThreadGroupAndSampler(workload: Workload, sampler: Class[_<: AbstractSampler]):
   List[(ThreadGroup, Sampler)] = {
-
     workload.threadChoices.map(numThreads =>
       getThreadGroupAndSamplerForWorkload(
-        name = workload.desc + "-%d-threads".format(numThreads),
+        name = "%s-%d-threads".format(workload.desc, numThreads),
         numWU = workload.numWU,
         numThreads = numThreads,
         numOpsPerThread = workload.numOpsPerWU / numThreads,
@@ -110,7 +117,7 @@ object BenchmarkingMain extends App {
     *
     * @param JMETER_HOME Full path to JMeter home (ex: /home/centos/apache-jmeter-3.3)
     */
-  def initJMeterEnv(JMETER_HOME: String): Unit = {
+  def initJMeterEnvironment(JMETER_HOME: String): Unit = {
     import org.apache.jmeter.util.JMeterUtils._
     setJMeterHome(JMETER_HOME)
     loadJMeterProperties("%s/bin/jmeter.properties".format(JMETER_HOME))
