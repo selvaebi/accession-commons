@@ -9,7 +9,7 @@ class BenchmarkResultCollector(val summer: Summariser) extends ResultCollector(s
     super.sampleOccurred(e)
     val r = e.getResult
     if (!r.isSuccessful) {
-      System.out.println("Failed!")
+      System.out.println("Run Failed!")
       System.out.println(r.getResponseMessage)
     }
   }

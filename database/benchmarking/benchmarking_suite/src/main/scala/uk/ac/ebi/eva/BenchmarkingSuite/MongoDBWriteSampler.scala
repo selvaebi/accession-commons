@@ -11,9 +11,10 @@ import scala.concurrent.duration.Duration
 class MongoDBWriteSampler() extends AbstractSampler {
 
   val defaultBatchSize = 1000
-  var mongoDBTestParams: MongoDBConnectionParams = _
-  type doc = WriteModel[_ <: Document]
   val bulkWriteOptions: BulkWriteOptions = BulkWriteOptions().ordered(false)
+  type doc = WriteModel[_ <: Document]
+
+  var mongoDBTestParams: MongoDBConnectionParams = _
 
   override def sample(entry: Entry): SampleResult = {
     mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]

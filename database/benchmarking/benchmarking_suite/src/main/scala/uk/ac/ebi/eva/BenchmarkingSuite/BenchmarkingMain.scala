@@ -1,6 +1,6 @@
 package uk.ac.ebi.eva.BenchmarkingSuite
 
-import com.datastax.driver.core.{Cluster, PreparedStatement}
+import com.datastax.driver.core.{Cluster, PreparedStatement, SimpleStatement}
 import org.mongodb.scala.{Document, MongoClient, MongoCollection, WriteConcern}
 import org.apache.jmeter.control.LoopController
 import org.apache.jmeter.samplers.{AbstractSampler, Sampler}
@@ -32,17 +32,16 @@ object BenchmarkingMain extends App {
   val readSamplers = Map("cassandra" -> classOf[CassandraReadSampler], "mongodb" -> classOf[MongoDBReadSampler])
   val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler])
 
+  //Description Format - <Type of Operation>-<Operations per Workload Unit (WU)>-<Parallel(par)/Sequential(seq)>
   val writeWorkloads = List(
-    //Description Format - <Type of Operation>-<Inserts per WU>-<Parallel(par)/Sequential(seq)>
-    //new Workload(desc = "ins-256k-par", threadChoices = List(4, 8, 16), numOpsPerWU =  2560, numWU = 30),
-    new Workload(desc = "ins-1B-par", threadChoices = List(16), numOpsPerWU = 1e9.toInt, numWU = 1),
-    //new Workload(desc = "ins-32k-seq", threadChoices = List(1), numOpsPerWU =  32000, numWU = 50)
+    new Workload(desc = "ins-256k-par", threadChoices = List(4, 8, 16, 32), numOpsPerWU =  256000, numWU = 50),
+    new Workload(desc = "ins-1B-par", threadChoices = List(8, 16, 32), numOpsPerWU = 1e9.toInt, numWU = 2),
+    new Workload(desc = "ins-32k-seq", threadChoices = List(1), numOpsPerWU =  32000, numWU = 50)
   )
   val readWorkloads = List(
-    //Description Format - <Type of Operation>-<Reads per WU>-<Parallel(par)/Sequential(seq)>
-    new Workload(desc = "ins-256k-par", threadChoices = List(8, 16, 32), numOpsPerWU = 256000, numWU = 50),
-    //new Workload(desc = "ins-1B-par", threadChoices = List(16, 32), numOpsPerWU = 1e9.toInt, numWU = 2),
-    //new Workload(desc = "ins-32k-seq", threadChoices = List(1), numOpsPerWU = 32000, numWU = 50)
+    new Workload(desc = "read-256k-par", threadChoices = List(4, 8, 16, 32), numOpsPerWU = 256000, numWU = 50),
+    new Workload(desc = "read-1B-par", threadChoices = List(8, 16, 32), numOpsPerWU = 1e9.toInt, numWU = 2),
+    new Workload(desc = "read-32k-seq", threadChoices = List(1), numOpsPerWU = 32000, numWU = 50)
   )
 
   try {
@@ -50,8 +49,8 @@ object BenchmarkingMain extends App {
     //Add a separate thread group + sampler to the Test plan for each thread choice in a given workload
     writeWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, writeSamplers(db)))
       .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
-//    readWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, readSamplers(db)))
-//      .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
+    readWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, readSamplers(db)))
+      .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
     jMeterTestPlan.runPlan()
   } catch {
     case ex: Exception => ex.printStackTrace()
@@ -72,7 +71,7 @@ object BenchmarkingMain extends App {
     val cassandra_nodes = connectionString.split(",")
     val cassandra_cluster = Cluster.builder().addContactPoints(cassandra_nodes: _*).build()
     val cassandra_session = cassandra_cluster.connect(keyspaceName)
-    cassandra_session.execute("truncate %s".format(variantTableName))
+    cassandra_session.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
     val insertEntityString = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
       .format(variantTableName) +
       "values (?, ?, ?, ?, ?, ?);"
@@ -102,7 +101,7 @@ object BenchmarkingMain extends App {
         name = workload.desc + "-%d-threads".format(numThreads),
         numWU = workload.numWU,
         numThreads = numThreads,
-        numInsertsPerThread = workload.numOpsPerWU / numThreads,
+        numOpsPerThread = workload.numOpsPerWU / numThreads,
         sampler = sampler.newInstance()))
   }
 
@@ -118,11 +117,11 @@ object BenchmarkingMain extends App {
     initLocale()
   }
 
-  def getThreadGroupAndSamplerForWorkload(name: String, numWU: Int, numThreads: Int, numInsertsPerThread: Int,
+  def getThreadGroupAndSamplerForWorkload(name: String, numWU: Int, numThreads: Int, numOpsPerThread: Int,
                                           sampler: Sampler): (ThreadGroup, Sampler) = {
     //Sampler
     sampler.setName(name)
-    sampler.setProperty("numOpsPerThread", numInsertsPerThread)
+    sampler.setProperty("numOpsPerThread", numOpsPerThread)
 
     // Setup Loop controller
     var loopCtrl = new LoopController
