@@ -36,7 +36,7 @@ class CassandraWriteSampler() extends AbstractSampler {
       batchStmt.clear()
     }
 
-    if (counter <= numInsertsPerThread) {
+    if (counter < numInsertsPerThread) {
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
       if (timeForBatchWrite) {
         batchWrite

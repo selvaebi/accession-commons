@@ -36,7 +36,7 @@ class MongoDBWriteSampler() extends AbstractSampler {
         Duration.Inf)
     }
 
-    if (counter <= numInsertsPerThread) {
+    if (counter < numInsertsPerThread) {
       val timeStamp = System.currentTimeMillis()
       val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
       val documentToInsert: doc = InsertOneModel(Document(
