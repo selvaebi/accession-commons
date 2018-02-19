@@ -77,8 +77,8 @@ public class VariantAccessioningRestControllerTest {
                 requestEntity, Map.class);
         assertEquals(HttpStatus.OK, getAccessionsResponse.getStatusCode());
         assertEquals(2, getAccessionsResponse.getBody().size());
-        String getVariantsUrl = "/v1/accession/variant/getVariants?accession=" + getAccessionsResponse.getBody().values
-                ().toArray()[0] + "&accession=" + getAccessionsResponse.getBody().values().toArray()[1];
+        String getVariantsUrl = "/v1/accession/variant/" + getAccessionsResponse.getBody().values().toArray()[0]
+                + "," + getAccessionsResponse.getBody().values().toArray()[1];
         ResponseEntity<Map> getVariantsResponse = testRestTemplate.getForEntity(getVariantsUrl, Map.class);
         assertEquals(HttpStatus.OK, getVariantsResponse.getStatusCode());
         assertEquals(2, getVariantsResponse.getBody().size());

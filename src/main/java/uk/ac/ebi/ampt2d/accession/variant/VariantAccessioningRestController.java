@@ -19,10 +19,10 @@ package uk.ac.ebi.ampt2d.accession.variant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.ampt2d.accession.AccessioningService;
 
@@ -42,8 +42,8 @@ public class VariantAccessioningRestController {
         return accessioningService.getAccessions(variantMessages);
     }
 
-    @RequestMapping(value = "/getVariants", method = RequestMethod.GET, produces = "application/json")
-    public Map<String, VariantMessage> getVariants(@RequestParam("accession") List<String> accessions) {
+    @RequestMapping(value = "/{accessions}",method = RequestMethod.GET, produces = "application/json")
+    public Map<String, VariantMessage> getVariants(@PathVariable List<String> accessions) {
         return accessioningService.getObjectsFromAccessions(accessions);
     }
 }
