@@ -27,7 +27,7 @@ public interface ModelHashAccession<MODEL, HASH, ACCESSION> {
     ACCESSION accession();
 
     static <X, Y, Z> ModelHashAccession<X, Y, Z> of(X model, Y hash, Z accession) {
-        return new ModelHashAccession() {
+        return new ModelHashAccession<X, Y, Z>() {
             public X model() {
                 return model;
             }
