@@ -53,7 +53,7 @@ public class BasicDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION e
     }
 
     @Override
-    public Map<ACCESSION, ? extends MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes) {
+    public Map<ACCESSION, MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes) {
         return repository.findByHashedMessageIn(messageHashes).stream()
                 .collect(Collectors.toMap(getAccessionFunction, e -> e));
     }

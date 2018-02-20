@@ -112,7 +112,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
     }
 
     @Override
-    public Map<ACCESSION, ? extends MODEL> get(List<MODEL> accessionObjects) {
+    public Map<ACCESSION, MODEL> get(List<? extends MODEL> accessionObjects) {
         return dbService.findAllAccessionByMessageHash(getHashes(accessionObjects));
     }
 
@@ -121,7 +121,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
         return dbService.findAllAccessionByAccessions(accessions);
     }
 
-    private List<HASH> getHashes(List<MODEL> accessionObjects) {
+    private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
         return accessionObjects.stream().map(digestFunction.andThen(hashingFunction)).collect(Collectors.toList());
     }
 

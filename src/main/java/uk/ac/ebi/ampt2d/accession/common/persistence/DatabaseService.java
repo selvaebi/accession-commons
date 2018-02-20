@@ -26,11 +26,11 @@ import java.util.Map;
 
 public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
-    Map<ACCESSION, ? extends MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes);
+    Map<ACCESSION, MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes);
 
     Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> messageHashes);
 
-    SaveResponse save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
+    SaveResponse<ACCESSION, MODEL> save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
 
     Map<ACCESSION,? extends MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions);
 }

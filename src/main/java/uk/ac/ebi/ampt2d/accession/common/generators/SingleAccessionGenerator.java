@@ -31,19 +31,19 @@ import java.util.stream.Collectors;
  * Base class for accession generators that don't have performance penalty if they don't generate the accessions
  * in batches
  *
- * @param <MESSAGE>
+ * @param <MODEL>
  * @param <ACCESSION>
  */
-public class SingleAccessionGenerator<MESSAGE, ACCESSION> implements AccessionGenerator<MESSAGE, ACCESSION> {
+public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGenerator<MODEL, ACCESSION> {
 
-    private final Function<MESSAGE, ACCESSION> generateAccessionFunction;
+    private final Function<MODEL, ACCESSION> generateAccessionFunction;
 
-    public SingleAccessionGenerator(Function<MESSAGE, ACCESSION> generateAccessionFunction) {
+    public SingleAccessionGenerator(Function<MODEL, ACCESSION> generateAccessionFunction) {
         this.generateAccessionFunction = generateAccessionFunction;
     }
 
     @Override
-    public <HASH> List<ModelHashAccession<MESSAGE, HASH, ACCESSION>> generateAccessions(Map<HASH, MESSAGE> messages) {
+    public <HASH> List<ModelHashAccession<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
         return messages.entrySet()
                 .stream()
                 .map(entry -> ModelHashAccession.of(entry.getValue(), entry.getKey(),
@@ -52,7 +52,7 @@ public class SingleAccessionGenerator<MESSAGE, ACCESSION> implements AccessionGe
     }
 
     @Override
-    public void postSave(SaveResponse<ACCESSION, MESSAGE> response) {
+    public void postSave(SaveResponse<ACCESSION, MODEL> response) {
         // No action performed, as all the accessions are generated on the fly.
     }
 

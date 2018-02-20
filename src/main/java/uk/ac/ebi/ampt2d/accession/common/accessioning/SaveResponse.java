@@ -20,34 +20,34 @@ package uk.ac.ebi.ampt2d.accession.common.accessioning;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SaveResponse<ACCESSION, MESSAGE> {
+public class SaveResponse<ACCESSION, MODEL> {
 
-    private final Map<ACCESSION, MESSAGE> savedAccessions;
-    private final Map<ACCESSION, MESSAGE> unsavedAccessions;
-    private final Map<ACCESSION, MESSAGE> accessionOfUnsavedMessages;
+    private final Map<ACCESSION, MODEL> savedAccessions;
+    private final Map<ACCESSION, MODEL> unsavedAccessions;
+    private final Map<ACCESSION, MODEL> accessionOfUnsavedMessages;
 
-    public SaveResponse(Map<ACCESSION, MESSAGE> savedAccessions,
-                        Map<ACCESSION, MESSAGE> unsavedAccessions,
-                        Map<ACCESSION, MESSAGE> accessionOfUnsavedMessages) {
+    public SaveResponse(Map<ACCESSION, MODEL> savedAccessions,
+                        Map<ACCESSION, MODEL> unsavedAccessions,
+                        Map<ACCESSION, MODEL> accessionOfUnsavedMessages) {
         this.savedAccessions = savedAccessions;
         this.unsavedAccessions = unsavedAccessions;
         this.accessionOfUnsavedMessages = accessionOfUnsavedMessages;
     }
 
-    public Map<ACCESSION, MESSAGE> getSavedAccessions() {
+    public Map<ACCESSION, MODEL> getSavedAccessions() {
         return savedAccessions;
     }
 
-    public Map<ACCESSION, MESSAGE> getUnsavedAccessions() {
+    public Map<ACCESSION, MODEL> getUnsavedAccessions() {
         return unsavedAccessions;
     }
 
-    public Map<ACCESSION, MESSAGE> getAccessionOfUnsavedMessages() {
+    public Map<ACCESSION, MODEL> getAccessionOfUnsavedMessages() {
         return accessionOfUnsavedMessages;
     }
 
-    public Map<ACCESSION, MESSAGE> getAllAccessionToMessage() {
-        Map<ACCESSION, MESSAGE> allAccessionToMessage = new HashMap<>(savedAccessions);
+    public Map<ACCESSION, MODEL> getAllAccessionToMessage() {
+        Map<ACCESSION, MODEL> allAccessionToMessage = new HashMap<>(savedAccessions);
         allAccessionToMessage.putAll(accessionOfUnsavedMessages);
         return allAccessionToMessage;
     }
