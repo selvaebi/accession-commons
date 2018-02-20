@@ -34,4 +34,6 @@ public interface AccessioningRepository<ENTITY_TYPE extends AccessionableEntity,
     long count();
 
     void flush();
+
+    Collection<ENTITY_TYPE> findByAccessionIn(List<ID_TYPE> accessions);
 }

@@ -27,6 +27,8 @@ import uk.ac.ebi.ampt2d.accession.sample.SampleMessage;
 import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningDatabaseService;
 import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
+import uk.ac.ebi.ampt2d.accession.variant.VariantAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.variant.VariantMessage;
 
 @Configuration
 public class WebConfiguration {
@@ -67,4 +69,15 @@ public class WebConfiguration {
         return new SampleAccessioningDatabaseService();
     }
 
+    @Bean
+    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
+    public AccessioningService<VariantMessage, String> variantAccessionService() {
+        return new AccessioningService(new SHA1AccessionGenerator<>(), variantAccessioningDatabaseService());
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
+    public VariantAccessioningDatabaseService variantAccessioningDatabaseService() {
+        return new VariantAccessioningDatabaseService();
+    }
 }
