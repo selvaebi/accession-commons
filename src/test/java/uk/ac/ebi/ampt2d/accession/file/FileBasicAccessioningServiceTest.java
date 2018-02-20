@@ -51,12 +51,12 @@ public class FileBasicAccessioningServiceTest {
         FileModel fileA = new FileDTO(checksumA);
         FileModel fileB = new FileDTO(checksumB);
 
-        Map<String, FileModel> generatedAccessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
+        Map<String, FileModel> generatedAccessions = accessioningService.getOrCreateAccessions(Arrays.asList(fileA, fileB));
 
         fileA = new FileDTO(checksumA);
         fileB = new FileDTO(checksumB);
 
-        Map<String, FileModel> retrievedAccessions = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
+        Map<String, FileModel> retrievedAccessions = accessioningService.getOrCreateAccessions(Arrays.asList(fileA, fileB));
 
         assertEquals(generatedAccessions.keySet(), retrievedAccessions.keySet());
     }
@@ -65,7 +65,7 @@ public class FileBasicAccessioningServiceTest {
     public void everyNewObjectReceiveOneAccession() throws Exception {
         List<FileDTO> newObjects = Arrays.asList(new FileDTO("checksumA"),
                 new FileDTO("checksumB"), new FileDTO("checksumC"));
-        Map<String, FileModel> accessions = accessioningService.getAccessions(newObjects);
+        Map<String, FileModel> accessions = accessioningService.getOrCreateAccessions(newObjects);
 
         assertFalse(accessions.containsKey(null));
     }
@@ -76,7 +76,7 @@ public class FileBasicAccessioningServiceTest {
         FileDTO fileB = new FileDTO("checksumA");
 
         List<FileDTO> newObjects = Arrays.asList(fileA, fileB);
-        Map<String, FileModel> accessions = accessioningService.getAccessions(newObjects);
+        Map<String, FileModel> accessions = accessioningService.getOrCreateAccessions(newObjects);
 
         assertEquals(1, accessions.size());
     }
@@ -86,7 +86,7 @@ public class FileBasicAccessioningServiceTest {
         FileDTO fileA = new FileDTO("checksumA");
         FileDTO fileB = new FileDTO("checksumB");
         List<FileDTO> newObjects = Arrays.asList(fileA, fileB);
-        Map<String, FileModel> accessions = accessioningService.getAccessions(newObjects);
+        Map<String, FileModel> accessions = accessioningService.getOrCreateAccessions(newObjects);
 
         assertEquals(2, accessions.size());
     }
@@ -95,12 +95,12 @@ public class FileBasicAccessioningServiceTest {
     public void mixingAlreadyAccessionedAndNewObjectsIsAllowed() throws Exception {
         FileDTO fileA = new FileDTO("checksumA");
         FileDTO fileB = new FileDTO("checksumB");
-        Map<String, FileModel> accessionsFromFirstServiceCall = accessioningService.getAccessions(Arrays.asList(fileA, fileB));
+        Map<String, FileModel> accessionsFromFirstServiceCall = accessioningService.getOrCreateAccessions(Arrays.asList(fileA, fileB));
         FileDTO fileC = new FileDTO("checksumC");
         FileDTO fileD = new FileDTO("checksumD");
         List<FileDTO> objectsToAccession = Arrays.asList(fileA, fileB, fileC, fileD);
         Map<String, FileModel> accessionsFromSecondServiceCall = accessioningService
-                .getAccessions(objectsToAccession);
+                .getOrCreateAccessions(objectsToAccession);
 
         assertEquals(2, accessionsFromFirstServiceCall.size());
         assertEquals(4, accessionsFromSecondServiceCall.size());

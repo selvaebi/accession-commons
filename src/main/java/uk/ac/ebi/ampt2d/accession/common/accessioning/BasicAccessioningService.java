@@ -71,7 +71,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
      * @return
      */
     @Override
-    public Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> messages) {
+    public Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) {
         Map<HASH, MODEL> hashToMessages = mapHashOfMessages(messages);
         Map<HASH, ACCESSION> existingAccessions = dbService.getExistingAccessions(hashToMessages.keySet());
         Map<HASH, MODEL> newMessages = filterNotExists(hashToMessages, existingAccessions);
@@ -112,7 +112,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
     }
 
     @Override
-    public Map<ACCESSION, MODEL> get(List<? extends MODEL> accessionObjects) {
+    public Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionObjects) {
         return dbService.findAllAccessionByMessageHash(getHashes(accessionObjects));
     }
 
