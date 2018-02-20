@@ -26,10 +26,10 @@ import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1HashingFunction;
 public class FileAccessioningService extends BasicAccessioningService<FileModel, String, String> {
 
     public FileAccessioningService(DatabaseService<FileModel, String, String> dbService) {
-        super(SingleAccessionGenerator.ofSHA1AccessionGenerator(new FileModelDigestFunction()),
+        super(new SingleAccessionGenerator<>(fileModel -> fileModel.getHash()),
                 dbService,
-                new FileModelDigestFunction(),
-                new SHA1HashingFunction());
+                fileModel -> fileModel.getHash(),
+                message -> message);
     }
 
 }
