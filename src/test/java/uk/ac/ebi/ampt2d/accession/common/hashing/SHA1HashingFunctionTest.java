@@ -15,21 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.common.hashing.SHA1;
+package uk.ac.ebi.ampt2d.accession.common.hashing;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1.SHA1Util;
+import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1HashingFunction;
 
-public class SHA1UtilTest {
+import java.util.function.Function;
+
+public class SHA1HashingFunctionTest {
 
     @Test
     public void testGenerateAccession() {
         String object1 = "Object1";
         String object2 = "Object2";
-        String object1Accession = SHA1Util.generateSha1FromBytes(object1.getBytes());
-        String object2Accession = SHA1Util.generateSha1FromBytes(object2.getBytes());
-        String object3Accession = SHA1Util.generateSha1FromBytes(object2.getBytes());
+        Function<String, String> hashingFunction = new SHA1HashingFunction();
+        String object1Accession = hashingFunction.apply(object1);
+        String object2Accession = hashingFunction.apply(object2);
+        String object3Accession = hashingFunction.apply(object2);
         Assert.assertNotEquals(object1Accession, object2Accession);
         Assert.assertEquals(object2Accession, object3Accession);
         Assert.assertEquals(40, object1Accession.length());

@@ -17,13 +17,34 @@
  */
 package uk.ac.ebi.ampt2d.accession.common.hashing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
-import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1.SHA1Util;
+
+import javax.xml.bind.DatatypeConverter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class SHA1HashingFunction implements HashingFunction<String> {
 
+    private static final Logger sha1UtilLogger = LoggerFactory.getLogger(SHA1HashingFunction.class);
+
     @Override
     public String apply(String digest) {
-        return SHA1Util.generateSha1FromBytes(digest.getBytes());
+        return generateSha1FromBytes(digest.getBytes());
+    }
+
+    private static String generateSha1FromBytes(byte[] nameBytes) {
+        return DatatypeConverter.printHexBinary(toSHA1(nameBytes));
+    }
+
+    private static byte[] toSHA1(byte[] bytes) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            sha1UtilLogger.error("No Such Algorithm - SHA-1");
+        }
+        return md.digest(bytes);
     }
 }

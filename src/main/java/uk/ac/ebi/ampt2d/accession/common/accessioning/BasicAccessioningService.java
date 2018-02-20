@@ -18,10 +18,10 @@
 package uk.ac.ebi.ampt2d.accession.common.accessioning;
 
 import org.springframework.beans.factory.InitializingBean;
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 import uk.ac.ebi.ampt2d.accession.common.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.persistence.DatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
+import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 
 import java.util.List;
 import java.util.Map;
