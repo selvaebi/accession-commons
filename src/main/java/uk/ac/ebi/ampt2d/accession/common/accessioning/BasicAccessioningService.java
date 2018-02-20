@@ -74,7 +74,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
     public Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) {
         Map<HASH, MODEL> hashToMessages = mapHashOfMessages(messages);
         Map<HASH, ACCESSION> existingAccessions = dbService.getExistingAccessions(hashToMessages.keySet());
-        Map<HASH, MODEL> newMessages = filterNotExists(hashToMessages, existingAccessions);
+        Map<HASH, MODEL> newMessages = filterNotExistingAccessions(hashToMessages, existingAccessions);
 
         Map<ACCESSION, MODEL> accessions = joinExistingAccessionsWithMessages(existingAccessions, hashToMessages);
         if (!newMessages.isEmpty()) {
@@ -93,8 +93,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
         return messages.stream().collect(Collectors.toMap(digestFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
     }
 
-    private Map<HASH, MODEL> filterNotExists(Map<HASH, MODEL> hashToMessages,
-                                             Map<HASH, ACCESSION> existingAccessions) {
+    private Map<HASH, MODEL> filterNotExistingAccessions(Map<HASH, MODEL> hashToMessages,
+                                                         Map<HASH, ACCESSION> existingAccessions) {
         return hashToMessages.entrySet().stream()
                 .filter(entry -> !existingAccessions.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
