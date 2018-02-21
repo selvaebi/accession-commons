@@ -46,7 +46,7 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-        String url = "/v1/study/generateAccession";
+        String url = "/v1/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(generateStudyDTOs(1, 2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -55,7 +55,7 @@ public class StudyAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        String url = "/v1/study/generateAccession";
+        String url = "/v1/study";
         HttpEntity<Object> requestEntity = new HttpEntity<>(generateStudyDTOs(1, 2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

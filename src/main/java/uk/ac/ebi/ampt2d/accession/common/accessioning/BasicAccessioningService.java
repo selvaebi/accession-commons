@@ -43,16 +43,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
 
     private final DigestFunction<MODEL> digestFunction;
 
-    private HashingFunction<HASH> hashingFunction;
+    private final HashingFunction<HASH> hashingFunction;
 
-    /**
-     * Basic accessioning service constructor, requires an accession generator, a database service and a hashing
-     * function, it also allows the registering of a init function.
-     *
-     * @param accessionGenerator
-     * @param dbService
-     * @param hashingFunction
-     */
     public BasicAccessioningService(AccessionGenerator<MODEL, ACCESSION> accessionGenerator,
                                     DatabaseService<MODEL, HASH, ACCESSION> dbService,
                                     DigestFunction<MODEL> digestFunction,
@@ -64,7 +56,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
     }
 
     /**
-     * Get accessions for a list of messages. It looks for the object's accessions in a repository, and it they don't
+     * Get accessions for a list of messages. It looks for the object's accessions in a repository, and if they don't
      * exist, generate new ones, storing them in the repository
      *
      * @param messages

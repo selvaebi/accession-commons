@@ -47,7 +47,7 @@ public class BasicRestController<MODEL, DTO extends MODEL, ACCESSIONING> {
         return modelToDTO;
     }
 
-    @RequestMapping(value = "/generateAccession", method = RequestMethod.POST, produces = "application/json",
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
     public Map<ACCESSIONING, DTO> generateAccessions(@RequestBody List<DTO> DTOS) {
         return service.getOrCreateAccessions(DTOS).entrySet().stream().collect(Collectors.toMap(o -> o.getKey(),

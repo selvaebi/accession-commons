@@ -50,7 +50,7 @@ public class SampleRestControllerTest {
     public void testRestApi() {
         SampleDTO sample1 = new SampleDTO(generateSampleMap(1));
         SampleDTO sample2 = new SampleDTO(generateSampleMap(2));
-        String url = "/v1/sample/generateAccession";
+        String url = "/v1/sample/";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(sample1, sample2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -61,7 +61,7 @@ public class SampleRestControllerTest {
     public void requestPostTwiceAndWeGetSameAccessions() {
         SampleDTO sample1 = new SampleDTO(generateSampleMap(1));
         SampleDTO sample2 = new SampleDTO(generateSampleMap(2));
-        String url = "/v1/sample/generateAccession";
+        String url = "/v1/sample/";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(sample1, sample2));
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());

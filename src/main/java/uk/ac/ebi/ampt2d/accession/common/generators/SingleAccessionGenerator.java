@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Base class for accession generators that don't have performance penalty if they don't generate the accessions
+ * Base class for accession generators that don't suffer performance penalty if they don't generate the accessions
  * in batches
  *
  * @param <MODEL>

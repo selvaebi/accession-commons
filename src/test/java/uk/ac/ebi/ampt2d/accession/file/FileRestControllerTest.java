@@ -51,7 +51,7 @@ public class FileRestControllerTest {
         FileDTO fileB = new FileDTO("checksumB");
         FileDTO fileC = new FileDTO("checksumC");
 
-        String url = "/v1/file/generateAccession";
+        String url = "/v1/file";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
@@ -66,7 +66,7 @@ public class FileRestControllerTest {
         FileDTO fileB = new FileDTO("checksumB");
         FileDTO fileC = new FileDTO("checksumC");
 
-        String url = "/v1/file/generateAccession";
+        String url = "/v1/file/";
         HttpEntity<Object> requestEntity = new HttpEntity<>(Arrays.asList(fileA, fileB, fileC));
 
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);

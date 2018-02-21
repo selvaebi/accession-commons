@@ -48,7 +48,7 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void testRestApi() {
-        String url = "/v1/variant/generateAccession";
+        String url = "/v1/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -57,7 +57,7 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void requestPostTwiceAndWeGetSameAccessions() {
-        String url = "/v1/variant/generateAccession";
+        String url = "/v1/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> response = testRestTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -73,7 +73,7 @@ public class VariantAccessioningRestControllerTest {
 
     @Test
     public void testGetVariantsRestApi() {
-        String getAccessionsUrl = "/v1/variant/generateAccession";
+        String getAccessionsUrl = "/v1/variant";
         HttpEntity<Object> requestEntity = new HttpEntity<>(getListOfVariantMessages());
         ResponseEntity<Map> getAccessionsResponse = testRestTemplate.exchange(getAccessionsUrl, HttpMethod.POST,
                 requestEntity, Map.class);
