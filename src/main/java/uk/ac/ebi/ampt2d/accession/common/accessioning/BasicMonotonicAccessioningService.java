@@ -17,15 +17,17 @@
  */
 package uk.ac.ebi.ampt2d.accession.common.accessioning;
 
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
-import uk.ac.ebi.ampt2d.accession.common.persistence.MonotonicDatabaseService;
+import org.springframework.beans.factory.InitializingBean;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicRange;
+import uk.ac.ebi.ampt2d.accession.common.persistence.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
+import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 
 import java.util.Collection;
 
-public class BasicMonotonicAccessioningService<MODEL, HASH> extends BasicAccessioningService<MODEL, HASH, Long> {
+public class BasicMonotonicAccessioningService<MODEL, HASH> extends BasicAccessioningService<MODEL, HASH, Long>
+        implements InitializingBean {
 
     public BasicMonotonicAccessioningService(MonotonicAccessionGenerator<MODEL> accessionGenerator,
                                              MonotonicDatabaseService<MODEL, HASH> dbService,

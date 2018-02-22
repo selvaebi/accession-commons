@@ -34,8 +34,7 @@ import java.util.stream.Collectors;
  * @param <ACCESSION>
  * @param <HASH>
  */
-public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements InitializingBean,
-        AccessioningService<MODEL, ACCESSION> {
+public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements AccessioningService<MODEL, ACCESSION> {
 
     private AccessionGenerator<MODEL, ACCESSION> accessionGenerator;
 
@@ -115,11 +114,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Initial
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
         return accessionObjects.stream().map(digestFunction.andThen(hashingFunction)).collect(Collectors.toList());
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // Do nothing
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {
