@@ -56,14 +56,14 @@ public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGene
         // No action performed, as all the accessions are generated on the fly.
     }
 
-    public static <MESSAGE, ACCESSION> SingleAccessionGenerator<MESSAGE, ACCESSION> ofHashAccessionGenerator(
-            DigestFunction<MESSAGE> digestFunction,
+    public static <MODEL, ACCESSION> SingleAccessionGenerator<MODEL, ACCESSION> ofHashAccessionGenerator(
+            DigestFunction<MODEL> digestFunction,
             HashingFunction<ACCESSION> hashingFunction) {
         return new SingleAccessionGenerator<>(message -> digestFunction.andThen(hashingFunction).apply(message));
     }
 
-    public static <MESSAGE> SingleAccessionGenerator<MESSAGE, String> ofSHA1AccessionGenerator(
-            DigestFunction<MESSAGE> digestFunction){
+    public static <MODEL> SingleAccessionGenerator<MODEL, String> ofSHA1AccessionGenerator(
+            DigestFunction<MODEL> digestFunction){
         return ofHashAccessionGenerator(digestFunction, new SHA1HashingFunction());
     }
 

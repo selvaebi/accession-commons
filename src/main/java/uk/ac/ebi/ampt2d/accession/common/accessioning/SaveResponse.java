@@ -24,14 +24,11 @@ public class SaveResponse<ACCESSION, MODEL> {
 
     private final Map<ACCESSION, MODEL> savedAccessions;
     private final Map<ACCESSION, MODEL> unsavedAccessions;
-    private final Map<ACCESSION, MODEL> accessionOfUnsavedMessages;
 
     public SaveResponse(Map<ACCESSION, MODEL> savedAccessions,
-                        Map<ACCESSION, MODEL> unsavedAccessions,
-                        Map<ACCESSION, MODEL> accessionOfUnsavedMessages) {
+                        Map<ACCESSION, MODEL> unsavedAccessions) {
         this.savedAccessions = savedAccessions;
         this.unsavedAccessions = unsavedAccessions;
-        this.accessionOfUnsavedMessages = accessionOfUnsavedMessages;
     }
 
     public Map<ACCESSION, MODEL> getSavedAccessions() {
@@ -42,13 +39,9 @@ public class SaveResponse<ACCESSION, MODEL> {
         return unsavedAccessions;
     }
 
-    public Map<ACCESSION, MODEL> getAccessionOfUnsavedMessages() {
-        return accessionOfUnsavedMessages;
-    }
-
     public Map<ACCESSION, MODEL> getAllAccessionToMessage() {
         Map<ACCESSION, MODEL> allAccessionToMessage = new HashMap<>(savedAccessions);
-        allAccessionToMessage.putAll(accessionOfUnsavedMessages);
+        allAccessionToMessage.putAll(unsavedAccessions);
         return allAccessionToMessage;
     }
 }

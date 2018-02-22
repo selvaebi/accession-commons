@@ -67,8 +67,7 @@ public class DecoratedGenerator<MODEL, DECORATED_ACCESSION, ACCESSION> implement
     @Override
     public void postSave(SaveResponse<DECORATED_ACCESSION, MODEL> response) {
         generator.postSave(new SaveResponse<>(removeDecoration(response.getSavedAccessions()),
-                removeDecoration(response.getUnsavedAccessions()),
-                removeDecoration(response.getAccessionOfUnsavedMessages())));
+                removeDecoration(response.getUnsavedAccessions())));
     }
 
     private Map<ACCESSION, MODEL> removeDecoration(Map<DECORATED_ACCESSION, MODEL> map) {

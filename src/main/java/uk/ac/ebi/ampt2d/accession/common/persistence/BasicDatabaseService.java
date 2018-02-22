@@ -69,14 +69,13 @@ public class BasicDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION e
         // TODO overly optimisting database service that will work always
         HashMap<ACCESSION, MODEL> savedAccessions = new HashMap<>();
         HashMap<ACCESSION, MODEL> unsavedAccessions = new HashMap<>();
-        HashMap<ACCESSION, MODEL> accessionOfUnsavedMessages = new HashMap<>();
 
         Set<ENTITY> entitySet = objects.stream()
                 .map(toEntityFunction).collect(Collectors.toSet());
         Iterable<ENTITY> savedEntities = repository.save(entitySet);
         savedEntities.forEach(entity -> savedAccessions.put(getAccessionFunction.apply(entity), entity));
 
-        return new SaveResponse(savedAccessions, unsavedAccessions, accessionOfUnsavedMessages);
+        return new SaveResponse(savedAccessions, unsavedAccessions);
     }
 
     @Override
