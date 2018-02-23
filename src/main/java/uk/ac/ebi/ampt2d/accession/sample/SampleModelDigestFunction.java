@@ -18,11 +18,9 @@
 
 package uk.ac.ebi.ampt2d.accession.sample;
 
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-
 import java.util.stream.Collectors;
 
-public class SampleModelDigestFunction implements DigestFunction<SampleModel> {
+public class SampleModelDigestFunction implements java.util.function.Function<SampleModel, String> {
 
     @Override
     public String apply(SampleModel message) {

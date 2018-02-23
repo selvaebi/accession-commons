@@ -58,7 +58,7 @@ public class SampleAccessioningDatabaseServiceTest {
         databaseService.save(samples);
 
         Map<String, ? extends SampleModel> accessionsFromRepository =
-                databaseService.findAllAccessionByMessageHash(hashes);
+                databaseService.findAllAccessionsByHash(hashes);
         assertEquals(2, accessionsFromRepository.size());
     }
 

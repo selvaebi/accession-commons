@@ -17,14 +17,12 @@
  */
 package uk.ac.ebi.ampt2d.accession.common.accessioning;
 
-import org.springframework.beans.factory.InitializingBean;
 import uk.ac.ebi.ampt2d.accession.common.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.persistence.DatabaseService;
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -40,17 +38,17 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
 
     private DatabaseService<MODEL, HASH, ACCESSION> dbService;
 
-    private final DigestFunction<MODEL> digestFunction;
+    private final Function<MODEL, String> summaryFunction;
 
-    private final HashingFunction<HASH> hashingFunction;
+    private final Function<String, HASH> hashingFunction;
 
     public BasicAccessioningService(AccessionGenerator<MODEL, ACCESSION> accessionGenerator,
                                     DatabaseService<MODEL, HASH, ACCESSION> dbService,
-                                    DigestFunction<MODEL> digestFunction,
-                                    HashingFunction<HASH> hashingFunction) {
+                                    Function<MODEL, String> summaryFunction,
+                                    Function<String, HASH> hashingFunction) {
         this.accessionGenerator = accessionGenerator;
         this.dbService = dbService;
-        this.digestFunction = digestFunction;
+        this.summaryFunction = summaryFunction;
         this.hashingFunction = hashingFunction;
     }
 
@@ -81,7 +79,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * @return
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
-        return messages.stream().collect(Collectors.toMap(digestFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
+        return messages.stream().collect(Collectors.toMap(summaryFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
     }
 
     private Map<HASH, MODEL> filterNotExistingAccessions(Map<HASH, MODEL> hashToMessages,
@@ -103,8 +101,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
     }
 
     @Override
-    public Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionObjects) {
-        return dbService.findAllAccessionByMessageHash(getHashes(accessionObjects));
+    public Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects) {
+        return dbService.findAllAccessionsByHash(getHashes(accessionedObjects));
     }
 
     @Override
@@ -113,7 +111,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
     }
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
-        return accessionObjects.stream().map(digestFunction.andThen(hashingFunction)).collect(Collectors.toList());
+        return accessionObjects.stream().map(summaryFunction.andThen(hashingFunction)).collect(Collectors.toList());
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

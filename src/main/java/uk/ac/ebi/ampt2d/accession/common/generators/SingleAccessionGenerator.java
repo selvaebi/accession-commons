@@ -17,8 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.accession.common.generators;
 
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 import uk.ac.ebi.ampt2d.accession.common.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1HashingFunction;
 
@@ -57,14 +55,14 @@ public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGene
     }
 
     public static <MODEL, ACCESSION> SingleAccessionGenerator<MODEL, ACCESSION> ofHashAccessionGenerator(
-            DigestFunction<MODEL> digestFunction,
-            HashingFunction<ACCESSION> hashingFunction) {
-        return new SingleAccessionGenerator<>(message -> digestFunction.andThen(hashingFunction).apply(message));
+            Function<MODEL, String> summaryFunction,
+            Function<String, ACCESSION> hashingFunction) {
+        return new SingleAccessionGenerator<>(message -> summaryFunction.andThen(hashingFunction).apply(message));
     }
 
     public static <MODEL> SingleAccessionGenerator<MODEL, String> ofSHA1AccessionGenerator(
-            DigestFunction<MODEL> digestFunction){
-        return ofHashAccessionGenerator(digestFunction, new SHA1HashingFunction());
+            Function<MODEL, String> summaryFunction) {
+        return ofHashAccessionGenerator(summaryFunction, new SHA1HashingFunction());
     }
 
 }

@@ -17,11 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.accession.variant.persistence;
 
-import uk.ac.ebi.ampt2d.accession.common.persistence.BasicDatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.accession.variant.VariantModel;
 
 public class VariantAccessioningDatabaseService
-        extends BasicDatabaseService<VariantModel, VariantEntity, String, String> {
+        extends BasicSpringDataRepositoryDatabaseService<VariantModel, VariantEntity, String, String> {
 
     public VariantAccessioningDatabaseService(VariantAccessioningRepository repository) {
         super(repository,

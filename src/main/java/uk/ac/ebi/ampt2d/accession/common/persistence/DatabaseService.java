@@ -24,11 +24,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Interface to the database service that handles the storage and queries of a object with their hashed version and
+ * accession.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
 public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
-    Map<ACCESSION, MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes);
+    Map<ACCESSION, MODEL> findAllAccessionsByHash(Collection<HASH> hashes);
 
-    Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> messageHashes);
+    Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> hashes);
 
     SaveResponse<ACCESSION, MODEL> save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
 

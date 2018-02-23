@@ -21,25 +21,24 @@ import org.springframework.beans.factory.InitializingBean;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.accession.common.persistence.MonotonicDatabaseService;
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 public class BasicMonotonicAccessioningService<MODEL, HASH> extends BasicAccessioningService<MODEL, HASH, Long>
         implements InitializingBean {
 
     public BasicMonotonicAccessioningService(MonotonicAccessionGenerator<MODEL> accessionGenerator,
                                              MonotonicDatabaseService<MODEL, HASH> dbService,
-                                             DigestFunction<MODEL> digestFunction,
-                                             HashingFunction<HASH> hashingFunction) {
-        super(accessionGenerator, dbService, digestFunction, hashingFunction);
+                                             Function<MODEL, String> summaryFunction,
+                                             Function<String, HASH> hashingFunction) {
+        super(accessionGenerator, dbService, summaryFunction, hashingFunction);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         Collection<MonotonicRange> availableRanges = getAccessionGenerator().getAvailableRanges();
-        getAccessionGenerator().recoverState(getDbService().getExistingIds(availableRanges));
+        getAccessionGenerator().recoverState(getDbService().getAccessionsInRanges(availableRanges));
     }
 
     @Override

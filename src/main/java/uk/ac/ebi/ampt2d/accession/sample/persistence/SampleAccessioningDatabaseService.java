@@ -18,10 +18,10 @@
 package uk.ac.ebi.ampt2d.accession.sample.persistence;
 
 import uk.ac.ebi.ampt2d.accession.common.accessioning.AccessioningRepository;
-import uk.ac.ebi.ampt2d.accession.common.persistence.BasicDatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.accession.sample.SampleModel;
 
-public class SampleAccessioningDatabaseService extends BasicDatabaseService<SampleModel, SampleEntity, String,
+public class SampleAccessioningDatabaseService extends BasicSpringDataRepositoryDatabaseService<SampleModel, SampleEntity, String,
         String> {
 
 

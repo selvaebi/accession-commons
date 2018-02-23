@@ -18,11 +18,9 @@
 
 package uk.ac.ebi.ampt2d.accession.study;
 
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-
 import java.util.stream.Collectors;
 
-public class StudyModelDigestFunction implements DigestFunction<StudyModel> {
+public class StudyModelDigestFunction implements java.util.function.Function<StudyModel, String> {
 
     @Override
     public String apply(StudyModel study) {

@@ -18,10 +18,10 @@
 package uk.ac.ebi.ampt2d.accession.study.persistence;
 
 import uk.ac.ebi.ampt2d.accession.common.accessioning.AccessioningRepository;
-import uk.ac.ebi.ampt2d.accession.common.persistence.BasicDatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.accession.study.StudyModel;
 
-public class StudyAccessioningDatabaseService extends BasicDatabaseService<StudyModel, StudyEntity, String, String> {
+public class StudyAccessioningDatabaseService extends BasicSpringDataRepositoryDatabaseService<StudyModel, StudyEntity, String, String> {
 
     public StudyAccessioningDatabaseService(AccessioningRepository<StudyEntity, String, String> repository) {
         super(repository, new StudyModelToEntity(), studyEntity -> studyEntity.getAccession(), studyEntity ->

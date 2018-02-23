@@ -18,8 +18,8 @@
 package uk.ac.ebi.ampt2d.accession.common.persistence;
 
 import uk.ac.ebi.ampt2d.accession.common.accessioning.AccessioningRepository;
-import uk.ac.ebi.ampt2d.accession.common.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accession.common.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accession.common.generators.ModelHashAccession;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -30,7 +30,17 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BasicDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION extends Serializable>
+/**
+ * Basic implementation of {@link DatabaseService} that requires a Spring Data repository that extends
+ * {@link AccessioningRepository}, a function to generate the entities from the triple model/hash/accession, a function
+ * to get the accession from the entity and a function to get the hashed representation of the message from the entity.
+ *
+ * @param <MODEL>
+ * @param <ENTITY>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
+public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION extends Serializable>
         implements DatabaseService<MODEL, HASH, ACCESSION> {
 
     private AccessioningRepository<ENTITY, HASH, ACCESSION> repository;
@@ -42,10 +52,10 @@ public class BasicDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION e
     private final Function<ENTITY, HASH> getHashedMessageFunction;
 
 
-    public BasicDatabaseService(AccessioningRepository<ENTITY, HASH, ACCESSION> repository,
-                                Function<ModelHashAccession<MODEL, HASH, ACCESSION>, ENTITY> toEntityFunction,
-                                Function<ENTITY, ACCESSION> getAccessionFunction,
-                                Function<ENTITY, HASH> getHashedMessageFunction) {
+    public BasicSpringDataRepositoryDatabaseService(AccessioningRepository<ENTITY, HASH, ACCESSION> repository,
+                                                    Function<ModelHashAccession<MODEL, HASH, ACCESSION>, ENTITY> toEntityFunction,
+                                                    Function<ENTITY, ACCESSION> getAccessionFunction,
+                                                    Function<ENTITY, HASH> getHashedMessageFunction) {
         this.repository = repository;
         this.toEntityFunction = toEntityFunction;
         this.getAccessionFunction = getAccessionFunction;
@@ -53,20 +63,20 @@ public class BasicDatabaseService<MODEL, ENTITY extends MODEL, HASH, ACCESSION e
     }
 
     @Override
-    public Map<ACCESSION, MODEL> findAllAccessionByMessageHash(Collection<HASH> messageHashes) {
-        return repository.findByHashedMessageIn(messageHashes).stream()
+    public Map<ACCESSION, MODEL> findAllAccessionsByHash(Collection<HASH> hashes) {
+        return repository.findByHashedMessageIn(hashes).stream()
                 .collect(Collectors.toMap(getAccessionFunction, e -> e));
     }
 
     @Override
-    public Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> messageHashes) {
-        return repository.findByHashedMessageIn(messageHashes).stream()
+    public Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> hashes) {
+        return repository.findByHashedMessageIn(hashes).stream()
                 .collect(Collectors.toMap(getHashedMessageFunction, getAccessionFunction));
     }
 
     @Override
     public SaveResponse save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects) {
-        // TODO overly optimisting database service that will work always
+        // TODO overly optimistic database service that will work always
         HashMap<ACCESSION, MODEL> savedAccessions = new HashMap<>();
         HashMap<ACCESSION, MODEL> unsavedAccessions = new HashMap<>();
 

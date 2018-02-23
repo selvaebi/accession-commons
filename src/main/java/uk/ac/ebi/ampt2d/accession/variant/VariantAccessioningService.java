@@ -22,7 +22,7 @@ import uk.ac.ebi.ampt2d.accession.common.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningDatabaseService;
 
-public class VariantAccessioningService extends BasicAccessioningService<VariantModel, String, String> {
+public class VariantAccessioningService extends BasicAccessioningService<VariantModel,String,String> {
 
     public VariantAccessioningService(VariantAccessioningDatabaseService dbService) {
         super(SingleAccessionGenerator.ofSHA1AccessionGenerator(new VariantModelDigestFunction()),

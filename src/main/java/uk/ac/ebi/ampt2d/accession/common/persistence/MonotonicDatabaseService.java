@@ -21,8 +21,14 @@ import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicRange;
 
 import java.util.Collection;
 
+/**
+ * Extension of the {@link DatabaseService} that allows getting all the existing accessions in a range of values.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ */
 public interface MonotonicDatabaseService<MODEL, HASH> extends DatabaseService<MODEL, HASH, Long> {
 
-    long[] getExistingIds(Collection<MonotonicRange> availableRanges);
+    long[] getAccessionsInRanges(Collection<MonotonicRange> ranges);
 
 }

@@ -24,7 +24,7 @@ public interface AccessioningService<MODEL, ACCESSION> {
 
     Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages);
 
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionObjects);
+    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
 
     Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
 }

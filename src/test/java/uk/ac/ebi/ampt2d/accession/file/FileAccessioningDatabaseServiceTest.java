@@ -59,7 +59,7 @@ public class FileAccessioningDatabaseServiceTest {
 
         Collection<String> messageHashes = Arrays.asList(CHECKSUM_A, CHECKSUM_B);
         Map<String, ? extends FileModel> accessionsFromRepository =
-                databaseService.findAllAccessionByMessageHash(messageHashes);
+                databaseService.findAllAccessionsByHash(messageHashes);
 
         assertTrue(accessionsFromRepository.containsKey(CHECKSUM_A));
         assertTrue(accessionsFromRepository.containsKey(CHECKSUM_B));
@@ -77,7 +77,7 @@ public class FileAccessioningDatabaseServiceTest {
 
         Collection<String> messageHashes = Arrays.asList(CHECKSUM_A, CHECKSUM_B);
         Map<String, ? extends FileModel> accessionsFromRepository =
-                databaseService.findAllAccessionByMessageHash(messageHashes);
+                databaseService.findAllAccessionsByHash(messageHashes);
 
         assertTrue(accessionsFromRepository.containsKey(CHECKSUM_A));
         assertTrue(accessionsFromRepository.containsKey(CHECKSUM_B));

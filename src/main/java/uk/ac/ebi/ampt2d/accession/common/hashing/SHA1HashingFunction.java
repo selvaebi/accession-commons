@@ -19,19 +19,19 @@ package uk.ac.ebi.ampt2d.accession.common.hashing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.ebi.ampt2d.accession.common.utils.HashingFunction;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.function.Function;
 
-public class SHA1HashingFunction implements HashingFunction<String> {
+public class SHA1HashingFunction implements Function<String, String> {
 
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(SHA1HashingFunction.class);
 
     @Override
-    public String apply(String digest) {
-        return generateSha1FromBytes(digest.getBytes());
+    public String apply(String summary) {
+        return generateSha1FromBytes(summary.getBytes());
     }
 
     private static String generateSha1FromBytes(byte[] nameBytes) {

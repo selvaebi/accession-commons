@@ -17,9 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accession.variant;
 
-import uk.ac.ebi.ampt2d.accession.common.utils.DigestFunction;
-
-public class VariantModelDigestFunction implements DigestFunction<VariantModel> {
+public class VariantModelDigestFunction implements java.util.function.Function<VariantModel, String> {
 
     @Override
     public String apply(VariantModel model) {
