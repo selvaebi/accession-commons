@@ -23,7 +23,7 @@ class CassandraWriteSampler() extends AbstractSampler {
   }
 
   private def getBatchStmt = {
-    var batchStmt = new BatchStatement(BatchStatement.Type.UNLOGGED)
+    var batchStmt = new BatchStatement(BatchStatement.Type.LOGGED)
     batchStmt.setConsistencyLevel(ConsistencyLevel.QUORUM)
     batchStmt.setReadTimeoutMillis(600000)
     batchStmt
@@ -41,10 +41,16 @@ class CassandraWriteSampler() extends AbstractSampler {
       if (timeForBatchWrite) {
         batchWrite
       }
-      batchStmt.add(cassandraTestParams.insertStmt.bind(
-        "eva_hsapiens_grch37", threadNum.toString, new Integer(counter + 100),
-        "ent_%d_%d".format(threadNum, counter), "acc_%d_%d".format(threadNum, counter),
-        new Integer(counter)))
+      val (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) =
+        ("eva_hsapiens_grch37", threadNum.toString, new Integer(counter + 100), "ent_%d_%d".format(threadNum, counter),
+          "acc_%d_%d".format(threadNum, counter), new Integer(counter))
+
+      //Write to 2 tables one for the look-up and the other for the reverse look-up
+      batchStmt.add(cassandraTestParams.lkpTableInsertStmt.bind
+      (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id))
+      batchStmt.add(cassandraTestParams.reverseLkpTableInsertStmt.bind
+      (accession_id, raw_numeric_id, species, chromosome, start_pos, entity_id))
+
       insertData(threadNum, counter + 1, numInsertsPerThread)
     }
     else {

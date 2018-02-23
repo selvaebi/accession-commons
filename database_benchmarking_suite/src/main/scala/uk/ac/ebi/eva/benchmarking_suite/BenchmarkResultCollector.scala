@@ -1,5 +1,8 @@
 package uk.ac.ebi.eva.benchmarking_suite
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import org.apache.jmeter.reporters.{ResultCollector, Summariser}
 import org.apache.jmeter.samplers.SampleEvent
 
@@ -9,7 +12,8 @@ class BenchmarkResultCollector(val summer: Summariser) extends ResultCollector(s
     super.sampleOccurred(e)
     val r = e.getResult
     if (!r.isSuccessful) {
-      System.out.println("Run Failed!")
+      System.out.println("Sampler %s failed at !".format(e.getThreadGroup) +
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))
       System.out.println(r.getResponseMessage)
     }
   }

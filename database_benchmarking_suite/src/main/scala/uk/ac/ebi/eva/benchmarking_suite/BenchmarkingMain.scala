@@ -1,8 +1,9 @@
 package uk.ac.ebi.eva.benchmarking_suite
 
+import java.nio.file.Paths
+
 import com.datastax.driver.core.{Cluster, ConsistencyLevel, PreparedStatement, SimpleStatement}
-import com.mongodb.ReadConcern
-import org.mongodb.scala.{Document, MongoClient, MongoCollection, WriteConcern}
+import org.mongodb.scala.{Document, MongoClient, MongoCollection, ReadConcern, WriteConcern}
 import org.apache.jmeter.control.LoopController
 import org.apache.jmeter.samplers.{AbstractSampler, Sampler}
 import org.apache.jmeter.threads.ThreadGroup
@@ -35,24 +36,20 @@ object BenchmarkingMain extends App {
   val readSamplers = Map("cassandra" -> classOf[CassandraReadSampler], "mongodb" -> classOf[MongoDBReadSampler])
   val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler])
 
-  //Description Format - <Type of Operation>-<Operations per Workload Unit (WU)>-<Parallel(par)/Sequential(seq)>
-  val writeWorkloads = List(
-    new Workload(desc = "ins-256k-par", threadChoices = List(4, 8, 16, 32), numOpsPerWU =  256000, numWU = 50),
-    new Workload(desc = "ins-1B-par", threadChoices = List(8, 16, 32), numOpsPerWU = 1e9.toInt, numWU = 2),
-    new Workload(desc = "ins-32k-seq", threadChoices = List(1), numOpsPerWU =  32000, numWU = 50)
-  )
-  val readWorkloads = List(
-    new Workload(desc = "read-256k-par", threadChoices = List(4, 8, 16, 32), numOpsPerWU = 256000, numWU = 50),
-    new Workload(desc = "read-1B-par", threadChoices = List(8, 16, 32), numOpsPerWU = 1e9.toInt, numWU = 2),
-    new Workload(desc = "read-32k-seq", threadChoices = List(1), numOpsPerWU = 32000, numWU = 50)
-  )
+  val workloadConfig = pureconfig.loadConfigFromFiles[WorkloadConfig](Seq(Paths.get(config.workloadConfigFile())))
+  match {
+    case Left(failure) =>
+      println("Invalid Workload Configuration:" + failure.head.description)
+      sys.exit(1)
+    case Right(conf) => conf
+  }
 
   try {
     var jMeterTestPlan = new JMeterTestPlan(testOutputFile = config.outputFile())
     //Add a separate thread group + sampler to the Test plan for each thread choice in a given workload
-    writeWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, writeSamplers(db)))
+    workloadConfig.writeWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, writeSamplers(db)))
       .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
-    readWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, readSamplers(db)))
+    workloadConfig.readWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, readSamplers(db)))
       .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
     jMeterTestPlan.runPlan()
   } catch {
@@ -75,18 +72,21 @@ object BenchmarkingMain extends App {
     val cassandraCluster = Cluster.builder().addContactPoints(cassandraNodes: _*).build()
     val cassandraSession = cassandraCluster.connect(keyspaceName)
 
-    val insertEntityString = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
-      .format(variantTableName) +
-      "values (?, ?, ?, ?, ?, ?);"
+    val insertIntoLkp = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
+      .format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
+    val insertIntoReverseLkp = ("insert into %s_reverse (accession_id, raw_numeric_id, species, " +
+      "chromosome, start_pos, entity_id) ").format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
-    val preparedInsertStatement: PreparedStatement = cassandraSession.prepare(insertEntityString)
+    val lkpInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLkp)
+    val reverseLkpInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLkp)
     val blockReadStatement: PreparedStatement = cassandraSession.prepare(blockReadString)
       .setConsistencyLevel(ConsistencyLevel.QUORUM)
 
     cassandraSession.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
 
-    CassandraConnectionParams(cassandraCluster, cassandraSession, preparedInsertStatement, blockReadStatement)
+    CassandraConnectionParams(cassandraCluster, cassandraSession, lkpInsertStmt,
+      reverseLkpInsertStmt, blockReadStatement)
   }
 
   def getMongoDBConnectionParams(connectionString: String, databaseName: String, collectionName: String):
@@ -94,7 +94,7 @@ object BenchmarkingMain extends App {
     val mongoClient = MongoClient(connectionString)
     val mongoDatabase = mongoClient.getDatabase(databaseName)
     var mongoCollection: MongoCollection[Document] = mongoDatabase.getCollection(collectionName)
-      .withWriteConcern(WriteConcern.MAJORITY)
+      .withWriteConcern(WriteConcern.MAJORITY).withReadConcern(ReadConcern.MAJORITY)
 
     Await.result(mongoCollection.deleteMany(Document()).toFuture(), Duration.Inf)
 
@@ -145,6 +145,8 @@ object BenchmarkingMain extends App {
   }
 }
 
+class WorkloadConfig(val writeWorkloads: List[Workload], val readWorkloads: List[Workload])
+
 // Workload settings - WU => Workload Unit
 class Workload(val desc: String, val threadChoices: List[Int], val numOpsPerWU: Int, val numWU: Int) {}
 
@@ -169,6 +171,8 @@ class BenchmarkingArgParser(arguments: Seq[String], validDatabases: List[String]
     descr = "Full path to the JMeter installation directory (ex: /opt/jmeter)")
   val outputFile: arg[String] = opt[String](required = true, short = 'o',
     descr = "Path to store the test output (ex: /opt/cassandra_test/results.jtl)")
+  val workloadConfigFile: arg[String] = opt[String](required = true, short = 'f',
+    descr = "Path to workload configuration file (ex: /opt/cassandra_test/read_workloads.json")
 
   validate(databaseType) { (databaseName) =>
     if (validDatabases.contains(databaseName)) Right(Unit)
