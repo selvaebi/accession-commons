@@ -33,13 +33,11 @@ public class StudyConfiguration {
     private StudyAccessioningRepository repository;
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
     public StudyAccessioningService studyAccessionService() {
         return new StudyAccessioningService(studyAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "study-accession")
     public StudyAccessioningDatabaseService studyAccessioningDatabaseService() {
         return new StudyAccessioningDatabaseService(repository);
     }

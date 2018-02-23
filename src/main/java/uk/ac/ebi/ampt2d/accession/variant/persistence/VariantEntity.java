@@ -30,8 +30,7 @@ public class VariantEntity implements VariantModel {
 
     @Id
     @Column(nullable = false, unique = true, updatable = false)
-    @Size(max = 230, min = 0)
-    private String accession;
+    private Long accession;
 
     @Column(nullable = false, unique = true)
     private String hashedMessage;
@@ -54,12 +53,12 @@ public class VariantEntity implements VariantModel {
     VariantEntity() {
     }
 
-    public VariantEntity(String accession, String hashedMessage, VariantModel model) {
+    public VariantEntity(Long accession, String hashedMessage, VariantModel model) {
         this(accession, hashedMessage, model.getAssemblyAccession(), model.getProjectAccession(),
                 model.getChromosome(), model.getStart(), model.getType());
     }
 
-    public VariantEntity(String accession, String hashedMessage, String assemblyAccession, String projectAccession,
+    public VariantEntity(Long accession, String hashedMessage, String assemblyAccession, String projectAccession,
                          String chromosome, long start, VariantType type) {
         this.accession = accession;
         this.hashedMessage = hashedMessage;
@@ -70,7 +69,7 @@ public class VariantEntity implements VariantModel {
         this.type = type;
     }
 
-    public String getAccession() {
+    public Long getAccession() {
         return this.accession;
     }
 

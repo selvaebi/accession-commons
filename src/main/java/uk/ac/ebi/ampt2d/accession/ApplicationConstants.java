@@ -15,16 +15,13 @@
  * limitations under the License.
  *
  */
+package uk.ac.ebi.ampt2d.accession;
 
-package uk.ac.ebi.ampt2d.accession.study;
+public class ApplicationConstants {
 
-import java.util.stream.Collectors;
+    public static final String APPLICATION_INSTANCE_ID = "accessioning.instance.id";
 
-public class StudyModelDigestFunction implements java.util.function.Function<StudyModel, String> {
-
-    @Override
-    public String apply(StudyModel study) {
-        return study.getStudyProperties().values().stream().sorted().collect(Collectors.joining(","));
-    }
+    public static final String VARIANT_BLOCK_SIZE = "accessioning.variant.block.size";
+    public static final String VARIANT_ID = "accessioning.variant.id";
 
 }

@@ -91,7 +91,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
 
     private Map<ACCESSION, MODEL> joinExistingAccessionsWithMessages(Map<HASH, ACCESSION> existingAccessions,
                                                                      Map<HASH, MODEL> hashToMessages) {
-        return existingAccessions.values().stream().collect(Collectors.toMap(e -> e, e -> hashToMessages.get(e)));
+        return existingAccessions.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getValue(), e -> hashToMessages.get(e.getKey())));
     }
 
     private Map<ACCESSION, MODEL> generateAccessions(Map<HASH, MODEL> accessions) {

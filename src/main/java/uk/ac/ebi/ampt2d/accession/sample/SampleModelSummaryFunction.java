@@ -15,19 +15,16 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.variant;
 
-public class VariantModelDigestFunction implements java.util.function.Function<VariantModel, String> {
+package uk.ac.ebi.ampt2d.accession.sample;
+
+import java.util.stream.Collectors;
+
+public class SampleModelSummaryFunction implements java.util.function.Function<SampleModel, String> {
 
     @Override
-    public String apply(VariantModel model) {
-        return new StringBuilder()
-                .append(model.getAssemblyAccession())
-                .append(model.getChromosome())
-                .append(model.getProjectAccession())
-                .append(model.getStart())
-                .append(model.getType())
-                .toString();
+    public String apply(SampleModel message) {
+        return message.getSampleProperties().values().stream().sorted().collect(Collectors.joining(","));
     }
 
 }

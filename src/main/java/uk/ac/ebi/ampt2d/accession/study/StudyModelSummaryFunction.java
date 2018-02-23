@@ -16,15 +16,15 @@
  *
  */
 
-package uk.ac.ebi.ampt2d.accession.sample;
+package uk.ac.ebi.ampt2d.accession.study;
 
 import java.util.stream.Collectors;
 
-public class SampleModelDigestFunction implements java.util.function.Function<SampleModel, String> {
+public class StudyModelSummaryFunction implements java.util.function.Function<StudyModel, String> {
 
     @Override
-    public String apply(SampleModel message) {
-        return message.getSampleProperties().values().stream().sorted().collect(Collectors.joining(","));
+    public String apply(StudyModel study) {
+        return study.getStudyProperties().values().stream().sorted().collect(Collectors.joining(","));
     }
 
 }

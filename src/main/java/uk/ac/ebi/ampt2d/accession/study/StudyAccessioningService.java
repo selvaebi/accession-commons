@@ -27,9 +27,9 @@ public class StudyAccessioningService extends BasicAccessioningService<StudyMode
 
     public StudyAccessioningService(DatabaseService<StudyModel, String, String> dbService) {
         super(
-                SingleAccessionGenerator.ofSHA1AccessionGenerator(new StudyModelDigestFunction()),
+                SingleAccessionGenerator.ofSHA1AccessionGenerator(new StudyModelSummaryFunction()),
                 dbService,
-                new StudyModelDigestFunction(),
+                new StudyModelSummaryFunction(),
                 new SHA1HashingFunction()
         );
 

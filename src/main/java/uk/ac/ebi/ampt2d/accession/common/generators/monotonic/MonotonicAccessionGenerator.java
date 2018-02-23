@@ -17,21 +17,18 @@
  */
 package uk.ac.ebi.ampt2d.accession.common.generators.monotonic;
 
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.InitializingBean;
+import uk.ac.ebi.ampt2d.accession.common.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accession.common.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.common.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.accession.common.accessioning.SaveResponse;
-import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.entities.ContiguousIdBlock;
-import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.accession.common.utils.ExponentialBackOff;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Generates monotonically increasing ids for type of objects across multiple application instances. Each
@@ -48,37 +45,30 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
 
     private String applicationInstanceId;
 
-    private ContiguousIdBlockRepository contiguousIdBlockRepository;
+    private ContiguousIdBlockService blockService;
 
     private final BlockManager blockManager;
 
     public MonotonicAccessionGenerator(long blockSize, String categoryId, String applicationInstanceId,
-                                       ContiguousIdBlockRepository contiguousIdBlockRepository) {
+                                       ContiguousIdBlockService contiguousIdBlockService) {
         this.blockSize = blockSize;
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
-        this.contiguousIdBlockRepository = contiguousIdBlockRepository;
+        this.blockService = contiguousIdBlockService;
         this.blockManager = new BlockManager();
         loadIncompleteBlocks();
     }
 
     private void loadIncompleteBlocks() {
-        List<ContiguousIdBlock> uncompletedBlocks = getUncompletedBlocksForThisInstanceOrdered();
+        List<ContiguousIdBlock> uncompletedBlocks = blockService
+                .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId,
+                        applicationInstanceId);
         //Insert as available ranges
         for (ContiguousIdBlock block : uncompletedBlocks) {
             blockManager.addBlock(block);
         }
     }
 
-    /**
-     * TODO this can be changed to a query to recover and avoid the filter
-     */
-    private List<ContiguousIdBlock> getUncompletedBlocksForThisInstanceOrdered() {
-        try (Stream<ContiguousIdBlock> reservedBlocksOfThisInstance = contiguousIdBlockRepository
-                .findAllByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, applicationInstanceId)) {
-            return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());
-        }
-    }
 
     /**
      * This function will recover the internal state of committed elements and will remove them from the available
@@ -122,19 +112,12 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         }
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    protected synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
-        ContiguousIdBlock lastBlock = contiguousIdBlockRepository.findFirstByCategoryIdOrderByEndDesc(categoryId);
-        if (lastBlock != null) {
-            blockManager.addBlock(contiguousIdBlockRepository.save(lastBlock.nextBlock(instanceId, size)));
-        } else {
-            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, 0, size);
-            blockManager.addBlock(contiguousIdBlockRepository.save(newBlock));
-        }
+    private synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
+        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size));
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPending {
-        contiguousIdBlockRepository.save(blockManager.commit(accessions));
+        blockService.save(blockManager.commit(accessions));
     }
 
     public synchronized void release(long... accessions) throws AccessionIsNotPending {
@@ -152,6 +135,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         List<ModelHashAccession<MODEL, HASH, Long>> messageHashAccession = new ArrayList<>();
         for (Map.Entry<HASH, ? extends MODEL> entry : messages.entrySet()) {
             messageHashAccession.add(ModelHashAccession.of(entry.getValue(), entry.getKey(), accessions[i]));
+            i++;
         }
 
         return messageHashAccession;
@@ -162,4 +146,5 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         commit(response.getSavedAccessions().keySet().stream().mapToLong(l -> l).toArray());
         release(response.getUnsavedAccessions().keySet().stream().mapToLong(l -> l).toArray());
     }
+
 }

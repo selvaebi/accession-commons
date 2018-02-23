@@ -18,8 +18,8 @@
 package uk.ac.ebi.ampt2d.accession.common.generators.monotonic;
 
 import org.springframework.data.util.Pair;
-import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.entities.ContiguousIdBlock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -114,6 +114,9 @@ class BlockManager {
 
     private List<ContiguousIdBlock> doCommit(long[] accessions) {
         List<ContiguousIdBlock> blocksToUpdate = new ArrayList<>();
+        if (accessions == null || accessions.length == 0) {
+            return blocksToUpdate;
+        }
 
         addToCommitted(accessions);
 

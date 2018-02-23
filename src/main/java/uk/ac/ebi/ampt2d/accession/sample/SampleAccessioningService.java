@@ -26,9 +26,9 @@ import uk.ac.ebi.ampt2d.accession.common.hashing.SHA1HashingFunction;
 public class SampleAccessioningService extends BasicAccessioningService<SampleModel, String, String> {
 
     public SampleAccessioningService(DatabaseService<SampleModel, String, String> dbService) {
-        super(SingleAccessionGenerator.ofSHA1AccessionGenerator(new SampleModelDigestFunction()),
+        super(SingleAccessionGenerator.ofSHA1AccessionGenerator(new SampleModelSummaryFunction()),
                 dbService,
-                new SampleModelDigestFunction(),
+                new SampleModelSummaryFunction(),
                 new SHA1HashingFunction());
     }
 

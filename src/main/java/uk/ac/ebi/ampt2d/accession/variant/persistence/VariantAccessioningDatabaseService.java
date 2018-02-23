@@ -17,11 +17,16 @@
  */
 package uk.ac.ebi.ampt2d.accession.variant.persistence;
 
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.accession.common.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.accession.common.persistence.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.accession.variant.VariantModel;
 
+import java.util.Collection;
+
 public class VariantAccessioningDatabaseService
-        extends BasicSpringDataRepositoryDatabaseService<VariantModel, VariantEntity, String, String> {
+        extends BasicSpringDataRepositoryDatabaseService<VariantModel, VariantEntity, String, Long>
+        implements MonotonicDatabaseService<VariantModel, String> {
 
     public VariantAccessioningDatabaseService(VariantAccessioningRepository repository) {
         super(repository,
@@ -31,4 +36,8 @@ public class VariantAccessioningDatabaseService
                 variantEntity -> variantEntity.getHashedMessage());
     }
 
+    @Override
+    public long[] getAccessionsInRanges(Collection<MonotonicRange> ranges) {
+        return new long[0];
+    }
 }

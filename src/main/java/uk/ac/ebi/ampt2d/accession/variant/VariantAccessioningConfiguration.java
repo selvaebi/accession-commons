@@ -18,9 +18,14 @@
 package uk.ac.ebi.ampt2d.accession.variant;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ebi.ampt2d.accession.ApplicationConstants;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningDatabaseService;
 import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningRepository;
 
@@ -28,18 +33,41 @@ import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningReposit
 @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
 public class VariantAccessioningConfiguration {
 
+    @Value("${" + ApplicationConstants.VARIANT_BLOCK_SIZE + "}")
+    private long blockSize;
+
+    @Value("${" + ApplicationConstants.VARIANT_ID + "}")
+    private String variantId;
+
+    @Value("${" + ApplicationConstants.APPLICATION_INSTANCE_ID + "}")
+    private String applicationInstanceId;
+
+
     @Autowired
     private VariantAccessioningRepository repository;
 
+    @Autowired
+    private ContiguousIdBlockRepository contiguousIdBlockRepository;
+
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
     public VariantAccessioningService variantAccessionService() {
-        return new VariantAccessioningService (variantAccessioningDatabaseService());
+        return new VariantAccessioningService(variantAccessionGenerator(), variantAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
     public VariantAccessioningDatabaseService variantAccessioningDatabaseService() {
         return new VariantAccessioningDatabaseService(repository);
     }
+
+    @Bean
+    public MonotonicAccessionGenerator<VariantModel> variantAccessionGenerator() {
+        return new MonotonicAccessionGenerator<>(blockSize, variantId, applicationInstanceId,
+                contiguousIdBlockService());
+    }
+
+    @Bean
+    public ContiguousIdBlockService contiguousIdBlockService(){
+        return new ContiguousIdBlockService(contiguousIdBlockRepository);
+    }
+
 }

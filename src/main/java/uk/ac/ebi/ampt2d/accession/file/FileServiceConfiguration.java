@@ -33,13 +33,11 @@ public class FileServiceConfiguration {
     private FileAccessioningRepository repository;
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
     public FileAccessioningService fileAccessionService() {
         return new FileAccessioningService(fileAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "file-accession")
     public FileAccessioningDatabaseService fileAccessioningDatabaseService() {
         return new FileAccessioningDatabaseService(repository);
     }

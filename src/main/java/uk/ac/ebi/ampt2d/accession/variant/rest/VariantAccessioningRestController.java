@@ -33,7 +33,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/v1/variant")
 @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
-public class VariantAccessioningRestController extends BasicRestController<VariantModel, VariantDTO, String> {
+public class VariantAccessioningRestController extends BasicRestController<VariantModel, VariantDTO, Long> {
 
     public VariantAccessioningRestController(VariantAccessioningService service) {
         super(service, model -> new VariantDTO(model.getAssemblyAccession(), model.getProjectAccession(), model

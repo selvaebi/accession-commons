@@ -15,14 +15,19 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.variant.persistence;
+package uk.ac.ebi.ampt2d.accession.variant;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accession.common.accessioning.AccessioningRepository;
+public class VariantModelSummaryFunction implements java.util.function.Function<VariantModel, String> {
 
-@Repository
-@ConditionalOnProperty(name = "services", havingValue = "variant-accession")
-public interface VariantAccessioningRepository extends AccessioningRepository<VariantEntity, String, Long> {
+    @Override
+    public String apply(VariantModel model) {
+        return new StringBuilder()
+                .append(model.getAssemblyAccession())
+                .append(model.getChromosome())
+                .append(model.getProjectAccession())
+                .append(model.getStart())
+                .append(model.getType())
+                .toString();
+    }
 
 }

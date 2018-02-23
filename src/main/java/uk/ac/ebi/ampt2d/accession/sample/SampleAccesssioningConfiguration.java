@@ -33,13 +33,11 @@ public class SampleAccesssioningConfiguration {
     private SampleAccessioningRepository repository;
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
     public SampleAccessioningService sampleAccessionService() {
         return new SampleAccessioningService(sampleAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "sample-accession")
     public SampleAccessioningDatabaseService sampleAccessioningDatabaseService() {
         return new SampleAccessioningDatabaseService(repository);
     }
