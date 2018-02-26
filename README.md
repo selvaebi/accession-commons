@@ -1,27 +1,28 @@
 # amp-t2d-accession
-Generic service for accessioning of any type of object. 
+Generic library for accessioning any object type. It provides the core interfaces to generate hash-based and monotonically increasing accessions, which must be extended by each application to support a particular object type.
 
 ## How does it work
-A series of objects are passed to the accessioning service. This service will generate a summary of the relevant fields of the object and then a hash value will be calculated from it. This hash will be used as a key to check if the object has been accessioned already, if it exists already on the system, the existing accession will be returned for that object, otherwise a new accession will be generated and stored in the database. Finally, the user will receive a map of accessions/objects.
+A set of objects must be passed to the accessioning service layer. This service will generate a summary with the relevant fields of the object, and then a hash value will be calculated based on it. This hash will be used as a key to check if the object has been previously accessioned; if it already exists in the system, the existing accession will be returned for that object, otherwise a new accession will be generated and stored in the database. Finally, the user will receive a mapping between accessions/objects.
 
 ## Accessioning service
-An accessioning service is composed of
+An accessioning service requires the following:
+
 - Summary function
-- Hashing function
+- Hash function
 - Accession generator service
-- Database service layer to store the object in the desired database
+- Database service layer
 
 ### Summary function
-A summary function is a java lambda or Function implementation from your object model to a string. It is meant to give the minimum text string that identifies uniquely your object model.
+A summary function is a Java lambda or `Function` implementation from your object model to a string. It is meant to generate the minimum text string that uniquely identifies your object model.
 
-### Hashing function
-The hashing function is a java lambda or Function implementation from a String value to your Hash representation. It is also possible that the hash representation is also a string. This function will be used to hash the summary of your object to use as unique key. The library already contains a SHA1 function implementation.
+### Hash function
+The hash function is a Java lambda or `Function` implementation from the summary string to your preferred hash representation (which could also be a string). This hash value will be used as unique key for your object. The library already contains a SHA1 implementation.
 
-### Accession generator service
+## Accession generator service
 Service to generate accessions. It will receive a map of hash/model and will generate an accession for each pair creating a list of triplets accession/hash/model. The generated accession will depend on the specific implementation. The library currently has a timestamp based accession, accession hashed from the model and monotonic accession implementations.
 
-### Database service
+## Database service
 This service will handle the database persistence of the triplet accession/hash/model and the related queries offered through the accessioning service. Currently in the library there is a basic implementation that supports the use of Spring Data repositories / entities.
  
-## BasicAccessionGeneratorRestController
-The library offers a basic implementation of the methods to generate accessions and some queries of the existing ones. This implementation also allows to use the validation of the rest message against a DTO that represents your model.
+## REST interface
+Via the `BasicAccessionGeneratorRestController` class, the library offers a basic implementation of the REST andpoints to generate accessions and query the existing ones. This implementation also allows to use the validation of the rest message against a DTO that represents your model.
