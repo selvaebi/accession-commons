@@ -23,6 +23,7 @@ class CassandraWriteSampler() extends AbstractSampler {
   }
 
   private def getBatchStmt = {
+    //Use logged batches to maintain atomicity/consistency since we are inserting into two tables
     var batchStmt = new BatchStatement(BatchStatement.Type.LOGGED)
     batchStmt.setConsistencyLevel(ConsistencyLevel.QUORUM)
     batchStmt.setReadTimeoutMillis(600000)

@@ -36,6 +36,7 @@ object BenchmarkingMain extends App {
   val readSamplers = Map("cassandra" -> classOf[CassandraReadSampler], "mongodb" -> classOf[MongoDBReadSampler])
   val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler])
 
+  //Load workload configuration from a JSON configuration file
   val workloadConfig = pureconfig.loadConfigFromFiles[WorkloadConfig](Seq(Paths.get(config.workloadConfigFile())))
   match {
     case Left(failure) =>
@@ -72,6 +73,8 @@ object BenchmarkingMain extends App {
     val cassandraCluster = Cluster.builder().addContactPoints(cassandraNodes: _*).build()
     val cassandraSession = cassandraCluster.connect(keyspaceName)
 
+    //Use two separate tables to facilitate reverse lookup instead of materialized views
+    // See https://www.mail-archive.com/user@cassandra.apache.org/msg54073.html for materialized view deprecation
     val insertIntoLkp = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
       .format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val insertIntoReverseLkp = ("insert into %s_reverse (accession_id, raw_numeric_id, species, " +
