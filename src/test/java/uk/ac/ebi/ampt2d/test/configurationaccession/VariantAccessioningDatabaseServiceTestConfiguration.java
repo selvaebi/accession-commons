@@ -17,24 +17,47 @@
  */
 package uk.ac.ebi.ampt2d.test.configurationaccession;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.variant.VariantAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.variant.VariantMessage;
+import uk.ac.ebi.ampt2d.accession.ApplicationConstants;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.accession.variant.VariantAccessioningService;
+import uk.ac.ebi.ampt2d.accession.variant.VariantModel;
+import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.variant.persistence.VariantAccessioningRepository;
 
+@TestConfiguration
 public class VariantAccessioningDatabaseServiceTestConfiguration {
 
+    @Autowired
+    private VariantAccessioningRepository repository;
+
+    @Autowired
+    private ContiguousIdBlockRepository contiguousIdBlockRepository;
+
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
-    public AccessioningService<VariantMessage, String> variantAccessionService() {
-        return new AccessioningService<>(new SHA1AccessionGenerator<>(), variantAccessioningDatabaseService());
+    public VariantAccessioningService variantAccessionService() {
+        return new VariantAccessioningService(variantAccessionGenerator(), variantAccessioningDatabaseService());
     }
 
     @Bean
-    @ConditionalOnProperty(name = "services", havingValue = "variant-accession")
     public VariantAccessioningDatabaseService variantAccessioningDatabaseService() {
-        return new VariantAccessioningDatabaseService();
+        return new VariantAccessioningDatabaseService(repository);
     }
+
+    @Bean
+    public MonotonicAccessionGenerator<VariantModel> variantAccessionGenerator() {
+        return new MonotonicAccessionGenerator<>(1000L, "var-test", "test-inst",
+                contiguousIdBlockService());
+    }
+
+    @Bean
+    public ContiguousIdBlockService contiguousIdBlockService(){
+        return new ContiguousIdBlockService(contiguousIdBlockRepository);
+    }
+
 }

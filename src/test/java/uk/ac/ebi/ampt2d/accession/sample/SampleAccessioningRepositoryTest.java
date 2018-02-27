@@ -17,24 +17,28 @@
  */
 package uk.ac.ebi.ampt2d.accession.sample;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import org.springframework.test.context.transaction.TestTransaction;
+import uk.ac.ebi.ampt2d.accession.sample.persistence.SampleAccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.sample.persistence.SampleEntity;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.ampt2d.test.utils.TestHelper.generateSampleEntities;
+import static uk.ac.ebi.ampt2d.test.utils.TestHelper.generateSampleEntity;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
@@ -42,81 +46,44 @@ import static org.junit.Assert.assertEquals;
 public class SampleAccessioningRepositoryTest {
 
     @Autowired
-    private AccessioningRepository accessioningRepository;
-
-    private Map<String, String> sampleMap1;
-    private Map<String, String> sampleMap2;
-    private SampleEntity sampleEntity1;
-    private SampleEntity sampleEntity2;
-    private Set<SampleEntity> accessionObjects;
-
-    @Before
-    public void setUp() throws Exception {
-        sampleMap1 = new HashMap<>();
-        sampleMap1.put("title", "Title1");
-        sampleMap1.put("type", "Type1");
-        sampleMap1.put("submitterEmail", "Email1");
-        sampleMap2 = new HashMap<>();
-        sampleMap2.put("title", "Title2");
-        sampleMap2.put("type", "Type2");
-        sampleMap2.put("submitterEmail", "Email2");
-        sampleEntity1 = new SampleEntity(sampleMap1, "accession1", "hashedmessage1");
-        sampleEntity2 = new SampleEntity(sampleMap2, "accession2", "hashedmessage2");
-        accessionObjects = new HashSet<>();
-        accessionObjects.add(sampleEntity1);
-        accessionObjects.add(sampleEntity2);
-    }
+    private SampleAccessioningRepository accessioningRepository;
 
     @Test
     public void testSamplesAreStoredToRepository() throws Exception {
-        accessioningRepository.save(accessionObjects);
+        accessioningRepository.save(generateSampleEntities(1, 2));
         assertEquals(2, accessioningRepository.count());
-        Map<String, String> sampleMap3 = new HashMap<>();
-        sampleMap3.put("title", "Title3");
-        sampleMap3.put("type", "Type3");
-        sampleMap3.put("submitterEmail", "Email3");
-        SampleEntity accessionObject3 = new SampleEntity(sampleMap3, "accession3", "hashedmessage3");
-        accessionObjects.clear();
-        accessionObjects.add(accessionObject3);
-        accessioningRepository.save(accessionObjects);
+        accessioningRepository.save(generateSampleEntity(3));
         assertEquals(3, accessioningRepository.count());
     }
 
     @Test
     public void testFindObjectsInRepository() throws Exception {
-        accessioningRepository.save(accessionObjects);
+        List<SampleEntity> entities = generateSampleEntities(1, 2);
+        accessioningRepository.save(entities);
         assertEquals(2, accessioningRepository.count());
-        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
+        List<String> hashes = entities.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
         Collection<SampleEntity> objectsInRepo = accessioningRepository.findByHashedMessageIn(hashes);
         assertEquals(2, objectsInRepo.size());
     }
 
     //JpaSystemException is due to the id of entity being null
-    @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
+    @Test(expected = JpaSystemException.class)
     public void testSavingObjectsWithoutAccession() throws Exception {
-        SampleEntity accessionObject = new SampleEntity(sampleMap1, null, "hashedMessage1");
-        accessionObjects.clear();
-        accessionObjects.add(accessionObject);
-        accessioningRepository.save(accessionObjects);
+        SampleEntity accessionObject = new SampleEntity(new HashMap<>(), null, "hashedMessage1");
+        accessioningRepository.save(accessionObject);
     }
 
-    @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    @Test(expected = DataIntegrityViolationException.class)
+    @Commit
     public void testSavingObjectsWithoutHashedMessage() throws Exception {
-        sampleEntity1.setHashedMessage(null);
-        accessionObjects.clear();
-        accessionObjects.add(sampleEntity1);
-        accessioningRepository.save(accessionObjects);
-        accessioningRepository.flush();
+        SampleEntity accessionObject = new SampleEntity(new HashMap<>(), "accession1", null);
+        accessioningRepository.save(accessionObject);
+        TestTransaction.end();
     }
 
     @Test
     public void testSavingObjectsWithSameAccessionOverwrites() throws Exception {
-        accessionObjects.clear();
-        SampleEntity accessionObject1 = new SampleEntity(sampleMap1, "accession1", "hashedMessage1");
-        accessionObjects.add(accessionObject1);
-        SampleEntity accessionObject2 = new SampleEntity(sampleMap2, "accession1", "hashedMessage2");
-        accessionObjects.add(accessionObject2);
-        accessioningRepository.save(accessionObjects);
-        accessioningRepository.flush();
+        accessioningRepository.save(generateSampleEntities(1, 1));
+        assertEquals(1, accessioningRepository.count());
     }
 }

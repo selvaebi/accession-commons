@@ -17,14 +17,16 @@
  */
 package uk.ac.ebi.ampt2d.accession.file;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.AccessioningRepository;
+import org.springframework.test.context.transaction.TestTransaction;
+import uk.ac.ebi.ampt2d.accession.common.accessioning.AccessioningRepository;
+import uk.ac.ebi.ampt2d.accession.file.persistence.FileEntity;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,27 +44,23 @@ public class FileAccessioningRepositoryTest {
     @Autowired
     private AccessioningRepository fileAccessioningRepository;
 
-    private FileEntity accessionObject1;
-    private FileEntity accessionObject2;
-    private Set<FileEntity> accessionObjects;
+    private FileEntity generateFileEntity(int value){
+        return new FileEntity("file"+value,"file"+value);
+    }
 
-    @Before
-    public void setUp() throws Exception {
-        accessionObject1 = new FileEntity("file1", "file1");
-        accessionObject2 = new FileEntity("file2", "file2");
-        accessionObjects = new HashSet<>();
-        accessionObjects.add(accessionObject1);
-        accessionObjects.add(accessionObject2);
+    private Set<FileEntity> generateEntities(){
+        Set<FileEntity> accessionObjects = new HashSet<>();
+        accessionObjects.add(generateFileEntity(1));
+        accessionObjects.add(generateFileEntity(2));
+        return accessionObjects;
     }
 
     @Test
     public void testFilesAreStoredInTheRepository() throws Exception {
-        fileAccessioningRepository.save(accessionObjects);
+        fileAccessioningRepository.save(generateEntities());
         assertEquals(2, fileAccessioningRepository.count());
 
-        FileEntity accessionObject3 = new FileEntity("file3", "file3");
-        accessionObjects.add(accessionObject3);
-        fileAccessioningRepository.save(accessionObjects);
+        fileAccessioningRepository.save(generateFileEntity(3));
         assertEquals(3, fileAccessioningRepository.count());
     }
 
@@ -70,10 +68,11 @@ public class FileAccessioningRepositoryTest {
     public void testFindObjectsInRepository() throws Exception {
         assertEquals(0, fileAccessioningRepository.count());
 
-        fileAccessioningRepository.save(accessionObjects);
+        final Set<FileEntity> entities = generateEntities();
+        fileAccessioningRepository.save(entities);
         assertEquals(2, fileAccessioningRepository.count());
 
-        List<String> hashes = accessionObjects.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
+        List<String> hashes = entities.stream().map(obj -> obj.getHashedMessage()).collect(Collectors.toList());
 
         Collection<FileEntity> objectsInRepo = fileAccessioningRepository.findByHashedMessageIn(hashes);
         assertEquals(2, objectsInRepo.size());
@@ -81,16 +80,13 @@ public class FileAccessioningRepositoryTest {
 
     @Test(expected = org.springframework.orm.jpa.JpaSystemException.class)
     public void testSavingObjectsWithoutAccession() throws Exception {
-        accessionObjects.clear();
-        accessionObjects.add(new FileEntity("file1", null));
-        fileAccessioningRepository.save(accessionObjects);
+        fileAccessioningRepository.save(new FileEntity("file1", null));
     }
 
     @Test(expected = org.springframework.dao.DataIntegrityViolationException.class)
+    @Commit
     public void testSavingObjectsWithoutHash() throws Exception {
-        accessionObjects.clear();
-        accessionObjects.add(new FileEntity(null, "accession"));
-        fileAccessioningRepository.save(accessionObjects);
-        fileAccessioningRepository.flush();
+        fileAccessioningRepository.save(new FileEntity(null, "accession"));
+        TestTransaction.end();
     }
 }

@@ -18,5 +18,7 @@
 package uk.ac.ebi.ampt2d.accession.variant;
 
 public enum VariantType {
+
     SNV, DIV, HETEROZYGOUS, STR, NAMEDVARIANT, NOVARIATION, MIXED, MNV
+
 }

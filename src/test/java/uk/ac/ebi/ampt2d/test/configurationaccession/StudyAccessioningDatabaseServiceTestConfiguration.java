@@ -17,27 +17,30 @@
  */
 package uk.ac.ebi.ampt2d.test.configurationaccession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import uk.ac.ebi.ampt2d.accession.AccessioningService;
-import uk.ac.ebi.ampt2d.accession.sha1.SHA1AccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningDatabaseService;
-import uk.ac.ebi.ampt2d.accession.study.StudyMessage;
+import uk.ac.ebi.ampt2d.accession.study.StudyAccessioningService;
+import uk.ac.ebi.ampt2d.accession.study.persistence.StudyAccessioningDatabaseService;
+import uk.ac.ebi.ampt2d.accession.study.persistence.StudyAccessioningRepository;
 
 @TestConfiguration
 public class StudyAccessioningDatabaseServiceTestConfiguration {
 
+    @Autowired
+    private StudyAccessioningRepository repository;
+
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "study-accession")
-    public AccessioningService<StudyMessage, String> studyAccessionService() {
-        return new AccessioningService<>(new SHA1AccessionGenerator<>(), studyAccessioningDatabaseService());
+    public StudyAccessioningService studyAccessionService() {
+        return new StudyAccessioningService(studyAccessioningDatabaseService());
     }
 
     @Bean
     @ConditionalOnProperty(name = "services", havingValue = "study-accession")
     public StudyAccessioningDatabaseService studyAccessioningDatabaseService() {
-        return new StudyAccessioningDatabaseService();
+        return new StudyAccessioningDatabaseService(repository);
     }
 
 }
