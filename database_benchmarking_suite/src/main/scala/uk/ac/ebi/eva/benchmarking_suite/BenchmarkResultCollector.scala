@@ -12,8 +12,8 @@ class BenchmarkResultCollector(val summer: Summariser) extends ResultCollector(s
     super.sampleOccurred(e)
     val r = e.getResult
     if (!r.isSuccessful) {
-      System.out.println("Sampler %s failed at !".format(e.getThreadGroup) +
-        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))
+      System.out.println("Sampler %s failed at %s!".format(e.getThreadGroup,
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())))
       System.out.println(r.getResponseMessage)
     }
   }

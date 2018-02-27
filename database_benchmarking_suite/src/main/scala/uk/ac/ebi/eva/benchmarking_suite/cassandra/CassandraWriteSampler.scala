@@ -50,9 +50,9 @@ class CassandraWriteSampler() extends AbstractSampler {
           accessionId, new Integer(counter))
 
       //Write to 2 tables one for the look-up and the other for the reverse look-up
-      batchStmt.add(cassandraTestParams.lkpTableInsertStmt.bind
+      batchStmt.add(cassandraTestParams.lookupTableInsertStmt.bind
       (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id))
-      batchStmt.add(cassandraTestParams.reverseLkpTableInsertStmt.bind
+      batchStmt.add(cassandraTestParams.reverseLookupTableInsertStmt.bind
       (accession_id, raw_numeric_id, species, chromosome, start_pos, entity_id))
 
       insertData(threadNum, counter + 1, numInsertsPerThread)

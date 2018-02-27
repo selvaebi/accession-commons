@@ -75,21 +75,21 @@ object BenchmarkingMain extends App {
 
     //Use two separate tables to facilitate reverse lookup instead of materialized views
     // See https://www.mail-archive.com/user@cassandra.apache.org/msg54073.html for materialized view deprecation
-    val insertIntoLkp = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
+    val insertIntoLookup = "insert into %s (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) "
       .format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
-    val insertIntoReverseLkp = ("insert into %s_reverse (accession_id, raw_numeric_id, species, " +
+    val insertIntoReverseLookup = ("insert into %s_reverse (accession_id, raw_numeric_id, species, " +
       "chromosome, start_pos, entity_id) ").format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
-    val lkpInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLkp)
-    val reverseLkpInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLkp)
+    val lookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLookup)
+    val reverseLookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLookup)
     val blockReadStatement: PreparedStatement = cassandraSession.prepare(blockReadString)
       .setConsistencyLevel(ConsistencyLevel.QUORUM)
 
     cassandraSession.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
 
-    CassandraConnectionParams(cassandraCluster, cassandraSession, lkpInsertStmt,
-      reverseLkpInsertStmt, blockReadStatement)
+    CassandraConnectionParams(cassandraCluster, cassandraSession, lookupInsertStmt,
+      reverseLookupInsertStmt, blockReadStatement)
   }
 
   def getMongoDBConnectionParams(connectionString: String, databaseName: String, collectionName: String):
@@ -174,7 +174,7 @@ class BenchmarkingArgParser(arguments: Seq[String], validDatabases: List[String]
     descr = "Full path to the JMeter installation directory (ex: /opt/jmeter)")
   val outputFile: arg[String] = opt[String](required = true, short = 'o',
     descr = "Path to store the test output (ex: /opt/cassandra_test/results.jtl)")
-  val workloadConfigFile: arg[String] = opt[String](required = true, short = 'f',
+  val workloadConfigFile: arg[String] = opt[String](required = true, short = 'w',
     descr = "Path to workload configuration file (ex: /opt/cassandra_test/read_workloads.json")
 
   validate(databaseType) { (databaseName) =>
