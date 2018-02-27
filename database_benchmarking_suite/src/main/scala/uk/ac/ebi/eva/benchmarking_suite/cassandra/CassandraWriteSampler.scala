@@ -37,13 +37,16 @@ class CassandraWriteSampler() extends AbstractSampler {
     }
 
     if (counter < numInsertsPerThread) {
+      val timeStamp = System.currentTimeMillis()
+      val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
+      val entityId = "ent_%d_%d_%s".format(threadNum, counter, timeStamp)
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
       if (timeForBatchWrite) {
         batchWrite
       }
       val (species, chromosome, start_pos, entity_id, accession_id, raw_numeric_id) =
-        ("eva_hsapiens_grch37", threadNum.toString, new Integer(counter + 100), "ent_%d_%d".format(threadNum, counter),
-          "acc_%d_%d".format(threadNum, counter), new Integer(counter))
+        ("eva_hsapiens_grch37", threadNum.toString, new Integer(counter + 100), entityId,
+          accessionId, new Integer(counter))
 
       //Write to 2 tables one for the look-up and the other for the reverse look-up
       batchStmt.add(cassandraTestParams.lkpTableInsertStmt.bind
