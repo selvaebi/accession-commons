@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.ampt2d</groupId>
-    <artifactId>accessioning-service</artifactId>
+    <artifactId>accessioning-commons</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>

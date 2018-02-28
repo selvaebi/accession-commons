@@ -18,12 +18,19 @@
 package uk.ac.ebi.ampt2d.test.configurationaccession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.accession.common.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
 
-@TestConfiguration
+@Configuration
+@EntityScan("uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities")
+@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence")
+@ComponentScan(basePackages = "uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence")
 public class MonotonicAccessionGeneratorTestConfiguration {
 
     @Autowired
