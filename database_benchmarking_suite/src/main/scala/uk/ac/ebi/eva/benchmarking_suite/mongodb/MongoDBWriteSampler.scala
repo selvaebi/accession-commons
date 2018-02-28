@@ -39,9 +39,10 @@ class MongoDBWriteSampler() extends AbstractSampler {
     if (counter < numInsertsPerThread) {
       val timeStamp = System.currentTimeMillis()
       val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
+      val entityId = "ent_%d_%d_%s".format(threadNum, counter, timeStamp)
       val documentToInsert: doc = InsertOneModel(Document(
-        "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> ("" + threadNum),
-        "start_pos" -> (counter + 100), "entity_id" -> "ent_%d_%d".format(threadNum, counter),
+        "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> threadNum.toString,
+        "start_pos" -> (counter + 100), "entity_id" -> entityId,
         "accession_id" -> accessionId, "raw_numeric_id" -> counter)
       )
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
