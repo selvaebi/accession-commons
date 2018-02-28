@@ -1,4 +1,4 @@
-# amp-t2d-accession
+# Accession Commons
 Generic library for accessioning any object type. It provides the core interfaces to generate hash-based and monotonically increasing accessions, which must be extended by each application to support a particular object type.
 
 ## How does it work
