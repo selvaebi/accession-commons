@@ -21,9 +21,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.accessioning.commons.autoconfigure.EnableSpringDataContiguousIdService;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities.ContiguousIdBlock;
@@ -41,6 +43,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@SpringBootTest
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
 public class MonotonicAccessionGeneratorTest {
 
