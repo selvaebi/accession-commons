@@ -18,21 +18,22 @@ class CassandraReadSampler() extends AbstractSampler {
       databaseAction = () => {
         val numReadsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
-        randomNumGen = new scala.util.Random(threadNum)
+        //Use thread number and timestamp to vary the random seed across multiple runs for a same thread choice
+        randomNumGen = new scala.util.Random(threadNum  + System.currentTimeMillis())
         (1 to numReadsPerThread).foreach(_ => readData())
       })
 
   }
 
   private def readData(): Unit = {
-    val chromosome = randomNumGen.nextInt(16)
-    val startPos = randomNumGen.nextInt(1e9.toInt/16)
+    val chromosome = randomNumGen.nextInt(32)
+    val startPos = randomNumGen.nextInt(1e8.toInt/32)
     val rows: ResultSet = cassandraTestParams.session.execute(cassandraTestParams.blockReadStmt.bind(
       "eva_hsapiens_grch37",
       chromosome.toString,
       new Integer(startPos),
       new Integer(startPos + blockReadSize)
-    ))
+    ).setReadTimeoutMillis(600000))
     rows.iterator().forEachRemaining(row => row.getInt("start_pos")) //Force row retrieval by getting one attribute
     }
 }

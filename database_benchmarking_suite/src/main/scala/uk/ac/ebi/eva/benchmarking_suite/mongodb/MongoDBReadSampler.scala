@@ -5,6 +5,9 @@ import org.apache.jmeter.util.JMeterUtils
 import org.mongodb.scala.model.Filters._
 import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 class MongoDBReadSampler() extends AbstractSampler {
 
   var mongoDBTestParams: MongoDBConnectionParams = _
@@ -19,17 +22,23 @@ class MongoDBReadSampler() extends AbstractSampler {
         mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]
         val numReadsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
-        randomNumGen = new scala.util.Random(threadNum)
+        //Use thread number and timestamp to vary the random seed across multiple runs for a same thread choice
+        randomNumGen = new scala.util.Random(threadNum + System.currentTimeMillis())
         (1 to numReadsPerThread).foreach(_ => readData())
       })
   }
 
   def readData(): Unit = {
-    val chromosome = randomNumGen.nextInt(16)
-    val startPos = randomNumGen.nextInt(1e9.toInt/16)
-    mongoDBTestParams.mongoCollection.find(
-      and(equal("chromosome", chromosome),
+    val chromosome = randomNumGen.nextInt(32)
+    val startPos = randomNumGen.nextInt(1e8.toInt/32)
+    val findResults = mongoDBTestParams.mongoCollection.find(
+      and(equal("chromosome", chromosome.toString),
         gt("start_pos", startPos),
-        lte("start_pos", startPos + blockReadSize))).foreach(doc => doc.get("start_pos")) //Force document retrieval by getting one attribute
+        lte("start_pos", startPos + blockReadSize))).maxTime(10.minutes)
+    Await.result(findResults.toFuture(), 10.minutes).foreach(doc => {
+      doc.get("start_pos").head.toString //Force document retrieval by getting one attribute
+    })
   }
+
+
 }
