@@ -15,18 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accessioning.commons.accessioning;
+package uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
+public class AccessionCouldNotBeGeneratedException extends Exception {
 
-import java.util.List;
-import java.util.Map;
-
-public interface AccessioningService<MODEL, ACCESSION> {
-
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
-
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
-
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
+    public AccessionCouldNotBeGeneratedException(String s) {
+        super(s);
+    }
 }

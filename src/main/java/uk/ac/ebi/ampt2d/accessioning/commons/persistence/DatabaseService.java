@@ -17,8 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.accessioning.commons.persistence;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +39,8 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> hashes);
 
-    SaveResponse<ACCESSION, MODEL> save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
+    @Transactional
+    void save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
 
-    Map<ACCESSION,? extends MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions);
+    Map<ACCESSION, ? extends MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions);
 }

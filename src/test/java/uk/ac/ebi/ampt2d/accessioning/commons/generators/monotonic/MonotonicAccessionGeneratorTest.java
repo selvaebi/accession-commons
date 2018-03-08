@@ -21,29 +21,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accessioning.commons.autoconfigure.EnableSpringDataContiguousIdService;
+import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
-import uk.ac.ebi.ampt2d.test.configurationaccession.MonotonicAccessionGeneratorTestConfiguration;
+import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@SpringBootTest
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
 public class MonotonicAccessionGeneratorTest {
 
@@ -381,6 +380,25 @@ public class MonotonicAccessionGeneratorTest {
         assertEquals(1, repository.count());
         assertEquals(0L, (long) generatedAccessions.get(0).accession());
         assertEquals(1L, (long) generatedAccessions.get(1).accession());
+    }
+
+    @Test
+    public void postSaveAction() throws Exception {
+        MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
+        generator.generateAccessions(BLOCK_SIZE);
+        Map<Long, String> committed = new HashMap<>();
+        committed.put(0L,"0");
+        committed.put(1L,"1");
+        committed.put(3L,"3");
+        committed.put(4L,"4");
+        Map<Long, String> released = new HashMap<>();
+        released.put(2L,"0");
+        released.put(5L,"0");
+        generator.postSave(new SaveResponse(committed,released));
+        long[] accessions = generator.generateAccessions(BLOCK_SIZE);
+        assertEquals(2,accessions[0]);
+        assertEquals(5,accessions[1]);
+        assertEquals(BLOCK_SIZE,accessions[2]);
     }
 
 }

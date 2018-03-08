@@ -39,9 +39,4 @@ public class SaveResponse<ACCESSION, MODEL> {
         return unsavedAccessions;
     }
 
-    public Map<ACCESSION, MODEL> getAllAccessionToMessage() {
-        Map<ACCESSION, MODEL> allAccessionToMessage = new HashMap<>(savedAccessions);
-        allAccessionToMessage.putAll(unsavedAccessions);
-        return allAccessionToMessage;
-    }
 }

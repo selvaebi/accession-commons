@@ -35,6 +35,7 @@ public class ContiguousIdBlockService {
         this.repository = repository;
     }
 
+    @Transactional
     public void save(Iterable<ContiguousIdBlock> blocks) {
         repository.save(blocks);
     }
@@ -53,7 +54,6 @@ public class ContiguousIdBlockService {
     @Transactional(readOnly = true)
     public List<ContiguousIdBlock> getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(
             String categoryId, String applicationInstanceId) {
-        boolean value = TransactionSynchronizationManager.isActualTransactionActive();
         try (Stream<ContiguousIdBlock> reservedBlocksOfThisInstance = repository
                 .findAllByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, applicationInstanceId)) {
             return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());

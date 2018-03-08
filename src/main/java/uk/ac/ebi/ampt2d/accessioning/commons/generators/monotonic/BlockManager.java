@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic;
 
 import org.springframework.data.util.Pair;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities.ContiguousIdBlock;
 
 import java.util.ArrayList;
@@ -64,7 +65,10 @@ class BlockManager {
      * @param maxValues Max array size returned by the function
      * @return
      */
-    public long[] pollNext(int maxValues) {
+    public long[] pollNext(int maxValues) throws AccessionCouldNotBeGeneratedException {
+        if (!hasAvailableAccessions(maxValues)) {
+            throw new AccessionCouldNotBeGeneratedException("Block manager doesn't have " + maxValues + " values available.");
+        }
         MonotonicRange monotonicRange = pollNextMonotonicRange(maxValues);
         long[] ids = monotonicRange.getIds();
         generatedAccessions.addAll(LongStream.of(ids).boxed().collect(Collectors.toList()));

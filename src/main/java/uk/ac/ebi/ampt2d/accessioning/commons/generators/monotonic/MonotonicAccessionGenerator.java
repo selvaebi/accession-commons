@@ -20,10 +20,12 @@ package uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic;
 import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.accessioning.commons.utils.ExponentialBackOff;
+import uk.ac.ebi.ampt2d.accessioning.commons.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +82,8 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         blockManager.recoverState(committedElements);
     }
 
-    public synchronized long[] generateAccessions(int numAccessionsToGenerate) {
+    public synchronized long[] generateAccessions(int numAccessionsToGenerate)
+            throws AccessionCouldNotBeGeneratedException {
         long[] accessions = new long[numAccessionsToGenerate];
         reserveNewBlocksUntilSizeIs(numAccessionsToGenerate);
 
@@ -105,7 +108,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
                 ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
-            } catch (RuntimeException e) {
+            } catch (ExponentialBackOffMaxRetriesRuntimeException e) {
                 // Ignore, max backoff have been reached, we will try again until we can reserve blocks
             }
         }
@@ -128,7 +131,8 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     }
 
     @Override
-    public <HASH> List<ModelHashAccession<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages) {
+    public <HASH> List<ModelHashAccession<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages)
+            throws AccessionCouldNotBeGeneratedException {
         long[] accessions = generateAccessions(messages.size());
         int i = 0;
         List<ModelHashAccession<MODEL, HASH, Long>> messageHashAccession = new ArrayList<>();

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.BasicAccessioningService;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,8 @@ public class BasicRestController<MODEL, DTO extends MODEL, ACCESSIONING> {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public Map<ACCESSIONING, DTO> generateAccessions(@RequestBody List<DTO> DTOS) {
+    public Map<ACCESSIONING, DTO> generateAccessions(@RequestBody List<DTO> DTOS)
+            throws AccessionCouldNotBeGeneratedException {
         return service.getOrCreateAccessions(DTOS).entrySet().stream().collect(Collectors.toMap(o -> o.getKey(),
                 o -> modelToDTO.apply(o.getValue())));
     }

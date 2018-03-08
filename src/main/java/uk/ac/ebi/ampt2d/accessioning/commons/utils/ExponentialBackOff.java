@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.accessioning.commons.utils;
 
+import uk.ac.ebi.ampt2d.accessioning.commons.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
+
 import java.util.function.Supplier;
 
 /**
@@ -45,7 +47,7 @@ public interface ExponentialBackOff {
                 currentValue = nextValue;
             }
         }
-        throw new RuntimeException("Exponential backoff max retries have been reached");
+        throw new ExponentialBackOffMaxRetriesRuntimeException();
     }
 
     static <T> T execute(Supplier<T> function) {
@@ -65,7 +67,7 @@ public interface ExponentialBackOff {
                 currentValue = nextValue;
             }
         }
-        throw new RuntimeException("Exponential backoff max retries have been reached");
+        throw new ExponentialBackOffMaxRetriesRuntimeException();
     }
 
     static void doWait(int valueInTheSeries, int timeBase) {

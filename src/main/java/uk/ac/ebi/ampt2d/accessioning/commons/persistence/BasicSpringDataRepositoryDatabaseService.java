@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accessioning.commons.persistence;
 
+import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.AccessioningRepository;
 import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
@@ -75,17 +76,14 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends MODE
     }
 
     @Override
-    public SaveResponse save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects) {
-        // TODO overly optimistic database service that will work always
+    @Transactional
+    public void save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects) {
         HashMap<ACCESSION, MODEL> savedAccessions = new HashMap<>();
         HashMap<ACCESSION, MODEL> unsavedAccessions = new HashMap<>();
 
         Set<ENTITY> entitySet = objects.stream()
                 .map(toEntityFunction).collect(Collectors.toSet());
-        Iterable<ENTITY> savedEntities = repository.save(entitySet);
-        savedEntities.forEach(entity -> savedAccessions.put(getAccessionFunction.apply(entity), entity));
-
-        return new SaveResponse(savedAccessions, unsavedAccessions);
+        repository.save(entitySet);
     }
 
     @Override

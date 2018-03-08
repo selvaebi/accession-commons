@@ -15,13 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configurationaccession;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.accessioning.commons.autoconfigure.EnableSpringDataContiguousIdService;
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.AccessioningRepository;
 
+@Repository
+public interface TestRepository extends AccessioningRepository<TestEntity, String, String> {
 }

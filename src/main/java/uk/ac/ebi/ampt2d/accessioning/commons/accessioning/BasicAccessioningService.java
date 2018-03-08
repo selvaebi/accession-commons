@@ -18,8 +18,11 @@
 package uk.ac.ebi.ampt2d.accessioning.commons.accessioning;
 
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.AccessionGenerator;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.accessioning.commons.persistence.DatabaseService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,6 +36,8 @@ import java.util.stream.Collectors;
  * @param <HASH>
  */
 public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements AccessioningService<MODEL, ACCESSION> {
+
+    private final BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> basicAccessioningServiceSaveDelegate;
 
     private AccessionGenerator<MODEL, ACCESSION> accessionGenerator;
 
@@ -50,6 +55,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
         this.dbService = dbService;
         this.summaryFunction = summaryFunction;
         this.hashingFunction = hashingFunction;
+        this.basicAccessioningServiceSaveDelegate = new BasicAccessioningServiceSaveDelegate<>(dbService);
     }
 
     /**
@@ -60,7 +66,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * @return
      */
     @Override
-    public Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) {
+    public Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages)
+            throws AccessionCouldNotBeGeneratedException {
         Map<HASH, MODEL> hashToMessages = mapHashOfMessages(messages);
         Map<HASH, ACCESSION> existingAccessions = dbService.getExistingAccessions(hashToMessages.keySet());
         Map<HASH, MODEL> newMessages = filterNotExistingAccessions(hashToMessages, existingAccessions);
@@ -95,10 +102,16 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
                 .collect(Collectors.toMap(e -> e.getValue(), e -> hashToMessages.get(e.getKey())));
     }
 
-    private Map<ACCESSION, MODEL> generateAccessions(Map<HASH, MODEL> accessions) {
-        SaveResponse<ACCESSION, MODEL> response = dbService.save(accessionGenerator.generateAccessions(accessions));
+    private Map<ACCESSION, MODEL> generateAccessions(Map<HASH, MODEL> accessions) throws
+            AccessionCouldNotBeGeneratedException {
+        SaveResponse<ACCESSION, MODEL> response = basicAccessioningServiceSaveDelegate
+                .doSaveAccessions(accessionGenerator.generateAccessions(accessions));
         accessionGenerator.postSave(response);
-        return response.getAllAccessionToMessage();
+        Map<ACCESSION, MODEL> savedAccessions = response.getSavedAccessions();
+        List<MODEL> unsavedObjects = new ArrayList<>(response.getUnsavedAccessions().values());
+        savedAccessions.putAll(getAccessions(unsavedObjects));
+
+        return savedAccessions;
     }
 
     @Override
