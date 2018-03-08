@@ -2,6 +2,7 @@ package uk.ac.ebi.eva.benchmarking_suite.cassandra
 
 import com.datastax.driver.core.{BatchStatement, ConsistencyLevel}
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
+import org.apache.jmeter.threads.JMeterVariables
 import org.apache.jmeter.util.JMeterUtils
 import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
 
@@ -12,13 +13,14 @@ class CassandraWriteSampler() extends AbstractSampler {
   var batchStmt: BatchStatement = _
 
   override def sample(entry: Entry): SampleResult = {
-    cassandraTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[CassandraConnectionParams]
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
+        cassandraTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[CassandraConnectionParams]
         val numInsertsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
+        val iteration = this.getThreadContext.getVariables.getIteration
         batchStmt = getBatchStmt
-        insertData(threadNum, counter = 0, numInsertsPerThread)
+        insertData(iteration, threadNum, counter = 0, numInsertsPerThread)
       })
   }
 
@@ -31,16 +33,16 @@ class CassandraWriteSampler() extends AbstractSampler {
   }
 
   @annotation.tailrec
-  private def insertData(threadNum: Int, counter: Int, numInsertsPerThread: Int): Unit = {
+  private def insertData(iteration: Int, threadNum: Int, counter: Int, numInsertsPerThread: Int): Unit = {
     def batchWrite = {
       cassandraTestParams.session.execute(batchStmt)
       batchStmt.clear()
     }
 
     if (counter < numInsertsPerThread) {
-      val timeStamp = System.currentTimeMillis()
-      val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
-      val entityId = "ent_%d_%d_%s".format(threadNum, counter, timeStamp)
+      //val timeStamp = System.currentTimeMillis()
+      val accessionId = "acc_%d_%d_%d".format(threadNum, counter, iteration)
+      val entityId = "ent_%d_%d_%d".format(threadNum, counter, iteration)
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
       if (timeForBatchWrite) {
         batchWrite
@@ -55,7 +57,7 @@ class CassandraWriteSampler() extends AbstractSampler {
       batchStmt.add(cassandraTestParams.reverseLookupTableInsertStmt.bind
       (accession_id, raw_numeric_id, species, chromosome, start_pos, entity_id))
 
-      insertData(threadNum, counter + 1, numInsertsPerThread)
+      insertData(iteration, threadNum, counter + 1, numInsertsPerThread)
     }
     else {
       batchWrite

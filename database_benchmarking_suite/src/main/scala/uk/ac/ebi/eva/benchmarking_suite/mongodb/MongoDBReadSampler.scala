@@ -3,7 +3,7 @@ package uk.ac.ebi.eva.benchmarking_suite.mongodb
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
 import org.mongodb.scala.model.Filters._
-import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
+import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, ReadBenchmarkingConstants}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -16,7 +16,6 @@ class MongoDBReadSampler() extends AbstractSampler {
   val blockReadSize = 100
 
   override def sample(entry: Entry): SampleResult = {
-    mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
         mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]
@@ -29,8 +28,8 @@ class MongoDBReadSampler() extends AbstractSampler {
   }
 
   def readData(): Unit = {
-    val chromosome = randomNumGen.nextInt(32)
-    val startPos = randomNumGen.nextInt(1e8.toInt/32)
+    val chromosome = randomNumGen.nextInt(ReadBenchmarkingConstants.threadChoiceUB)
+    val startPos = randomNumGen.nextInt(ReadBenchmarkingConstants.numRecordsUB/ReadBenchmarkingConstants.threadChoiceUB)
     val findResults = mongoDBTestParams.mongoCollection.find(
       and(equal("chromosome", chromosome.toString),
         gt("start_pos", startPos),

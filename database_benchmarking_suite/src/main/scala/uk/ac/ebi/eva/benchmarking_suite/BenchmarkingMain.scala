@@ -2,6 +2,7 @@ package uk.ac.ebi.eva.benchmarking_suite
 
 import java.nio.file.Paths
 
+import slick.jdbc.PostgresProfile.api._
 import com.datastax.driver.core.{Cluster, ConsistencyLevel, PreparedStatement, SimpleStatement}
 import org.mongodb.scala.{Document, MongoClient, MongoCollection, ReadConcern, WriteConcern}
 import org.apache.jmeter.control.LoopController
@@ -10,15 +11,28 @@ import org.apache.jmeter.threads.ThreadGroup
 import org.apache.jmeter.util.JMeterUtils
 import org.rogach.scallop._
 import uk.ac.ebi.eva.benchmarking_suite.cassandra.{CassandraConnectionParams, CassandraReadSampler, CassandraWriteSampler}
-import uk.ac.ebi.eva.benchmarking_suite.mongodb.{MongoDBConnectionParams, MongoDBReadSampler, MongoDBWriteSampler}
+import uk.ac.ebi.eva.benchmarking_suite.mongodb.{MongoDBConnectionParams, MongoDBLookupSampler, MongoDBReadSampler, MongoDBWriteSampler}
+import uk.ac.ebi.eva.benchmarking_suite.postgres.{PostgresConnectionParams, PostgresLookupSampler, PostgresReadSampler, PostgresWriteSampler}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+object ReadBenchmarkingConstants {
+  //Upper bound on the number of records
+  val numRecordsUB: Int = 500e6.toInt
+  //Thread choices
+  val threadChoices = List(8,16,32)
+  //Upper bound on the number of threads
+  val threadChoiceUB: Int = 32
+  //Upper bound on the number of loops a workload is repeated for any given thread choice
+  //In other words, upper bound on num-ops-per-wu - see README for a detailed description
+  val numLoopsUB: Int = 2
+}
+
 object BenchmarkingMain extends App {
 
   //Supported databases
-  val validDatabases = List("cassandra", "mongodb")
+  val validDatabases = List("cassandra", "mongodb", "postgres")
 
   //Parse command line arguments
   val config = new BenchmarkingArgParser(args, validDatabases)
@@ -33,8 +47,11 @@ object BenchmarkingMain extends App {
   val dbConnectionParams = getDBConnectionParams(db, connectionString)
   jmeterProperties.put("connectionParams", dbConnectionParams)
 
-  val readSamplers = Map("cassandra" -> classOf[CassandraReadSampler], "mongodb" -> classOf[MongoDBReadSampler])
-  val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler])
+  val readSamplers = Map("cassandra" -> classOf[CassandraReadSampler], "mongodb" -> classOf[MongoDBReadSampler],
+  "postgres" -> classOf[PostgresReadSampler])
+  val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler],
+  "postgres" -> classOf[PostgresWriteSampler])
+  val lookupSamplers = Map("mongodb" -> classOf[MongoDBLookupSampler], "postgres" -> classOf[PostgresLookupSampler])
 
   //Load workload configuration from a JSON configuration file
   val workloadConfig = pureconfig.loadConfigFromFiles[WorkloadConfig](Seq(Paths.get(config.workloadConfigFile())))
@@ -52,6 +69,8 @@ object BenchmarkingMain extends App {
       .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
     workloadConfig.readWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, readSamplers(db)))
       .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
+    workloadConfig.lookupWorkloads.flatMap(workload => getJMeterThreadGroupAndSampler(workload, lookupSamplers(db)))
+      .foreach(x => jMeterTestPlan.addThreadGroupAndSampler(x._1, x._2))
     jMeterTestPlan.runPlan()
   } catch {
     case ex: Exception => ex.printStackTrace()
@@ -64,7 +83,14 @@ object BenchmarkingMain extends App {
     db match {
       case "cassandra" => getCassandraConnectionParams(connectionString, schemaName, variantTableName)
       case "mongodb" => getMongoDBConnectionParams(connectionString, schemaName, variantTableName)
+      case "postgres" => getPostgresConnectionParams(connectionString, schemaName, variantTableName)
     }
+  }
+
+  def getPostgresConnectionParams(connectionString: String, schemaName: String, variantTableName: String):
+  PostgresConnectionParams = {
+    val postgresDBConnection = Database.forURL(connectionString, driver = "org.postgresql.Driver", user = "postgres")
+    PostgresConnectionParams(postgresDBConnection, schemaName, variantTableName)
   }
 
   def getCassandraConnectionParams(connectionString: String, keyspaceName: String, variantTableName: String):
@@ -86,8 +112,6 @@ object BenchmarkingMain extends App {
     val blockReadStatement: PreparedStatement = cassandraSession.prepare(blockReadString)
       .setConsistencyLevel(ConsistencyLevel.QUORUM)
 
-    cassandraSession.execute(new SimpleStatement("truncate %s".format(variantTableName)).setReadTimeoutMillis(600000))
-
     CassandraConnectionParams(cassandraCluster, cassandraSession, lookupInsertStmt,
       reverseLookupInsertStmt, blockReadStatement)
   }
@@ -98,8 +122,6 @@ object BenchmarkingMain extends App {
     val mongoDatabase = mongoClient.getDatabase(databaseName)
     var mongoCollection: MongoCollection[Document] = mongoDatabase.getCollection(collectionName)
       .withWriteConcern(WriteConcern.MAJORITY).withReadConcern(ReadConcern.MAJORITY)
-
-    Await.result(mongoCollection.deleteMany(Document()).toFuture(), Duration.Inf)
 
     MongoDBConnectionParams(mongoClient, mongoDatabase, mongoCollection)
   }
@@ -132,6 +154,7 @@ object BenchmarkingMain extends App {
     //Sampler
     sampler.setName(name)
     sampler.setProperty("numOpsPerThread", numOpsPerThread)
+    sampler.setProperty("threadChoice", numThreads)
 
     // Setup Loop controller
     var loopCtrl = new LoopController
@@ -148,7 +171,8 @@ object BenchmarkingMain extends App {
   }
 }
 
-class WorkloadConfig(val writeWorkloads: List[Workload], val readWorkloads: List[Workload])
+class WorkloadConfig(val writeWorkloads: List[Workload], val readWorkloads: List[Workload],
+                     val lookupWorkloads: List[Workload])
 
 // Workload settings - WU => Workload Unit
 class Workload(val desc: String, val threadChoices: List[Int], val numOpsPerWU: Int, val numWU: Int) {}
@@ -165,6 +189,7 @@ class BenchmarkingArgParser(arguments: Seq[String], validDatabases: List[String]
       """Database Connection Params:
         |For Cassandra, list of IPs: 192.168.0.1,192.168.0.2
         |For MongoDB, connection URL: mongodb://username:password@db1.example.net:27017,db2.example.net:27017
+        |For Postgres, connection URL: jdbc:postgresql://pghost:5432/db1
       """.stripMargin)
   val schemaName: arg[String] = opt[String](required = true, short = 's',
     descr = "Schema or keyspace to run the tests (ex: accessioning)")

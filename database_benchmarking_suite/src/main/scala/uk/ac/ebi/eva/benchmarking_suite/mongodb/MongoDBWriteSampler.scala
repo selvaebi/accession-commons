@@ -4,7 +4,7 @@ import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
 import org.mongodb.scala.Document
 import org.mongodb.scala.model._
-import uk.ac.ebi.eva.benchmarking_suite.DBSamplerProcessor
+import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, JMeterSamplerContextProperties}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -18,18 +18,18 @@ class MongoDBWriteSampler() extends AbstractSampler {
   var mongoDBTestParams: MongoDBConnectionParams = _
 
   override def sample(entry: Entry): SampleResult = {
-    mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
         mongoDBTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[MongoDBConnectionParams]
         val numInsertsPerThread = this.getPropertyAsInt("numOpsPerThread")
-        val threadNum = this.getThreadContext.getThreadNum
-        insertData(threadNum, counter = 0, numInsertsPerThread, List[doc]())
+        val samplerCtxProps = new JMeterSamplerContextProperties(this.getPropertyAsInt("threadChoice") ,
+          this.getThreadContext.getThreadNum, this.getThreadContext.getVariables.getIteration)
+        insertData(samplerCtxProps, counter = 0, numInsertsPerThread, List[doc]())
       })
   }
 
   @annotation.tailrec
-  private def insertData(threadNum: Int, counter: Int, numInsertsPerThread: Int,
+  private def insertData(samplerCtxProps: JMeterSamplerContextProperties, counter: Int, numInsertsPerThread: Int,
                          documents: List[doc]): Unit = {
     def batchWrite = {
       Await.result(mongoDBTestParams.mongoCollection.bulkWrite(documents, bulkWriteOptions).toFuture(),
@@ -37,11 +37,17 @@ class MongoDBWriteSampler() extends AbstractSampler {
     }
 
     if (counter < numInsertsPerThread) {
-      val timeStamp = System.currentTimeMillis()
-      val accessionId = "acc_%d_%d_%s".format(threadNum, counter, timeStamp)
-      val entityId = "ent_%d_%d_%s".format(threadNum, counter, timeStamp)
+      //Accession and Entity IDs suffix format
+      //Total number of threads for the current sampler
+      //Thread number of the current sampler (for ex: has a value 6 for the 6th thread of a sampler running with 8 threads)
+      //Iteration number of the current sampler (how many times has the current sampler already run thus far + 1)
+      //Index of the record currently being inserted
+      val accessionId = "acc_%d_%d_%d_%d".format(samplerCtxProps.threadChoice, samplerCtxProps.threadNum,
+        samplerCtxProps.loopIndex, counter)
+      val entityId = "ent_%d_%d_%d_%d".format(samplerCtxProps.threadChoice, samplerCtxProps.threadNum,
+        samplerCtxProps.loopIndex, counter)
       val documentToInsert: doc = InsertOneModel(Document(
-        "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> threadNum.toString,
+        "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> samplerCtxProps.threadNum.toString,
         "start_pos" -> (counter + 100), "entity_id" -> entityId,
         "accession_id" -> accessionId, "raw_numeric_id" -> counter)
       )
@@ -49,7 +55,7 @@ class MongoDBWriteSampler() extends AbstractSampler {
       if (timeForBatchWrite) {
         batchWrite
       }
-      insertData(threadNum, counter + 1, numInsertsPerThread,
+      insertData(samplerCtxProps, counter + 1, numInsertsPerThread,
         documentToInsert :: (if (timeForBatchWrite) List[doc]() else documents))
     }
     else {

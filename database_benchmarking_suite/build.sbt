@@ -16,8 +16,11 @@ libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "3.4
 libraryDependencies += "org.rogach" %% "scallop" % "3.1.1"
 //MongoDB library
 libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "2.2.0"
+//Postgres library
+libraryDependencies ++= List("org.postgresql" % "postgresql" % "9.4.1212","com.typesafe.slick" %% "slick" % "3.2.1")
 //Config library
 libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.9.0"
+
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
