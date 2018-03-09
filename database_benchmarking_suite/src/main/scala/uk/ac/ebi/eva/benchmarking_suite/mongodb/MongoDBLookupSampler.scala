@@ -3,17 +3,15 @@ package uk.ac.ebi.eva.benchmarking_suite.mongodb
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
 import org.mongodb.scala.model.Filters._
-import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, ReadBenchmarkingConstants}
+import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, RandomEntityIDGenerator}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class MongoDBReadSampler() extends AbstractSampler {
+class MongoDBLookupSampler extends AbstractSampler {
 
   var mongoDBTestParams: MongoDBConnectionParams = _
   var randomNumGen: scala.util.Random = _
-
-  val blockReadSize = 100
 
   override def sample(entry: Entry): SampleResult = {
     DBSamplerProcessor.process(sampler = this,
@@ -23,20 +21,17 @@ class MongoDBReadSampler() extends AbstractSampler {
         val threadNum = this.getThreadContext.getThreadNum
         //Use thread number and timestamp to vary the random seed across multiple runs for a same thread choice
         randomNumGen = new scala.util.Random(threadNum + System.currentTimeMillis())
-        (1 to numReadsPerThread).foreach(_ => readData())
+        (1 to numReadsPerThread).foreach(_ => lookupData())
       })
   }
 
-  def readData(): Unit = {
-    val (chromosome, startPos) = ReadBenchmarkingConstants.getRandomChromosomeAndStartPos(randomNumGen)
-    val findResults = mongoDBTestParams.mongoCollection.find(
-      and(equal("chromosome", chromosome.toString),
-        gt("start_pos", startPos),
-        lte("start_pos", startPos + blockReadSize))).maxTime(mongoDBTestParams.readTimeOutInMillis.milliseconds)
-    Await.result(findResults.toFuture(), mongoDBTestParams.readTimeOutInMillis.milliseconds).foreach(doc => {
-      doc.get("start_pos").head.toString //Force document retrieval by getting one attribute
-    })
+  def lookupData(): Unit = {
+    val entityToLookup = RandomEntityIDGenerator.getRandomEntityID(randomNumGen)
+    val findResults = mongoDBTestParams.mongoCollection.find(equal("entity_id", entityToLookup)).maxTime(10.minutes)
+    //Force document retrieval by getting one attribute
+    val results = Await.result(findResults.toFuture(), 10.minutes)
+    if (results.isEmpty) throw new Exception("Empty lookup results for entity ID: %s".format(entityToLookup))
+    results.foreach(doc => doc.get("start_pos").head.toString)
   }
-
 
 }

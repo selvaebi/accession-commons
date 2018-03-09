@@ -10,7 +10,7 @@ import org.apache.jmeter.samplers.{AbstractSampler, Sampler}
 import org.apache.jmeter.threads.ThreadGroup
 import org.apache.jmeter.util.JMeterUtils
 import org.rogach.scallop._
-import uk.ac.ebi.eva.benchmarking_suite.cassandra.{CassandraConnectionParams, CassandraReadSampler, CassandraWriteSampler}
+import uk.ac.ebi.eva.benchmarking_suite.cassandra.{CassandraConnectionParams, CassandraLookupSampler, CassandraReadSampler, CassandraWriteSampler}
 import uk.ac.ebi.eva.benchmarking_suite.mongodb.{MongoDBConnectionParams, MongoDBLookupSampler, MongoDBReadSampler, MongoDBWriteSampler}
 import uk.ac.ebi.eva.benchmarking_suite.postgres.{PostgresConnectionParams, PostgresLookupSampler, PostgresReadSampler, PostgresWriteSampler}
 
@@ -27,6 +27,11 @@ object ReadBenchmarkingConstants {
   //Upper bound on the number of loops a workload is repeated for any given thread choice
   //In other words, upper bound on num-ops-per-wu - see README for a detailed description
   val numLoopsUB: Int = 2
+
+  def getRandomChromosomeAndStartPos(randomNumGen: scala.util.Random): (String, Int) = {
+    (randomNumGen.nextInt(ReadBenchmarkingConstants.threadChoiceUB).toString,
+      randomNumGen.nextInt(ReadBenchmarkingConstants.numRecordsUB/ReadBenchmarkingConstants.threadChoiceUB))
+  }
 }
 
 object BenchmarkingMain extends App {
@@ -51,7 +56,8 @@ object BenchmarkingMain extends App {
   "postgres" -> classOf[PostgresReadSampler])
   val writeSamplers = Map("cassandra" -> classOf[CassandraWriteSampler], "mongodb" -> classOf[MongoDBWriteSampler],
   "postgres" -> classOf[PostgresWriteSampler])
-  val lookupSamplers = Map("mongodb" -> classOf[MongoDBLookupSampler], "postgres" -> classOf[PostgresLookupSampler])
+  val lookupSamplers = Map("cassandra" -> classOf[CassandraLookupSampler], "mongodb" -> classOf[MongoDBLookupSampler],
+    "postgres" -> classOf[PostgresLookupSampler])
 
   //Load workload configuration from a JSON configuration file
   val workloadConfig = pureconfig.loadConfigFromFiles[WorkloadConfig](Seq(Paths.get(config.workloadConfigFile())))
@@ -107,13 +113,17 @@ object BenchmarkingMain extends App {
       "chromosome, start_pos, entity_id) ").format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
+    val lookupString = "select * from %s where entity_id = ?"
+      .format(variantTableName)
     val lookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLookup)
     val reverseLookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLookup)
     val blockReadStatement: PreparedStatement = cassandraSession.prepare(blockReadString)
       .setConsistencyLevel(ConsistencyLevel.QUORUM)
+    val lookupStmt: PreparedStatement = cassandraSession.prepare(lookupString)
+      .setConsistencyLevel(ConsistencyLevel.QUORUM)
 
     CassandraConnectionParams(cassandraCluster, cassandraSession, lookupInsertStmt,
-      reverseLookupInsertStmt, blockReadStatement)
+      reverseLookupInsertStmt, blockReadStatement, lookupStmt)
   }
 
   def getMongoDBConnectionParams(connectionString: String, databaseName: String, collectionName: String):

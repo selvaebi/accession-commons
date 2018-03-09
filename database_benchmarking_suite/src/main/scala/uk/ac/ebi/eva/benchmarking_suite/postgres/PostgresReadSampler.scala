@@ -1,13 +1,16 @@
-package uk.ac.ebi.eva.benchmarking_suite.cassandra
+package uk.ac.ebi.eva.benchmarking_suite.postgres
 
-import com.datastax.driver.core.ResultSet
+import slick.jdbc.PostgresProfile.api._
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
 import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, ReadBenchmarkingConstants}
 
-class CassandraReadSampler() extends AbstractSampler {
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-  var cassandraTestParams: CassandraConnectionParams = _
+class PostgresReadSampler extends AbstractSampler {
+
+  var postgresTestParams: PostgresConnectionParams = _
   var randomNumGen: scala.util.Random = _
 
   val blockReadSize = 100
@@ -15,7 +18,7 @@ class CassandraReadSampler() extends AbstractSampler {
   override def sample(entry: Entry): SampleResult = {
     DBSamplerProcessor.process(sampler = this,
       databaseAction = () => {
-        cassandraTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[CassandraConnectionParams]
+        postgresTestParams = JMeterUtils.getJMeterProperties.get("connectionParams").asInstanceOf[PostgresConnectionParams]
         val numReadsPerThread = this.getPropertyAsInt("numOpsPerThread")
         val threadNum = this.getThreadContext.getThreadNum
         //Use thread number and timestamp to vary the random seed across multiple runs for a same thread choice
@@ -27,12 +30,11 @@ class CassandraReadSampler() extends AbstractSampler {
 
   private def readData(): Unit = {
     val (chromosome, startPos) = ReadBenchmarkingConstants.getRandomChromosomeAndStartPos(randomNumGen)
-    val rows: ResultSet = cassandraTestParams.session.execute(cassandraTestParams.blockReadStmt.bind(
-      "eva_hsapiens_grch37",
-      chromosome.toString,
-      new Integer(startPos),
-      new Integer(startPos + blockReadSize)
-    ).setReadTimeoutMillis(cassandraTestParams.readTimeOutInMillis))
-    rows.iterator().forEachRemaining(row => row.getInt("start_pos")) //Force row retrieval by getting one attribute
-    }
+    Await.result(postgresTestParams.postgresDBConnection.run (
+      sql"""select * from #${postgresTestParams.schemaName}.#${postgresTestParams.tableName}
+           where chromosome = $chromosome and start_pos >= $startPos and start_pos <= ${startPos + 100}
+         """.as[(String, String, Int, String, String, Int)]
+    ), postgresTestParams.readTimeOutInMillis.milliseconds).foreach(result => result)
+  }
+
 }
