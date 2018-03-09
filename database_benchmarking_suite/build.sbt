@@ -21,7 +21,6 @@ libraryDependencies ++= List("org.postgresql" % "postgresql" % "9.4.1212","com.t
 //Config library
 libraryDependencies += "com.github.pureconfig" %% "pureconfig" % "0.9.0"
 
-
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x => MergeStrategy.last

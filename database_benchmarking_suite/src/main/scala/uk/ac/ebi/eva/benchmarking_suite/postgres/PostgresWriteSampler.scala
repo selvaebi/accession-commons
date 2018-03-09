@@ -34,7 +34,7 @@ class PostgresWriteSampler extends AbstractSampler {
         DBIO.sequence(insertStatements.map(stmt => sqlu"""#$stmt""")).transactionally), 15.minutes)
     }
     if (counter < numInsertsPerThread) {
-      val (accessionId, entityId) = JMeterSamplerContextProperties.getIDsForRecord(samplerCtxProps, counter)
+      val (accessionId, entityId) = JMeterSamplerContextProperties.generateIDsForRecord(samplerCtxProps, counter)
       val startPos = counter + 100
       val rawNumericId = counter
 

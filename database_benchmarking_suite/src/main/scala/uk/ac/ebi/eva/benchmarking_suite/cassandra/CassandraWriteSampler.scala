@@ -39,7 +39,7 @@ class CassandraWriteSampler() extends AbstractSampler {
       }
 
       if (counter < numInsertsPerThread) {
-        val (accessionId, entityId) = JMeterSamplerContextProperties.getIDsForRecord(samplerCtxProps, counter)
+        val (accessionId, entityId) = JMeterSamplerContextProperties.generateIDsForRecord(samplerCtxProps, counter)
         val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
         if (timeForBatchWrite) {
           batchWrite

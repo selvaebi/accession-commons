@@ -37,7 +37,7 @@ class MongoDBWriteSampler() extends AbstractSampler {
     }
 
     if (counter < numInsertsPerThread) {
-      val (accessionId, entityId) = JMeterSamplerContextProperties.getIDsForRecord(samplerCtxProps, counter)
+      val (accessionId, entityId) = JMeterSamplerContextProperties.generateIDsForRecord(samplerCtxProps, counter)
       val documentToInsert: doc = InsertOneModel(Document(
         "_id" -> accessionId, "species" -> "eva_hsapiens_grch37", "chromosome" -> samplerCtxProps.threadNum.toString,
         "start_pos" -> (counter + 100), "entity_id" -> entityId,

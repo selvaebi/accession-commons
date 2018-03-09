@@ -2,9 +2,13 @@ package uk.ac.ebi.eva.benchmarking_suite
 
 object RandomEntityIDGenerator {
 
+  /**
+    * Construct entity to look up based on a random combination of entity ID components
+    * described in [[uk.ac.ebi.eva.benchmarking_suite.JMeterSamplerContextProperties#generateIDsForRecord]]
+    * @param randomNumGen Random Number generator
+    * @return Entity ID constructed from randomized components
+    */
   def getRandomEntityID (randomNumGen: scala.util.Random): String = {
-    // Construct entity to look up based on a random combination of entity ID components
-    // described in @uk.ac.ebi.eva.benchmarking_suite.mongodb.MongoDBWriteSampler
     val numThreadChoices = ReadBenchmarkingConstants.threadChoices.length
     val randomThreadChoice = ReadBenchmarkingConstants.threadChoices(randomNumGen.nextInt(numThreadChoices))
     val randomThreadNum = randomNumGen.nextInt(randomThreadChoice)
