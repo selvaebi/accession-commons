@@ -2,7 +2,7 @@ package uk.ac.ebi.eva.benchmarking_suite.cassandra
 
 import org.apache.jmeter.samplers.{AbstractSampler, Entry, SampleResult}
 import org.apache.jmeter.util.JMeterUtils
-import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, RandomEntityIDGenerator}
+import uk.ac.ebi.eva.benchmarking_suite.{DBSamplerProcessor, RandomEntityIDGenerator, ReadBenchmarkingConstants}
 
 class CassandraLookupSampler extends AbstractSampler {
 
@@ -23,8 +23,12 @@ class CassandraLookupSampler extends AbstractSampler {
 
   def lookupData(): Unit = {
     val entityToLookup = RandomEntityIDGenerator.getRandomEntityID(randomNumGen)
+    val entityIdComponents = entityToLookup.split("_")
+    val (chromosome, startPos) = (entityIdComponents(2), entityIdComponents(4) + 100)
+
     val rows = cassandraTestParams.session.execute(
-      cassandraTestParams.lookupStmt.bind(entityToLookup).setReadTimeoutMillis(cassandraTestParams.readTimeOutInMillis)
+      cassandraTestParams.lookupStmt.bind("eva_hsapiens_grch37", chromosome, startPos, entityToLookup)
+        .setReadTimeoutMillis(cassandraTestParams.readTimeOutInMillis)
     )
     rows.iterator().forEachRemaining(row => row.getInt("start_pos"))
   }

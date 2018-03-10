@@ -30,7 +30,7 @@ object ReadBenchmarkingConstants {
 
   def getRandomChromosomeAndStartPos(randomNumGen: scala.util.Random): (String, Int) = {
     (randomNumGen.nextInt(ReadBenchmarkingConstants.threadChoiceUB).toString,
-      randomNumGen.nextInt(ReadBenchmarkingConstants.numRecordsUB/ReadBenchmarkingConstants.threadChoiceUB))
+      randomNumGen.nextInt(ReadBenchmarkingConstants.numRecordsUB/ReadBenchmarkingConstants.threadChoiceUB) + 100)
   }
 }
 
@@ -113,7 +113,7 @@ object BenchmarkingMain extends App {
       "chromosome, start_pos, entity_id) ").format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
-    val lookupString = "select * from %s where entity_id = ?"
+    val lookupString = "select * from %s where species = ? and chromosome = ? and start_pos = ? and entity_id = ?"
       .format(variantTableName)
     val lookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLookup)
     val reverseLookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLookup)
