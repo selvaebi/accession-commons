@@ -10,7 +10,8 @@ object MongoDBConnectionParams {
 }
 
 class MongoDBConnectionParams(val mongoClient: MongoClient, val mongoDatabase: MongoDatabase,
-                              val mongoCollection: MongoCollection[Document]) extends  DBConnectionParams {
+                              val mongoCollection: MongoCollection[Document], val readTimeOutInMillis: Int = 600000)
+  extends  DBConnectionParams {
   override def cleanup(): Unit = {
     mongoClient.close()
   }
