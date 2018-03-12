@@ -24,7 +24,7 @@ class CassandraLookupSampler extends AbstractSampler {
   def lookupData(): Unit = {
     val entityToLookup = RandomEntityIDGenerator.getRandomEntityID(randomNumGen)
     val entityIdComponents = entityToLookup.split("_")
-    val (chromosome, startPos) = (entityIdComponents(2), entityIdComponents(4) + 100)
+    val (chromosome, startPos) = (entityIdComponents(2), new Integer(new Integer(entityIdComponents(4)) + 100))
 
     val rows = cassandraTestParams.session.execute(
       cassandraTestParams.lookupStmt.bind("eva_hsapiens_grch37", chromosome, startPos, entityToLookup)
