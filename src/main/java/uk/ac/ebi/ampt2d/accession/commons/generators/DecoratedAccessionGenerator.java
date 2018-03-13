@@ -61,13 +61,13 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
 
     public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> prefixSuxfixMonotonicAccessionGenerator(
             MonotonicAccessionGenerator<MODEL> generator,
-            String prefix, String sufix) {
-        return prefixSuxfixAccessionGenerator(generator, prefix, sufix, Long::parseLong);
+            String prefix, String suffix) {
+        return prefixSuffixAccessionGenerator(generator, prefix, suffix, Long::parseLong);
     }
 
-    public static <MODEL, ACCESSION> DecoratedAccessionGenerator<MODEL, ACCESSION> prefixSuxfixAccessionGenerator(
+    public static <MODEL, ACCESSION> DecoratedAccessionGenerator<MODEL, ACCESSION> prefixSuffixAccessionGenerator(
             AccessionGenerator<MODEL, ACCESSION> generator,
-            String prefix, String sufix,
+            String prefix, String suffix,
             Function<String, ACCESSION> parseAccession) {
         return new DecoratedAccessionGenerator<>(
                 generator,
@@ -76,8 +76,8 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
                     if (prefix != null) {
                         value = prefix + value;
                     }
-                    if (sufix != null) {
-                        value = value + sufix;
+                    if (suffix != null) {
+                        value = value + suffix;
                     }
                     return value;
                 },
@@ -85,8 +85,8 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
                     if (prefix != null) {
                         s = s.substring(prefix.length());
                     }
-                    if (sufix != null) {
-                        s = s.substring(0, s.length() - sufix.length());
+                    if (suffix != null) {
+                        s = s.substring(0, s.length() - suffix.length());
                     }
                     return parseAccession.apply(s);
                 });

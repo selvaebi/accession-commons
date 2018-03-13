@@ -24,6 +24,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.accession.commons.core.SaveResponse;
+import uk.ac.ebi.ampt2d.accession.commons.generators.DecoratedAccessionGenerator;
+import uk.ac.ebi.ampt2d.accession.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
-public class DecoratedAccessioningTest {
+public class DecoratedAccessionGeneratorTest {
 
     private static final int BLOCK_SIZE = 1000;
     private static final String CATEGORY_ID = "DECORATOR_TEST";
@@ -52,29 +54,29 @@ public class DecoratedAccessioningTest {
     private ContiguousIdBlockService service;
 
     @Test
-    public void testGeneratePrefixSufix() throws Exception {
+    public void testGeneratePrefixSuffix() throws Exception {
         Map<String, String> objects = new LinkedHashMap<>();
         objects.put("hash1", "string1");
         objects.put("hash2", "string2");
         objects.put("hash3", "string3");
 
-        DecoratedAccessionGenerator<String, Long> generator =
-                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "test-", "-blah");
+        DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
+                .prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "prefix-", "-suffix");
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
-        assertEquals("test-0-blah", generated.get(0).accession());
-        assertEquals("test-1-blah", generated.get(1).accession());
-        assertEquals("test-2-blah", generated.get(2).accession());
+        assertEquals("prefix-0-suffix", generated.get(0).accession());
+        assertEquals("prefix-1-suffix", generated.get(1).accession());
+        assertEquals("prefix-2-suffix", generated.get(2).accession());
 
         Map<String, String> savedAccessions = new HashMap<>();
-        savedAccessions.put("test-0-blah", "string1");
-        savedAccessions.put("test-1-blah", "string2");
-        savedAccessions.put("test-2-blah", "string3");
+        savedAccessions.put("prefix-0-suffix", "string1");
+        savedAccessions.put("prefix-1-suffix", "string2");
+        savedAccessions.put("prefix-2-suffix", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
-        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(CATEGORY_ID,
-                INSTANCE_ID).getLastCommitted());
+        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(
+                CATEGORY_ID, INSTANCE_ID).getLastCommitted());
     }
 
     @Test
@@ -85,18 +87,18 @@ public class DecoratedAccessioningTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator =
-                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "test-", null);
+                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "prefix-", null);
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
-        assertEquals("test-0", generated.get(0).accession());
-        assertEquals("test-1", generated.get(1).accession());
-        assertEquals("test-2", generated.get(2).accession());
+        assertEquals("prefix-0", generated.get(0).accession());
+        assertEquals("prefix-1", generated.get(1).accession());
+        assertEquals("prefix-2", generated.get(2).accession());
 
         Map<String, String> savedAccessions = new HashMap<>();
-        savedAccessions.put("test-0", "string1");
-        savedAccessions.put("test-1", "string2");
-        savedAccessions.put("test-2", "string3");
+        savedAccessions.put("prefix-0", "string1");
+        savedAccessions.put("prefix-1", "string2");
+        savedAccessions.put("prefix-2", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
         assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(CATEGORY_ID,
@@ -104,25 +106,25 @@ public class DecoratedAccessioningTest {
     }
 
     @Test
-    public void testGenerateSufix() throws Exception {
+    public void testGenerateSuffix() throws Exception {
         Map<String, String> objects = new LinkedHashMap<>();
         objects.put("hash1", "string1");
         objects.put("hash2", "string2");
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator =
-                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), null, "-blah");
+                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), null, "-suffix");
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
-        assertEquals("0-blah", generated.get(0).accession());
-        assertEquals("1-blah", generated.get(1).accession());
-        assertEquals("2-blah", generated.get(2).accession());
+        assertEquals("0-suffix", generated.get(0).accession());
+        assertEquals("1-suffix", generated.get(1).accession());
+        assertEquals("2-suffix", generated.get(2).accession());
 
         Map<String, String> savedAccessions = new HashMap<>();
-        savedAccessions.put("0-blah", "string1");
-        savedAccessions.put("1-blah", "string2");
-        savedAccessions.put("2-blah", "string3");
+        savedAccessions.put("0-suffix", "string1");
+        savedAccessions.put("1-suffix", "string2");
+        savedAccessions.put("2-suffix", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
         assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(CATEGORY_ID,

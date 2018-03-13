@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.accession.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Column;
