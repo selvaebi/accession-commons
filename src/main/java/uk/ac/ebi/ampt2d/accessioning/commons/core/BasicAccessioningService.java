@@ -15,10 +15,9 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accessioning.commons.accessioning;
+package uk.ac.ebi.ampt2d.accessioning.commons.core;
 
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.AccessionGenerator;
-import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.accessioning.commons.persistence.DatabaseService;
 

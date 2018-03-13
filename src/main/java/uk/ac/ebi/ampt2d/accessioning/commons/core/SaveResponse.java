@@ -15,18 +15,27 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accessioning.commons.accessioning;
+package uk.ac.ebi.ampt2d.accessioning.commons.core;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
-
-import java.util.List;
 import java.util.Map;
 
-public interface AccessioningService<MODEL, ACCESSION> {
+public class SaveResponse<ACCESSION, MODEL> {
 
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+    private final Map<ACCESSION, MODEL> savedAccessions;
+    private final Map<ACCESSION, MODEL> unsavedAccessions;
 
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
+    public SaveResponse(Map<ACCESSION, MODEL> savedAccessions,
+                        Map<ACCESSION, MODEL> unsavedAccessions) {
+        this.savedAccessions = savedAccessions;
+        this.unsavedAccessions = unsavedAccessions;
+    }
 
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
+    public Map<ACCESSION, MODEL> getSavedAccessions() {
+        return savedAccessions;
+    }
+
+    public Map<ACCESSION, MODEL> getUnsavedAccessions() {
+        return unsavedAccessions;
+    }
+
 }

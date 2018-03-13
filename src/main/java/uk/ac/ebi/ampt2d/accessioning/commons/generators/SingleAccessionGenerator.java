@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accessioning.commons.generators;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.core.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.hashing.SHA1HashingFunction;
 
 import java.util.List;

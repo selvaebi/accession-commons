@@ -24,16 +24,17 @@ import java.util.function.Supplier;
 /**
  * Lambda functor to execute a function with a exponential backoff
  */
-public interface ExponentialBackOff {
+public abstract class ExponentialBackOff {
 
-    int DEFAULT_TOTAL_ATTEMPTS = 7;
-    int DEFAULT_TIME_BASE = 1000;
+    static int DEFAULT_TOTAL_ATTEMPTS = 7;
 
-    static void execute(Runnable function) {
+    private static int DEFAULT_TIME_BASE = 1000;
+
+    public static void execute(Runnable function) {
         execute(function, DEFAULT_TOTAL_ATTEMPTS, DEFAULT_TIME_BASE);
     }
 
-    static void execute(Runnable function, int totalAttempts, int timeBase) {
+    public static void execute(Runnable function, int totalAttempts, int timeBase) {
         int previousValue = 0;
         int currentValue = 1;
         for (int attempt = 0; attempt < totalAttempts; attempt++) {
@@ -50,11 +51,11 @@ public interface ExponentialBackOff {
         throw new ExponentialBackOffMaxRetriesRuntimeException();
     }
 
-    static <T> T execute(Supplier<T> function) {
+    public static <T> T execute(Supplier<T> function) {
         return execute(function, DEFAULT_TOTAL_ATTEMPTS, DEFAULT_TIME_BASE);
     }
 
-    static <T> T execute(Supplier<T> function, int totalAttempts, int timeBase) {
+    public static <T> T execute(Supplier<T> function, int totalAttempts, int timeBase) {
         int previousValue = 0;
         int currentValue = 1;
         for (int attempt = 0; attempt < totalAttempts; attempt++) {
@@ -70,7 +71,7 @@ public interface ExponentialBackOff {
         throw new ExponentialBackOffMaxRetriesRuntimeException();
     }
 
-    static void doWait(int valueInTheSeries, int timeBase) {
+    private static void doWait(int valueInTheSeries, int timeBase) {
         try {
             Thread.sleep(valueInTheSeries * timeBase);
         } catch (InterruptedException e) {

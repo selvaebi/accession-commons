@@ -15,12 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.accessioning.commons.core;
 
+import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.accessioning.commons.core.AccessioningRepository;
+import java.util.List;
+import java.util.Map;
 
-@Repository
-public interface TestRepository extends AccessioningRepository<TestEntity, String, String> {
+public interface AccessioningService<MODEL, ACCESSION> {
+
+    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+
+    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
+
+    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
 }

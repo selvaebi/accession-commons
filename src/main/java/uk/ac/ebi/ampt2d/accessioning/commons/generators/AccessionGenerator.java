@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.accessioning.commons.generators;
 
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.core.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
 
 import java.util.List;
@@ -38,7 +38,8 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * @param messages Set of objects to accession
      * @return A map of objects to unique accessions
      */
-    <HASH> List<ModelHashAccession<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+    <HASH> List<ModelHashAccession<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
+            throws AccessionCouldNotBeGeneratedException;
 
     /**
      * This method returns to the accession generator the result of the database save operation in case any operation

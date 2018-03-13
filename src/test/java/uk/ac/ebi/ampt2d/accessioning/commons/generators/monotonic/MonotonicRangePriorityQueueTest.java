@@ -19,11 +19,12 @@ package uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
+@RunWith(BlockJUnit4ClassRunner.class)
 public class MonotonicRangePriorityQueueTest {
 
     @Test

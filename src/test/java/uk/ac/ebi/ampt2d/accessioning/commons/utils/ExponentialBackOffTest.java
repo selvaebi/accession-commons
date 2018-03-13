@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.accessioning.commons.utils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import uk.ac.ebi.ampt2d.accessioning.commons.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
 
 import java.util.function.Supplier;
@@ -27,10 +27,10 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringRunner.class)
+@RunWith(BlockJUnit4ClassRunner.class)
 public class ExponentialBackOffTest {
 
-    class ExtendedRunnable implements Runnable, Supplier<String> {
+    private class ExtendedRunnable implements Runnable, Supplier<String> {
 
         private int numRun = 0;
 

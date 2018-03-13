@@ -86,7 +86,6 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testGetUncompleteBlocks() {
-
         ContiguousIdBlock uncompletedBlock = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 5);
         ContiguousIdBlock completedBlock = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 10, 5);
         completedBlock.setLastCommitted(14);

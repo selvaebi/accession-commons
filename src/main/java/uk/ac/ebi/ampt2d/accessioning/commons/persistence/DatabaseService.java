@@ -18,7 +18,6 @@
 package uk.ac.ebi.ampt2d.accessioning.commons.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 
 import java.util.Collection;

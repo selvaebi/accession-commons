@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.core.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.monotonic.persistence.entities.ContiguousIdBlock;

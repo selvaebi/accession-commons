@@ -19,8 +19,9 @@ package uk.ac.ebi.ampt2d.accessioning.commons.generators;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.core.SaveResponse;
 import uk.ac.ebi.ampt2d.accessioning.commons.hashing.SHA1HashingFunction;
 
 import java.util.HashMap;
@@ -30,7 +31,7 @@ import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
+@RunWith(BlockJUnit4ClassRunner.class)
 public class SingleAccessionGeneratorTest {
 
     private class TestUser {

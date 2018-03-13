@@ -1,4 +1,4 @@
-package uk.ac.ebi.ampt2d.accessioning.commons.accessioning;
+package uk.ac.ebi.ampt2d.accessioning.commons.core;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
@@ -8,7 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-public class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
+/**
+ * This class is delegate for {@link BasicAccessioningService} to manage the save operation.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
+class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
 
     private class Partition {
 
@@ -53,6 +60,6 @@ public class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
                 }
             }
         }
-        return new SaveResponse<ACCESSION, MODEL>(savedAccessions, notSavedAccessions);
+        return new SaveResponse<>(savedAccessions, notSavedAccessions);
     }
 }

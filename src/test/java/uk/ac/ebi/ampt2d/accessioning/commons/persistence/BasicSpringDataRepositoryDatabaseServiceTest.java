@@ -43,9 +43,6 @@ import static org.junit.Assert.assertEquals;
 public class BasicSpringDataRepositoryDatabaseServiceTest {
 
     @Autowired
-    private TestRepository repository;
-
-    @Autowired
     private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> service;
 
     @Test

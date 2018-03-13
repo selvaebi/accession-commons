@@ -19,9 +19,12 @@ package uk.ac.ebi.ampt2d.accessioning.commons.hashing;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.util.function.Function;
 
+@RunWith(BlockJUnit4ClassRunner.class)
 public class SHA1HashingFunctionTest {
 
     @Test

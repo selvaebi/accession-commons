@@ -18,8 +18,7 @@
 package uk.ac.ebi.ampt2d.accessioning.commons.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.AccessioningRepository;
-import uk.ac.ebi.ampt2d.accessioning.commons.accessioning.SaveResponse;
+import uk.ac.ebi.ampt2d.accessioning.commons.core.AccessioningRepository;
 import uk.ac.ebi.ampt2d.accessioning.commons.generators.ModelHashAccession;
 
 import java.io.Serializable;
