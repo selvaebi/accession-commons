@@ -59,7 +59,6 @@ public class SingleAccessionGeneratorTest {
         List<ModelHashAccession<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
         assertEquals(3, accessions.size());
         assertAccession(0, accessions, null);
-
     }
 
     private void assertAccession(int i, List<ModelHashAccession<TestUser, String, String>> accessions,
