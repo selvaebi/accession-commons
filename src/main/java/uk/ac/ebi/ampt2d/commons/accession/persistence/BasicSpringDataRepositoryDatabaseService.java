@@ -86,7 +86,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends MODE
     }
 
     @Override
-    public Map<ACCESSION, ? extends MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions) {
+    public Map<ACCESSION, MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions) {
         Map<ACCESSION, MODEL> result = new HashMap<>();
         repository.findAll(accessions).iterator().forEachRemaining(entity -> result.put(getAccessionFunction
                 .apply(entity), entity));

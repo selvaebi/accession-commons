@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -104,38 +105,55 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testgetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-
-        repository.save(new TestMonotonicEntity(
-                0L,
-                "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
-                "service-test-3"));
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
+        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
+                TestModel.of("service-test-3")
+        ));
+        assertEquals(1, accessions1.size());
+
+
+        Map<Long, TestModel> accessions2 = accessioningService.getAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
         ));
-        assertEquals(1, accessions.size());
+        assertEquals(1, accessions2.size());
+        assertTrue(accessions2.containsKey(accessions1.keySet().iterator().next()));
+    }
+
+    @Test
+    public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+
+        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
+                TestModel.of("service-test-3")
+        ));
+        assertEquals(1, accessions1.size());
+
+
+        Map<Long, TestModel> accessions2 = accessioningService.getByAccessions(Arrays.asList(
+                (Long)accessions1.keySet().iterator().next()
+        ));
+        assertEquals(1, accessions2.size());
     }
 
     @Test
     public void testgetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-
-        repository.save(new TestMonotonicEntity(
-                0L,
-                "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
-                "service-test-3"));
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
+        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
+                TestModel.of("service-test-3")
+        ));
+        assertEquals(1, accessions1.size());
+
+        Map<Long, TestModel> accessions2 = accessioningService.getOrCreateAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
         ));
-        assertEquals(2, accessions.size());
+        assertEquals(3, accessions2.size());
+        assertTrue(accessions2.containsKey(accessions1.keySet().iterator().next()));
     }
 
 }
