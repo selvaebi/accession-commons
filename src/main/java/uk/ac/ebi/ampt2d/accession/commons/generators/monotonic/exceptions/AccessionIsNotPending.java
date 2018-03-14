@@ -15,13 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.exceptions;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.accession.commons.autoconfigure.EnableSpringDataContiguousIdService;
+public class AccessionIsNotPending extends RuntimeException {
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
+    public AccessionIsNotPending(long accession) {
+        super("Accession '" + accession + "' is not pending confirmation.");
+    }
 
 }

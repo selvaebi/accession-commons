@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.accession.commons.utils.exceptions;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.accession.commons.autoconfigure.EnableSpringDataContiguousIdService;
+public class ExponentialBackOffMaxRetriesRuntimeException extends RuntimeException {
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
-
+    public ExponentialBackOffMaxRetriesRuntimeException() {
+        super("Exponential backoff max retries have been reached");
+    }
 }

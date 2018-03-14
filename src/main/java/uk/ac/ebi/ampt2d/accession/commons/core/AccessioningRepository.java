@@ -15,13 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.accession.commons.core;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.accession.commons.autoconfigure.EnableSpringDataContiguousIdService;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
+import java.io.Serializable;
+import java.util.Collection;
+
+@NoRepositoryBean
+public interface AccessioningRepository<ENTITY, HASH, ACCESSION extends Serializable>
+        extends CrudRepository<ENTITY, ACCESSION> {
+
+    Collection<ENTITY> findByHashedMessageIn(Collection<HASH> hashes);
 
 }

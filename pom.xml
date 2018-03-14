@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.ampt2d</groupId>
-    <artifactId>accessioning-commons</artifactId>
+    <artifactId>accession-commons</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -19,7 +19,7 @@
     </build>
     <packaging>jar</packaging>
 
-    <name>accessioning-service</name>
+    <name>accession-commons</name>
     <url>http://github.com/EBIvariation/accession-commons</url>
 
     <properties>
