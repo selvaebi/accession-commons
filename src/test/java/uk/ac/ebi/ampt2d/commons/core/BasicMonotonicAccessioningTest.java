@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.commons.core;
+package uk.ac.ebi.ampt2d.commons.core;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.commons.core.BasicAccessioningService;
-import uk.ac.ebi.ampt2d.accession.commons.core.BasicMonotonicAccessioningService;
-import uk.ac.ebi.ampt2d.accession.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.commons.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 

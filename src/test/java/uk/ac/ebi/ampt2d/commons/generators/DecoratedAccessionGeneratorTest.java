@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.commons.generators;
+package uk.ac.ebi.ampt2d.commons.generators;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.accession.commons.core.SaveResponse;
-import uk.ac.ebi.ampt2d.accession.commons.generators.DecoratedAccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.commons.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.persistence.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.HashMap;

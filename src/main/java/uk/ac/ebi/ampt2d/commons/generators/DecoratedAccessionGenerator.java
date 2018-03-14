@@ -15,11 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.accession.commons.generators;
+package uk.ac.ebi.ampt2d.commons.generators;
 
-import uk.ac.ebi.ampt2d.accession.commons.core.SaveResponse;
-import uk.ac.ebi.ampt2d.accession.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.accession.commons.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicAccessionGenerator;
 
 import java.util.List;
 import java.util.Map;
