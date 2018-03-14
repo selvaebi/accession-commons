@@ -15,13 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.commons.persistence;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.commons.autoconfigure.EnableSpringDataContiguousIdService;
+import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicRange;
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
+import java.util.Collection;
+
+/**
+ * Extension of the {@link DatabaseService} that allows getting all the existing accessions in a range of values.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ */
+public interface MonotonicDatabaseService<MODEL, HASH> extends DatabaseService<MODEL, HASH, Long> {
+
+    long[] getAccessionsInRanges(Collection<MonotonicRange> ranges);
 
 }
