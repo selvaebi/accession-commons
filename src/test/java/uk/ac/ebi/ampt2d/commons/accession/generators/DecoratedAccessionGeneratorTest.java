@@ -59,7 +59,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
-                .prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "prefix-", "-suffix");
+                .prefixSuffixMonotonicAccessionGenerator(getGenerator(), "prefix-", "-suffix");
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
@@ -85,7 +85,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator =
-                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), "prefix-", null);
+                DecoratedAccessionGenerator.prefixSuffixMonotonicAccessionGenerator(getGenerator(), "prefix-", null);
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
@@ -111,7 +111,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator =
-                DecoratedAccessionGenerator.prefixSuxfixMonotonicAccessionGenerator(getGenerator(), null, "-suffix");
+                DecoratedAccessionGenerator.prefixSuffixMonotonicAccessionGenerator(getGenerator(), null, "-suffix");
 
         List<ModelHashAccession<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());

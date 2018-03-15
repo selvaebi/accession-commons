@@ -59,7 +59,7 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
         generator.postSave(new SaveResponse<>(savedAccession, unsavedAccession));
     }
 
-    public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> prefixSuxfixMonotonicAccessionGenerator(
+    public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> prefixSuffixMonotonicAccessionGenerator(
             MonotonicAccessionGenerator<MODEL> generator,
             String prefix, String suffix) {
         return prefixSuffixAccessionGenerator(generator, prefix, suffix, Long::parseLong);
