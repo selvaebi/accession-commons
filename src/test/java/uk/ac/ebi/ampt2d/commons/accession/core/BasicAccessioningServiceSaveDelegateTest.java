@@ -37,6 +37,8 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {TestDatabaseServiceTestConfiguration.class})
@@ -61,7 +63,10 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        delegate.doSaveAccessions(getAccessioningService().getAccessionGenerator().generateAccessions(accessions));
+        SaveResponse<String, TestModel> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
+                .getAccessionGenerator().generateAccessions(accessions));
+
+        assertEquals(3,generatedAccessions.getSavedAccessions().size());
 
         TestTransaction.start();
         TestTransaction.flagForCommit();
@@ -83,7 +88,10 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        delegate.doSaveAccessions(getAccessioningService().getAccessionGenerator().generateAccessions(accessions));
+        SaveResponse<String, TestModel> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
+                .getAccessionGenerator().generateAccessions(accessions));
+        assertEquals(2,generatedAccessions.getSavedAccessions().size());
+        assertEquals(1,generatedAccessions.getUnsavedAccessions().size());
 
         TestTransaction.start();
         TestTransaction.flagForCommit();
