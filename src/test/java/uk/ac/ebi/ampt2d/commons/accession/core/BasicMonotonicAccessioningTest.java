@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.core;
+package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
@@ -130,7 +130,7 @@ public class BasicMonotonicAccessioningTest {
 
 
         Map<Long, TestModel> accessions2 = accessioningService.getByAccessions(Arrays.asList(
-                (Long)accessions1.keySet().iterator().next()
+                (Long) accessions1.keySet().iterator().next()
         ));
         assertEquals(1, accessions2.size());
     }

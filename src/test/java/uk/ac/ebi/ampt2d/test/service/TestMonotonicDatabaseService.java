@@ -17,11 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.test.service;
 
-import uk.ac.ebi.ampt2d.commons.core.AccessioningRepository;
-import uk.ac.ebi.ampt2d.commons.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.commons.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.persistence.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningRepository;
+import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 
