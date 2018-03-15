@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.commons.accession.generators.exceptions;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
+public class AccessionCouldNotBeGeneratedException extends Exception {
 
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
-
+    public AccessionCouldNotBeGeneratedException(String s) {
+        super(s);
+    }
 }

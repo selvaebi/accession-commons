@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.test.persistence;
 
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.core.AccessioningRepository;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningRepository;
 
 @Repository
 public interface TestRepository extends AccessioningRepository<TestEntity, String, String> {
