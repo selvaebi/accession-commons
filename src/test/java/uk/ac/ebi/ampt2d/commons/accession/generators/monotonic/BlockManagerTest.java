@@ -69,8 +69,8 @@ public class BlockManagerTest {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 100));
         long[] accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{0,1,2,3,4,5,6,7,8,9},accessions);
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, accessions);
     }
 
     @Test
@@ -78,12 +78,12 @@ public class BlockManagerTest {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 100));
         long[] accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{0,1,2,3,4,5,6,7,8,9},accessions);
-        manager.release(new long[]{0,1,2,3,4,5,6,7,8,9});
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, accessions);
+        manager.release(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{0,1,2,3,4,5,6,7,8,9},accessions);
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, accessions);
     }
 
     @Test
@@ -91,15 +91,15 @@ public class BlockManagerTest {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 100));
         long[] accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{0,1,2,3,4,5,6,7,8,9},accessions);
-        manager.release(new long[]{0,1,2,6,7,8,9});
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, accessions);
+        manager.release(new long[]{0, 1, 2, 6, 7, 8, 9});
         accessions = manager.pollNext(10);
-        assertEquals(3,accessions.length);
-        assertArrayEquals(new long[]{0,1,2},accessions);
+        assertEquals(3, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2}, accessions);
         accessions = manager.pollNext(10);
-        assertEquals(4,accessions.length);
-        assertArrayEquals(new long[]{6,7,8,9},accessions);
+        assertEquals(4, accessions.length);
+        assertArrayEquals(new long[]{6, 7, 8, 9}, accessions);
     }
 
     @Test
@@ -107,25 +107,25 @@ public class BlockManagerTest {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 100));
         long[] accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{0,1,2,3,4,5,6,7,8,9},accessions);
-        manager.commit(new long[]{0,1,2,6,7,8,9});
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, accessions);
+        manager.commit(new long[]{0, 1, 2, 6, 7, 8, 9});
         accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{10,11,12,13,14,15,16,17,18,19},accessions);
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, accessions);
     }
 
     @Test
     public void recoverState() throws AccessionCouldNotBeGeneratedException {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 100));
-        manager.recoverState(new long[]{0,1,2,6,7,8,9});
+        manager.recoverState(new long[]{0, 1, 2, 6, 7, 8, 9});
         long[] accessions = manager.pollNext(10);
-        assertEquals(3,accessions.length);
-        assertArrayEquals(new long[]{3,4,5},accessions);
+        assertEquals(3, accessions.length);
+        assertArrayEquals(new long[]{3, 4, 5}, accessions);
         accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{10,11,12,13,14,15,16,17,18,19},accessions);
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, accessions);
     }
 
     @Test
@@ -133,13 +133,13 @@ public class BlockManagerTest {
         BlockManager manager = new BlockManager();
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 10));
         manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 10, 10));
-        manager.recoverState(new long[]{0,1,2,6,7,8,9});
+        manager.recoverState(new long[]{0, 1, 2, 6, 7, 8, 9});
         long[] accessions = manager.pollNext(10);
-        assertEquals(3,accessions.length);
-        assertArrayEquals(new long[]{3,4,5},accessions);
+        assertEquals(3, accessions.length);
+        assertArrayEquals(new long[]{3, 4, 5}, accessions);
         accessions = manager.pollNext(10);
-        assertEquals(10,accessions.length);
-        assertArrayEquals(new long[]{10,11,12,13,14,15,16,17,18,19},accessions);
+        assertEquals(10, accessions.length);
+        assertArrayEquals(new long[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, accessions);
     }
 
 }
