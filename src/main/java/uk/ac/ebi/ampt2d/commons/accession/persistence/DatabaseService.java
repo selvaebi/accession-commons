@@ -41,5 +41,5 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     @Transactional
     void save(List<ModelHashAccession<MODEL, HASH, ACCESSION>> objects);
 
-    Map<ACCESSION, MODEL> findAllAccessionByAccessions(List<ACCESSION> accessions);
+    Map<ACCESSION, MODEL> findAllAccessionMappingsByAccessions(List<ACCESSION> accessions);
 }

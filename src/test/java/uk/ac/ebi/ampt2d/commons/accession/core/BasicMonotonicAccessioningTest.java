@@ -43,17 +43,13 @@ import static org.junit.Assert.assertTrue;
 public class BasicMonotonicAccessioningTest {
 
     @Autowired
-    private TestMonotonicRepository repository;
-
-    @Autowired
     private TestMonotonicDatabaseService databaseService;
 
     @Autowired
     private MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator;
 
     @Test
-    public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
-
+    public void testCreateAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
@@ -89,7 +85,6 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
@@ -101,7 +96,7 @@ public class BasicMonotonicAccessioningTest {
     }
 
     @Test
-    public void testgetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+    public void testGetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
@@ -136,7 +131,7 @@ public class BasicMonotonicAccessioningTest {
     }
 
     @Test
-    public void testgetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+    public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
