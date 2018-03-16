@@ -56,7 +56,6 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
@@ -69,7 +68,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     }
 
     private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService() {
-        return new BasicMonotonicAccessioningService<TestModel, String>(
+        return new BasicMonotonicAccessioningService<>(
                 monotonicAccessionGenerator,
                 databaseService,
                 TestModel::getSomething,
@@ -79,7 +78,6 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
@@ -94,7 +92,6 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
-
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
@@ -106,8 +103,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     }
 
     @Test
-    public void testgetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-
+    public void testGetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         repository.save(new TestMonotonicEntity(
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
@@ -124,8 +120,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     }
 
     @Test
-    public void testgetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-
+    public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         repository.save(new TestMonotonicEntity(
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
