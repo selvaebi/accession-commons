@@ -119,8 +119,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
     }
 
     @Override
-    public Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions) {
-        return dbService.findAllAccessionByAccessions(accessions);
+    public Map<ACCESSION, MODEL> getByAccessions(List<ACCESSION> accessions) {
+        return dbService.findAllAccessionMappingsByAccessions(accessions);
     }
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {

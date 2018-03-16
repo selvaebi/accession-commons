@@ -46,7 +46,7 @@ public class BasicSpringDataRepositoryDatabaseServiceTest {
 
     @Test
     public void testFindInEmptyRepository() {
-        assertEquals(0, service.findAllAccessionByAccessions(Arrays.asList("a1", "a2")).size());
+        assertEquals(0, service.findAllAccessionMappingsByAccessions(Arrays.asList("a1", "a2")).size());
         assertEquals(0, service.findAllAccessionsByHash(Arrays.asList("h1", "h2")).size());
         assertEquals(0, service.getExistingAccessions(Arrays.asList("h1", "h2")).size());
     }
@@ -59,7 +59,7 @@ public class BasicSpringDataRepositoryDatabaseServiceTest {
                 ModelHashAccession.of(TestModel.of("something3"), "h3", "a3")
         ));
 
-        Map<String, ? extends TestModel> accessionsToModels = service.findAllAccessionByAccessions(
+        Map<String, ? extends TestModel> accessionsToModels = service.findAllAccessionMappingsByAccessions(
                 Arrays.asList("a1", "a2"));
         assertEquals(2, accessionsToModels.size());
         assertEquals("something1", accessionsToModels.get("a1").getSomething());
