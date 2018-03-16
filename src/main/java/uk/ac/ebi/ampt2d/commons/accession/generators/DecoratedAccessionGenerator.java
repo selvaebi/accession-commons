@@ -59,13 +59,13 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
         generator.postSave(new SaveResponse<>(savedAccession, unsavedAccession));
     }
 
-    public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> prefixSuffixMonotonicAccessionGenerator(
+    public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> buildPrefixSuffixMonotonicAccessionGenerator(
             MonotonicAccessionGenerator<MODEL> generator,
             String prefix, String suffix) {
-        return prefixSuffixAccessionGenerator(generator, prefix, suffix, Long::parseLong);
+        return buildPrefixSuffixAccessionGenerator(generator, prefix, suffix, Long::parseLong);
     }
 
-    public static <MODEL, ACCESSION> DecoratedAccessionGenerator<MODEL, ACCESSION> prefixSuffixAccessionGenerator(
+    public static <MODEL, ACCESSION> DecoratedAccessionGenerator<MODEL, ACCESSION> buildPrefixSuffixAccessionGenerator(
             AccessionGenerator<MODEL, ACCESSION> generator,
             String prefix, String suffix,
             Function<String, ACCESSION> parseAccession) {
