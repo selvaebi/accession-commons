@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ebi.ampt2d.commons.accession.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
 
 import java.util.function.Supplier;
@@ -26,8 +28,9 @@ import java.util.function.Supplier;
  */
 public abstract class ExponentialBackOff {
 
-    static int DEFAULT_TOTAL_ATTEMPTS = 7;
+    static Logger logger = LoggerFactory.getLogger(ExponentialBackOff.class);
 
+    static int DEFAULT_TOTAL_ATTEMPTS = 7;
     private static int DEFAULT_TIME_BASE = 1000;
 
     public static void execute(Runnable function) {
@@ -42,6 +45,7 @@ public abstract class ExponentialBackOff {
                 function.run();
                 return;
             } catch (Exception e) {
+                logger.trace(e.getMessage());
                 doWait(currentValue, timeBase);
                 int nextValue = previousValue + currentValue;
                 previousValue = currentValue;
@@ -62,6 +66,7 @@ public abstract class ExponentialBackOff {
             try {
                 return function.get();
             } catch (Exception e) {
+                logger.trace(e.getMessage());
                 doWait(currentValue, timeBase);
                 int nextValue = previousValue + currentValue;
                 previousValue = currentValue;

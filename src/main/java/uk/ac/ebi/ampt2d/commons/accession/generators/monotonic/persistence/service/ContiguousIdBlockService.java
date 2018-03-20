@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,8 +31,12 @@ public class ContiguousIdBlockService {
 
     private ContiguousIdBlockRepository repository;
 
-    public ContiguousIdBlockService(ContiguousIdBlockRepository repository) {
+    private HashMap<String, String> categoryInitValues;
+
+    public ContiguousIdBlockService(ContiguousIdBlockRepository repository, HashMap<String, String>
+            categoryInitValues) {
         this.repository = repository;
+        this.categoryInitValues = categoryInitValues;
     }
 
     @Transactional
@@ -45,8 +50,16 @@ public class ContiguousIdBlockService {
         if (lastBlock != null) {
             return repository.save(lastBlock.nextBlock(instanceId, size));
         } else {
-            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, 0, size);
+            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, getInitValue(categoryId), size);
             return repository.save(newBlock);
+        }
+    }
+
+    private long getInitValue(String categoryId) {
+        if (categoryInitValues.get(categoryId) != null) {
+            return Long.parseLong(categoryInitValues.get(categoryId));
+        } else {
+            return 0;
         }
     }
 

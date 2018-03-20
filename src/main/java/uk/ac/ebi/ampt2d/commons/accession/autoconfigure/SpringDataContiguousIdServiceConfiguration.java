@@ -19,12 +19,15 @@ package uk.ac.ebi.ampt2d.commons.accession.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service.ContiguousIdBlockService;
+
+import java.util.HashMap;
 
 /**
  * Basic configuration to inject a {@link ContiguousIdBlockService} and configure the appropriate spring data jpa
@@ -38,9 +41,15 @@ import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.servi
 public class SpringDataContiguousIdServiceConfiguration {
 
     @Bean
+    @ConfigurationProperties(prefix="accessioning.monotonic.init")
+    public HashMap<String, String> contiguousBlockInitializations(){
+        return new HashMap<>();
+    }
+
+    @Bean
     public ContiguousIdBlockService contiguousIdBlockService(@Autowired ContiguousIdBlockRepository
-                                                                     contiguousIdBlockRepository) {
-        return new ContiguousIdBlockService(contiguousIdBlockRepository);
+                                                                         contiguousIdBlockRepository) {
+        return new ContiguousIdBlockService(contiguousIdBlockRepository, contiguousBlockInitializations());
     }
 
 }
