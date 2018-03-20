@@ -15,12 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service;
 
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories.ContiguousIdBlockRepository;
 
 import java.util.HashMap;
 import java.util.List;

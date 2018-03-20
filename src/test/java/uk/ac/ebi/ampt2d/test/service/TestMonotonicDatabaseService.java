@@ -21,7 +21,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningRepository;
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 

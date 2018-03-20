@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

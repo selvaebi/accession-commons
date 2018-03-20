@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.springframework.data.util.Pair;
 import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionIsNotPending;
 
 import java.util.ArrayList;

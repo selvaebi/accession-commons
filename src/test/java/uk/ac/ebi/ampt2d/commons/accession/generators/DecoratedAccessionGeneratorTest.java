@@ -25,8 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.HashMap;

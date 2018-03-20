@@ -15,11 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
 
 import java.util.stream.Stream;
 

@@ -24,8 +24,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
 
 import java.util.HashMap;
 
@@ -34,10 +34,9 @@ import java.util.HashMap;
  * repository using the default datasource injected by spring-boot property configuration.
  */
 @Configuration
-@EntityScan("uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities")
-@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence" +
-        ".repositories")
-@ComponentScan(basePackages = "uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service")
+@EntityScan("uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities")
+@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories")
+@ComponentScan(basePackages = "uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service")
 public class SpringDataContiguousIdServiceConfiguration {
 
     @Bean
