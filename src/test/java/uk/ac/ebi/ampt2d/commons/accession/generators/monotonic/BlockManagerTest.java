@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.junit.Test;
 import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
 
 import static org.junit.Assert.assertArrayEquals;

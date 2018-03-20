@@ -23,7 +23,7 @@ import uk.ac.ebi.ampt2d.commons.accession.utils.exceptions.ExponentialBackOffMax
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service.ContiguousIdBlockService;
 
