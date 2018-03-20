@@ -19,8 +19,8 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.springframework.data.util.Pair;
 import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.entities.ContiguousIdBlock;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionIsNotPending;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ class BlockManager {
 
     public void addBlock(ContiguousIdBlock block) {
         assignedBlocks.add(block);
-        availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getEnd()));
+        availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getLastValue()));
     }
 
     public MonotonicRangePriorityQueue getAvailableRanges() {
@@ -129,7 +129,7 @@ class BlockManager {
         while (committedAccessions.peek() != null && committedAccessions.peek() == lastCommitted + 1) {
             lastCommitted++;
             committedAccessions.poll();
-            if (lastCommitted == block.getEnd()) {
+            if (lastCommitted == block.getLastValue()) {
                 assignedBlocks.poll();
                 block.setLastCommitted(lastCommitted);
                 blocksToUpdate.add(block);

@@ -15,9 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.util.Collection;
 

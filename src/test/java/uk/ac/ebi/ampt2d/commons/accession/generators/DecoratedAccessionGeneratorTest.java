@@ -25,8 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.persistence.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class DecoratedAccessionGeneratorTest {
         savedAccessions.put("prefix-2-suffix", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
-        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(
+        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(
                 CATEGORY_ID, INSTANCE_ID).getLastCommitted());
     }
 
@@ -99,8 +99,8 @@ public class DecoratedAccessionGeneratorTest {
         savedAccessions.put("prefix-2", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
-        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(CATEGORY_ID,
-                INSTANCE_ID).getLastCommitted());
+        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(
+                CATEGORY_ID, INSTANCE_ID).getLastCommitted());
     }
 
     @Test
@@ -125,8 +125,8 @@ public class DecoratedAccessionGeneratorTest {
         savedAccessions.put("2-suffix", "string3");
 
         generator.postSave(new SaveResponse<>(savedAccessions, new HashMap<>()));
-        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(CATEGORY_ID,
-                INSTANCE_ID).getLastCommitted());
+        assertEquals(2, repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(
+                CATEGORY_ID, INSTANCE_ID).getLastCommitted());
     }
 
     private MonotonicAccessionGenerator<String> getGenerator() throws Exception {

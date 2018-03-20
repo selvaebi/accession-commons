@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 import org.springframework.beans.factory.InitializingBean;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.MonotonicDatabaseService;
 
 import java.util.Collection;
 import java.util.function.Function;
