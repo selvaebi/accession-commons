@@ -26,10 +26,11 @@ import java.util.stream.Stream;
 @Repository
 public interface ContiguousIdBlockRepository extends CrudRepository<ContiguousIdBlock, Long> {
 
-    ContiguousIdBlock findFirstByCategoryIdAndApplicationInstanceIdOrderByEndDesc(String categoryId, String instanceId);
+    ContiguousIdBlock findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(String categoryId,
+                                                                                        String instanceId);
 
-    Stream<ContiguousIdBlock> findAllByCategoryIdAndApplicationInstanceIdOrderByEndAsc(String categoryId,
-                                                                                       String instanceId);
+    Stream<ContiguousIdBlock> findAllByCategoryIdAndApplicationInstanceIdOrderByLastValueAsc(String categoryId,
+                                                                                             String instanceId);
 
-    ContiguousIdBlock findFirstByCategoryIdOrderByEndDesc(String categoryId);
+    ContiguousIdBlock findFirstByCategoryIdOrderByLastValueDesc(String categoryId);
 }

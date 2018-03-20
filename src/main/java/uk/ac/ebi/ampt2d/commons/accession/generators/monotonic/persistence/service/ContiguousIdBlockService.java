@@ -46,7 +46,7 @@ public class ContiguousIdBlockService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId, long size) {
-        ContiguousIdBlock lastBlock = repository.findFirstByCategoryIdOrderByEndDesc(categoryId);
+        ContiguousIdBlock lastBlock = repository.findFirstByCategoryIdOrderByLastValueDesc(categoryId);
         if (lastBlock != null) {
             return repository.save(lastBlock.nextBlock(instanceId, size));
         } else {
@@ -67,7 +67,7 @@ public class ContiguousIdBlockService {
     public List<ContiguousIdBlock> getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(
             String categoryId, String applicationInstanceId) {
         try (Stream<ContiguousIdBlock> reservedBlocksOfThisInstance = repository
-                .findAllByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, applicationInstanceId)) {
+                .findAllByCategoryIdAndApplicationInstanceIdOrderByLastValueAsc(categoryId, applicationInstanceId)) {
             return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());
         }
     }

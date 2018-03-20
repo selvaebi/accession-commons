@@ -29,9 +29,9 @@ import javax.persistence.Table;
  * This class represents a block allocated by an application instance, in a monotonic sequence associated with a 
  * category.
  * <p>
- * It is defined by the start of the monotonic sequence, the end and the last committed value to the database.
+ * It is defined by the first and last values of the monotonic sequence, and the last committed value to the database.
  * <p>
- * The last committed value of the block is initialized as the start position of the block minus one, to simplify the
+ * The last committed value of the block is initialized as the first value of the block minus one, to simplify the
  * application logic that implements the calculations.
  */
 @Entity
@@ -53,9 +53,9 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
     @Column(nullable = false, length = 255)
     private String applicationInstanceId;
 
-    private long start;
+    private long firstValue;
 
-    private long end;
+    private long lastValue;
 
     private long lastCommitted;
 
@@ -65,16 +65,16 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         //Hibernate default constructor
     }
 
-    public ContiguousIdBlock(String categoryId, String applicationInstanceId, long start, long size) {
+    public ContiguousIdBlock(String categoryId, String applicationInstanceId, long firstValue, long size) {
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
-        this.start = start;
-        this.end = start + size - 1;
-        this.lastCommitted = start - 1;
+        this.firstValue = firstValue;
+        this.lastValue = firstValue + size - 1;
+        this.lastCommitted = firstValue - 1;
     }
 
     public ContiguousIdBlock nextBlock(String instanceId, long size) {
-        return new ContiguousIdBlock(categoryId, instanceId, end + 1, size);
+        return new ContiguousIdBlock(categoryId, instanceId, lastValue + 1, size);
     }
 
     public long getId() {
@@ -89,20 +89,20 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         this.lastCommitted = lastCommitted;
     }
 
-    public long getStart() {
-        return start;
+    public long getFirstValue() {
+        return firstValue;
     }
 
-    public long getEnd() {
-        return end;
+    public long getLastValue() {
+        return lastValue;
     }
 
     public boolean isNotFull() {
-        return lastCommitted != end;
+        return lastCommitted != lastValue;
     }
 
     @Override
     public int compareTo(ContiguousIdBlock contiguousIdBlock) {
-        return Long.compare(start, contiguousIdBlock.getStart());
+        return Long.compare(firstValue, contiguousIdBlock.getFirstValue());
     }
 }

@@ -52,7 +52,7 @@ class BlockManager {
 
     public void addBlock(ContiguousIdBlock block) {
         assignedBlocks.add(block);
-        availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getEnd()));
+        availableRanges.add(new MonotonicRange(block.getLastCommitted() + 1, block.getLastValue()));
     }
 
     public MonotonicRangePriorityQueue getAvailableRanges() {
@@ -129,7 +129,7 @@ class BlockManager {
         while (committedAccessions.peek() != null && committedAccessions.peek() == lastCommitted + 1) {
             lastCommitted++;
             committedAccessions.poll();
-            if (lastCommitted == block.getEnd()) {
+            if (lastCommitted == block.getLastValue()) {
                 assignedBlocks.poll();
                 block.setLastCommitted(lastCommitted);
                 blocksToUpdate.add(block);
