@@ -37,8 +37,8 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 public class TestMonotonicDatabaseServiceTestConfiguration {
 
     private static final int BLOCK_SIZE = 1000;
-    private static final String CATEGORY_ID = "monotonic-accession-service-test";
-    private static final String INSTANCE_ID = "monotonic-accession-service-test";
+    private static final String CATEGORY_ID = "category-id-monotonic-test";
+    private static final String INSTANCE_ID = "instance-id-monotonic-test";
 
     @Autowired
     private TestMonotonicRepository repository;
