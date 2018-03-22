@@ -64,13 +64,13 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends MODE
 
     @Override
     public Map<ACCESSION, MODEL> findAllAccessionsByHash(Collection<HASH> hashes) {
-        return repository.findByHashedMessageIn(hashes).stream()
+        return repository.findByIsDeprecatedFalseAndHashedMessageIn(hashes).stream()
                 .collect(Collectors.toMap(getAccessionFunction, e -> e));
     }
 
     @Override
     public Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> hashes) {
-        return repository.findByHashedMessageIn(hashes).stream()
+        return repository.findByIsDeprecatedFalseAndHashedMessageIn(hashes).stream()
                 .collect(Collectors.toMap(getHashedMessageFunction, getAccessionFunction));
     }
 

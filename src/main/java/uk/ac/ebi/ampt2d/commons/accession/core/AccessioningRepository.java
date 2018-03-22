@@ -27,6 +27,5 @@ import java.util.Collection;
 public interface AccessioningRepository<ENTITY, HASH, ACCESSION extends Serializable>
         extends CrudRepository<ENTITY, ACCESSION> {
 
-    Collection<ENTITY> findByHashedMessageIn(Collection<HASH> hashes);
-
+    Collection<ENTITY> findByIsDeprecatedFalseAndHashedMessageIn(Collection<HASH> hashes);
 }
