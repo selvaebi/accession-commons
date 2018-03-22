@@ -23,6 +23,7 @@ import uk.ac.ebi.ampt2d.test.TestModel;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.sql.Date;
 
 @Entity
 public class TestMonotonicEntity implements TestModel {
@@ -35,11 +36,15 @@ public class TestMonotonicEntity implements TestModel {
 
     private String something;
 
+    private boolean isDeprecated;
+
+    private Date deprecatedDate;
+
     TestMonotonicEntity() {
     }
 
     public TestMonotonicEntity(ModelHashAccession<TestModel, String, Long> triple) {
-        this(triple.accession(),triple.hash(),triple.model().getSomething());
+        this(triple.accession(), triple.hash(), triple.model().getSomething());
     }
 
     public TestMonotonicEntity(Long accession, String hashedMessage, String something) {
@@ -61,4 +66,11 @@ public class TestMonotonicEntity implements TestModel {
         return something;
     }
 
+    public void setIsDepricated(boolean isDeprecated) {
+        this.isDeprecated = isDeprecated;
+    }
+
+    public void setDeprecatedDate(Date deprecatedDate) {
+        this.deprecatedDate = deprecatedDate;
+    }
 }
