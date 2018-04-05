@@ -32,7 +32,7 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 @Configuration
 @EnableSpringDataContiguousIdService
-@EntityScan({"uk.ac.ebi.ampt2d.test.persistence","uk.ac.ebi.ampt2d.commons.accession.persistence"})
+@EntityScan({"uk.ac.ebi.ampt2d.test.persistence"})
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
 public class TestMonotonicDatabaseServiceTestConfiguration {
 

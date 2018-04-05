@@ -15,16 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
-
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+package uk.ac.ebi.ampt2d.commons.accession.accessionshistory;
 
 import java.io.Serializable;
-import java.util.Collection;
 
-@NoRepositoryBean
-public interface HistoryOfAccessionsRepository<ENTITY, ACCESSION extends Serializable> extends CrudRepository<ENTITY, ACCESSION> {
+public abstract class AccessionHistoryModel<ACCESSION extends Serializable> implements Serializable {
 
-    Collection<ENTITY> findAllByStatus(String accessionStatus);
+    protected ACCESSION accession;
 }

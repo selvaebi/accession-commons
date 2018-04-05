@@ -15,21 +15,8 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.rest;
+package uk.ac.ebi.ampt2d.commons.accession.accessionshistory;
 
-import java.util.List;
-
-public class HistoryOfAccessionsDTO<ACCESSION> {
-
-    private List<ACCESSION> accessions;
-
-    private String reason;
-
-    public List<ACCESSION> getAccessions() {
-        return accessions;
-    }
-
-    public String getReason() {
-        return reason;
-    }
+public enum AccessionStatus {
+    CREATED, UPDATED, MERGED, DEPRECATED;
 }

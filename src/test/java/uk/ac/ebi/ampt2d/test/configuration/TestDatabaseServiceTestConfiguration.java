@@ -28,7 +28,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 @Configuration
-@EntityScan(value = {"uk.ac.ebi.ampt2d.test.persistence","uk.ac.ebi.ampt2d.commons.accession.persistence"})
+@EntityScan(value = {"uk.ac.ebi.ampt2d.test.persistence"})
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
 public class TestDatabaseServiceTestConfiguration {
 
