@@ -15,18 +15,27 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import org.springframework.http.HttpStatus;
 
-import java.util.List;
-import java.util.Map;
+public class ErrorMessage {
 
-public interface AccessioningService<MODEL, ACCESSION> {
+    private HttpStatus status;
 
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+    private String message;
 
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
+    public ErrorMessage(HttpStatus status, String message) {
+        this.status = status;
+        this.message = message;
+    }
 
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
 }

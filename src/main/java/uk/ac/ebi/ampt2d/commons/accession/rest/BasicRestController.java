@@ -21,8 +21,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
-import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 
 import java.util.List;
 import java.util.Map;
@@ -31,16 +32,16 @@ import java.util.stream.Collectors;
 
 public class BasicRestController<MODEL, DTO extends MODEL, ACCESSIONING> {
 
-    private BasicAccessioningService<MODEL, ?, ACCESSIONING> service;
+    private AccessioningService<MODEL, ACCESSIONING> service;
     private Function<MODEL, DTO> modelToDTO;
 
-    public BasicRestController(BasicAccessioningService<MODEL, ?, ACCESSIONING> service,
+    public BasicRestController(AccessioningService<MODEL, ACCESSIONING> service,
                                Function<MODEL, DTO> modelToDTO) {
         this.service = service;
         this.modelToDTO = modelToDTO;
     }
 
-    protected BasicAccessioningService<MODEL, ?, ACCESSIONING> getService() {
+    protected AccessioningService<MODEL, ACCESSIONING> getService() {
         return service;
     }
 

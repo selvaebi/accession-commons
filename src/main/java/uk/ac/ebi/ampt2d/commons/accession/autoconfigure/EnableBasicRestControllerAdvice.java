@@ -15,12 +15,21 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.exceptions;
+package uk.ac.ebi.ampt2d.commons.accession.autoconfigure;
 
-public class AccessionIsNotPending extends RuntimeException {
+import org.springframework.context.annotation.Import;
 
-    public AccessionIsNotPending(long accession) {
-        super("Accession '" + accession + "' is not pending confirmation.");
-    }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+/**
+ * This annotation enables
+ * {@link uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestControllerAdvice} in the current spring-boot application.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(BasicRestControllerAdviceConfiguration.class)
+public @interface EnableBasicRestControllerAdvice {
 }

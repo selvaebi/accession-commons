@@ -15,18 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.test.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
 
-import java.util.List;
-import java.util.Map;
+@RestController
+@RequestMapping(value = "/v1/test")
+public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String> {
 
-public interface AccessioningService<MODEL, ACCESSION> {
+    public TestController() {
+        super(new MockTestAccessioningService(), studyModel -> new BasicRestModel(studyModel.getValue()));
+    }
 
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
-
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
-
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
 }

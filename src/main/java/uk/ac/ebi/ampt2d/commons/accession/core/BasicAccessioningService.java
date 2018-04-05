@@ -17,8 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.util.ArrayList;
@@ -107,10 +108,19 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
                 .doSaveAccessions(accessionGenerator.generateAccessions(accessions));
         accessionGenerator.postSave(response);
         Map<ACCESSION, MODEL> savedAccessions = response.getSavedAccessions();
-        List<MODEL> unsavedObjects = new ArrayList<>(response.getUnsavedAccessions().values());
-        savedAccessions.putAll(getAccessions(unsavedObjects));
-
+        if (!response.getUnsavedAccessions().isEmpty()) {
+            savedAccessions.putAll(getUnsavedAccessions(response));
+        }
         return savedAccessions;
+    }
+
+    private Map<ACCESSION, MODEL> getUnsavedAccessions(SaveResponse<ACCESSION, MODEL> response) {
+        List<MODEL> unsavedObjects = new ArrayList<>(response.getUnsavedAccessions().values());
+        final Map<ACCESSION, MODEL> unsavedObjectAccessions = getAccessions(unsavedObjects);
+        if (unsavedObjectAccessions.size() != unsavedObjects.size()) {
+            throw new MissingUnsavedAccessions(unsavedObjectAccessions, unsavedObjects);
+        }
+        return unsavedObjectAccessions;
     }
 
     @Override

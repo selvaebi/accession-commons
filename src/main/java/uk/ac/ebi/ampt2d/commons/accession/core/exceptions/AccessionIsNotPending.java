@@ -15,11 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.exceptions;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-public class AccessionCouldNotBeGeneratedException extends Exception {
+public class AccessionIsNotPending extends RuntimeException {
 
-    public AccessionCouldNotBeGeneratedException(String s) {
-        super(s);
+    public AccessionIsNotPending(long accession) {
+        super("Accession '" + accession + "' is not pending confirmation.");
     }
+
 }
