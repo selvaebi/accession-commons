@@ -15,13 +15,19 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entity;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.accessionshistory.persistence.AccessionHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
 
-@Repository
-public interface TestAccessionHistoryRepository extends
-        AccessionHistoryRepository<TestAccessionHistoryEntity, String> {
+import javax.persistence.Column;
+
+public abstract class AccessionHistoryStringEntity extends AccessionHistoryEntity {
+
+    @Column(nullable = false)
+    private String accession;
+
+    public AccessionHistoryStringEntity(String accession, AccessionStatus accessionStatus, String reason) {
+        super(accessionStatus, reason);
+        this.accession = accession;
+    }
 }
-

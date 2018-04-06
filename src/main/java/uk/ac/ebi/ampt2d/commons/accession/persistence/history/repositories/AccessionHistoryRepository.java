@@ -15,21 +15,19 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.accessionshistory.rest;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.history.repositories;
 
-import java.util.List;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
 
-public class AccessionHistoryDTO<ACCESSION> {
+import java.io.Serializable;
+import java.util.Collection;
 
-    private List<ACCESSION> accessions;
+@NoRepositoryBean
+public interface AccessionHistoryRepository<ENTITY, ID extends Serializable>
+        extends CrudRepository<ENTITY, ID> {
 
-    private String reason;
+    Collection<ENTITY> findAllByAccessionStatus(AccessionStatus accessionStatus);
 
-    public List<ACCESSION> getAccessions() {
-        return accessions;
-    }
-
-    public String getReason() {
-        return reason;
-    }
 }

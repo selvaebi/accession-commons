@@ -15,48 +15,43 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entity;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.ac.ebi.ampt2d.commons.accession.accessionshistory.AccessionStatus;
-import uk.ac.ebi.ampt2d.commons.accession.accessionshistory.AccessionStatusReason;
-import uk.ac.ebi.ampt2d.commons.accession.accessionshistory.AccessionHistoryModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.time.ZonedDateTime;
 
-@Entity
+@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class TestAccessionHistoryEntity extends AccessionHistoryModel<String> {
+public abstract class AccessionHistoryEntity {
 
     @Id
-    @Column(nullable = false)
-    private String accession;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private AccessionStatus status;
+    private AccessionStatus accessionStatus;
+
+    @Column(nullable = false, length = 2000)
+    private String reason;
 
     @CreatedDate
     @Column(updatable = false)
     private ZonedDateTime createdDate;
 
-    @Column(nullable = false)
-    private String reasonForChange;
-
-    TestAccessionHistoryEntity() {
-    }
-
-    public TestAccessionHistoryEntity(AccessionStatusReason<String> asr) {
-        this(asr.accession(), asr.accessionStatus(), asr.reason());
-    }
-
-    public TestAccessionHistoryEntity(String accession, AccessionStatus status, String reasonForChange) {
-        this.accession = accession;
-        this.status = status;
-        this.reasonForChange = reasonForChange;
+    public AccessionHistoryEntity(AccessionStatus accessionStatus, String reason) {
+        this.accessionStatus = accessionStatus;
+        this.reason = reason;
     }
 }

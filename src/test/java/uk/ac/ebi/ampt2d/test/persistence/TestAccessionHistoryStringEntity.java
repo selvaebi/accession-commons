@@ -15,11 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.accessionshistory;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-import java.io.Serializable;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entity.AccessionHistoryStringEntity;
 
-public abstract class AccessionHistoryModel<ACCESSION extends Serializable> implements Serializable {
+import javax.persistence.Entity;
 
-    protected ACCESSION accession;
+@Entity
+public class TestAccessionHistoryStringEntity extends AccessionHistoryStringEntity {
+
+    public TestAccessionHistoryStringEntity(String accession, AccessionStatus accessionStatus, String reason) {
+        super(accession, accessionStatus, reason);
+    }
+
 }

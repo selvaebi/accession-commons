@@ -15,8 +15,13 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.accessionshistory;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-public enum AccessionStatus {
-    CREATED, UPDATED, MERGED, DEPRECATED;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.history.repositories.AccessionHistoryRepository;
+
+@Repository
+public interface TestAccessionHistoryStringRepository extends
+        AccessionHistoryRepository<TestAccessionHistoryStringEntity, Long> {
+
 }
