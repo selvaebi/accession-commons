@@ -39,8 +39,9 @@ class PostgresWriteSampler extends AbstractSampler {
       val rawNumericId = counter
 
       val (schemaName, variantTableName) = (postgresTestParams.schemaName, postgresTestParams.tableName)
-      val sqlString = "insert into %s.%s values ('eva_hsapiens_grch37', '%s', %d, '%s', '%s', %d)"
-        .format(schemaName, variantTableName, samplerCtxProps.threadNum,
+      val (species, chromosome) = ("eva_hsapiens_grch37", samplerCtxProps.threadNum)
+      val sqlString = "insert into %s.%s values ('%s', '%s', %d, '%s', '%s', %d)"
+        .format(schemaName, variantTableName, species, chromosome,
           startPos, entityId, accessionId, rawNumericId)
 
       val timeForBatchWrite = counter % defaultBatchSize == 0 && counter > 0
