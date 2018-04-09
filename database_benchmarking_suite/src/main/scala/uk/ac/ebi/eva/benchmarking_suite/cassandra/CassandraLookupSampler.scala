@@ -22,14 +22,13 @@ class CassandraLookupSampler extends AbstractSampler {
   }
 
   def lookupData(): Unit = {
-    val entityToLookup = RandomEntityIDGenerator.getRandomEntityID(randomNumGen)
-    val entityIdComponents = entityToLookup.split("_")
-    val (chromosome, startPos) = (entityIdComponents(2), new Integer(new Integer(entityIdComponents(4)) + 100))
-
+    val accessionToLookup = RandomEntityIDGenerator.getRandomEntityID(randomNumGen).replace("ent", "acc")
     val rows = cassandraTestParams.session.execute(
-      cassandraTestParams.lookupStmt.bind("eva_hsapiens_grch37", chromosome, startPos, entityToLookup)
-        .setReadTimeoutMillis(cassandraTestParams.readTimeOutInMillis)
-    )
+  cassandraTestParams.lookupStmt.bind(accessionToLookup)
+    .setReadTimeoutMillis(cassandraTestParams.readTimeOutInMillis))
+    if (!rows.iterator().hasNext) {
+      throw new Exception("Empty lookup results for accession ID: %s".format(accessionToLookup))
+    }
     rows.iterator().forEachRemaining(row => row.getInt("start_pos"))
   }
 

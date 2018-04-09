@@ -113,7 +113,7 @@ object BenchmarkingMain extends App {
       "chromosome, start_pos, entity_id) ").format(variantTableName) + "values (?, ?, ?, ?, ?, ?);"
     val blockReadString = "select * from %s where species = ? and chromosome = ? and start_pos >= ? and start_pos <= ?"
       .format(variantTableName)
-    val lookupString = "select * from %s where species = ? and chromosome = ? and start_pos = ? and entity_id = ?"
+    val lookupString = "select * from %s_reverse where accession_id = ?"
       .format(variantTableName)
     val lookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoLookup)
     val reverseLookupInsertStmt: PreparedStatement = cassandraSession.prepare(insertIntoReverseLookup)
