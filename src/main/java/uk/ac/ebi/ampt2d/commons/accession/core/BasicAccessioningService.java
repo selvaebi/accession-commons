@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
 
         Map<ACCESSION, MODEL> accessions = joinExistingAccessionsWithMessages(existingAccessions, hashToMessages);
         if (!newMessages.isEmpty()) {
-            accessions.putAll(generateAccessions(newMessages));
+            accessions.putAll(saveAccessions(accessionGenerator.generateAccessions(newMessages)));
         }
         return accessions;
     }
@@ -86,7 +87,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * @return
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
-        return messages.stream().collect(Collectors.toMap(summaryFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
+        return messages.stream()
+                .collect(Collectors.toMap(summaryFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
     }
 
     private Map<HASH, MODEL> filterNotExistingAccessions(Map<HASH, MODEL> hashToMessages,
@@ -102,10 +104,18 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
                 .collect(Collectors.toMap(e -> e.getValue(), e -> hashToMessages.get(e.getKey())));
     }
 
-    private Map<ACCESSION, MODEL> generateAccessions(Map<HASH, MODEL> accessions) throws
-            AccessionCouldNotBeGeneratedException {
-        SaveResponse<ACCESSION, MODEL> response = basicAccessioningServiceSaveDelegate
-                .doSaveAccessions(accessionGenerator.generateAccessions(accessions));
+    /**
+     * Execute {@link BasicAccessioningServiceSaveDelegate#doSaveAccessions(List)} This operation will generate two
+     * lists on {@link SaveResponse} saved elements and not saved elements. Not saved elements are elements that
+     * could not be stored on database due to constraint exceptions. This should only happen when elements have been
+     * already stored by another application instance / thread with a different id.
+     * See {@link #getUnsavedAccessions(SaveResponse)} for more details.
+     *
+     * @param accessions
+     * @return
+     */
+    private Map<ACCESSION, MODEL> saveAccessions(List<ModelHashAccession<MODEL, HASH, ACCESSION>> accessions) {
+        SaveResponse<ACCESSION, MODEL> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
         accessionGenerator.postSave(response);
         Map<ACCESSION, MODEL> savedAccessions = response.getSavedAccessions();
         if (!response.getUnsavedAccessions().isEmpty()) {
@@ -114,6 +124,15 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
         return savedAccessions;
     }
 
+    /**
+     * We try to recover all elements that could not be saved to return their accession to the user. This is only
+     * expected when another application instance or thread has saved that element already with a different id. If
+     * all the elements could not be retrieved from the database it is considered an unexpected event and we throw
+     * {@link MissingUnsavedAccessions} to alert the system.
+     *
+     * @param response
+     * @return
+     */
     private Map<ACCESSION, MODEL> getUnsavedAccessions(SaveResponse<ACCESSION, MODEL> response) {
         List<MODEL> unsavedObjects = new ArrayList<>(response.getUnsavedAccessions().values());
         final Map<ACCESSION, MODEL> unsavedObjectAccessions = getAccessions(unsavedObjects);

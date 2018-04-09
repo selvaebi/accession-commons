@@ -27,6 +27,10 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGen
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
 
+/**
+ * Spring {@link RestControllerAdvice} bean to handle exception from the application at rest level and return
+ * a specific response with an error message.
+ */
 @RestControllerAdvice(assignableTypes = BasicRestController.class)
 public class BasicRestControllerAdvice {
 

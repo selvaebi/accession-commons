@@ -25,7 +25,7 @@ public class MissingUnsavedAccessions extends RuntimeException {
 
     public <ACCESSION, MODEL> MissingUnsavedAccessions(Map<ACCESSION, MODEL> unsavedObjectAccessions,
                                                        List<MODEL> unsavedObjects) {
-        super("Missing unsaved objects: " + generateMessage(unsavedObjectAccessions, unsavedObjects));
+        super("Unsaved objects could not be found: " + generateMessage(unsavedObjectAccessions, unsavedObjects));
     }
 
     private static <ACCESSION, MODEL> String generateMessage(Map<ACCESSION, MODEL> unsavedObjectAccessions,

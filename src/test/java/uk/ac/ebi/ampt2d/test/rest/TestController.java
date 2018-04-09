@@ -26,7 +26,7 @@ import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
 public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String> {
 
     public TestController() {
-        super(new MockTestAccessioningService(), studyModel -> new BasicRestModel(studyModel.getValue()));
+        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
     }
 
 }

@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Mock service, generates accessions and maintains accessions in memory.
+ * Mock service, generates accessions using in-memory data structures
  */
 public class MockTestAccessioningService implements AccessioningService<BasicRestModel, String> {
 
