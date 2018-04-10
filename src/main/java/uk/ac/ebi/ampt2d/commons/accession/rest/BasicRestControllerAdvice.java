@@ -40,10 +40,8 @@ public class BasicRestControllerAdvice {
             MissingUnsavedAccessions.class})
     public ResponseEntity<ErrorMessage> handleInternalServerErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(
-                new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

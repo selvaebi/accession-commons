@@ -19,23 +19,46 @@ package uk.ac.ebi.ampt2d.commons.accession.rest;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.Date;
+
 public class ErrorMessage {
 
-    private HttpStatus status;
+    private long timestamp;
+
+    private int status;
+
+    private String error;
+
+    private String exception;
 
     private String message;
 
-    public ErrorMessage(HttpStatus status, String message) {
-        this.status = status;
-        this.message = message;
+    public ErrorMessage(HttpStatus status, Exception ex) {
+        timestamp = new Date().getTime();
+        this.status = status.value();
+        this.error = status.getReasonPhrase();
+
+        this.exception = ex.getClass().getCanonicalName();
+        this.message = ex.getMessage();
     }
 
-    public HttpStatus getStatus() {
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public int getStatus() {
         return status;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public String getException() {
+        return exception;
     }
 
     public String getMessage() {
         return message;
     }
-
 }

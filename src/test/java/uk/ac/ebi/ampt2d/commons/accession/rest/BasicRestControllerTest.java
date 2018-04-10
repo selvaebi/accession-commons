@@ -79,15 +79,22 @@ public class BasicRestControllerTest {
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"MissingUnsavedAccessions\" }]"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.exception")
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"AccessionIsNotPending\" }]"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.exception")
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"AccessionCouldNotBeGeneratedException\" }]"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.exception")
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions" +
+                                ".AccessionCouldNotBeGeneratedException"));
     }
 
 }
