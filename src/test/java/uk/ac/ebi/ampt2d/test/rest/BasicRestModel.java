@@ -15,18 +15,21 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.test.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+public class BasicRestModel {
 
-import java.util.List;
-import java.util.Map;
+    private String value;
 
-public interface AccessioningService<MODEL, ACCESSION> {
+    BasicRestModel() {
+    }
 
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+    public BasicRestModel(String value) {
+        this.value = value;
+    }
 
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
+    public String getValue() {
+        return value;
+    }
 
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
 }

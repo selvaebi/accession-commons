@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
-import uk.ac.ebi.ampt2d.commons.accession.generators.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 
 import java.util.List;

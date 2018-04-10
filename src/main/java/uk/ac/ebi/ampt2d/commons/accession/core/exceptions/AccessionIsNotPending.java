@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.exceptions;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 public class AccessionIsNotPending extends RuntimeException {
 

@@ -15,11 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.generators.exceptions;
+package uk.ac.ebi.ampt2d.test.rest;
 
-public class AccessionCouldNotBeGeneratedException extends Exception {
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
 
-    public AccessionCouldNotBeGeneratedException(String s) {
-        super(s);
+@RestController
+@RequestMapping(value = "/v1/test")
+public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String> {
+
+    public TestController() {
+        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
     }
+
 }
