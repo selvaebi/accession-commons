@@ -29,6 +29,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 @Configuration
+@EnableJpaAuditing
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
 public class TestJpaDatabaseServiceTestConfiguration {
