@@ -28,7 +28,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGen
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
-import uk.ac.ebi.ampt2d.test.configuration.TestDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
@@ -39,14 +39,14 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = {TestDatabaseServiceTestConfiguration.class})
+@ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BasicAccessioningServiceTest {
 
     @Autowired
     private TestRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> databaseService;
+    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> databaseService;
 
     @Test
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {

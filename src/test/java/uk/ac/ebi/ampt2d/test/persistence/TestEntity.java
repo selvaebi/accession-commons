@@ -18,6 +18,8 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity.AccessionedStringEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Column;
@@ -25,17 +27,12 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class TestEntity implements TestModel {
-
-    @Id
-    private String accession;
-
-    @Column(nullable = false, unique = true)
-    private String hashedMessage;
+public class TestEntity extends AccessionedStringEntity implements TestModel  {
 
     private String something;
 
     TestEntity() {
+        super(null, null);
     }
 
     public TestEntity(ModelHashAccession<TestModel, String, String> triple) {
@@ -43,17 +40,8 @@ public class TestEntity implements TestModel {
     }
 
     public TestEntity(String accession, String hashedMessage, String something) {
-        this.accession = accession;
-        this.hashedMessage = hashedMessage;
+        super(hashedMessage,accession);
         this.something = something;
-    }
-
-    public String getAccession() {
-        return accession;
-    }
-
-    public String getHashedMessage() {
-        return hashedMessage;
     }
 
     @Override

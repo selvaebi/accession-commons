@@ -18,42 +18,27 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity.AccessionedLongEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
-public class TestMonotonicEntity implements TestModel {
-
-    @Id
-    private Long accession;
-
-    @Column(nullable = false, unique = true)
-    private String hashedMessage;
+public class TestMonotonicEntity extends AccessionedLongEntity implements TestModel {
 
     private String something;
 
     TestMonotonicEntity() {
+        super(null, null);
     }
 
     public TestMonotonicEntity(ModelHashAccession<TestModel, String, Long> triple) {
-        this(triple.accession(),triple.hash(),triple.model().getSomething());
+        this(triple.accession(), triple.hash(), triple.model().getSomething());
     }
 
     public TestMonotonicEntity(Long accession, String hashedMessage, String something) {
-        this.accession = accession;
-        this.hashedMessage = hashedMessage;
+        super(hashedMessage, accession);
         this.something = something;
-    }
-
-    public Long getAccession() {
-        return accession;
-    }
-
-    public String getHashedMessage() {
-        return hashedMessage;
     }
 
     @Override

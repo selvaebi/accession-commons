@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +27,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
-import uk.ac.ebi.ampt2d.test.configuration.TestDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 
 import java.util.Arrays;
@@ -38,11 +39,11 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = {TestDatabaseServiceTestConfiguration.class})
-public class BasicSpringDataRepositoryDatabaseServiceTest {
+@ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
+public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> service;
+    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> service;
 
     @Test
     public void testFindInEmptyRepository() {

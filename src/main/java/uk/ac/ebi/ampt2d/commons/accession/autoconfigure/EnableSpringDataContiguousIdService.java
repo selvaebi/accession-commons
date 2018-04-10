@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.autoconfigure;
 
 import org.springframework.context.annotation.Import;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

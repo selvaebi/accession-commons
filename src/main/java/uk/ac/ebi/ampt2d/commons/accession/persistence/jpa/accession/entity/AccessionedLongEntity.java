@@ -15,12 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity;
 
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+@MappedSuperclass
+public abstract class AccessionedLongEntity extends AccessionedEntity<Long> {
 
-@Repository
-public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String, String> {
+    @Id
+    private Long accession;
+
+    public AccessionedLongEntity(String hash, Long accession) {
+        super(hash, accession);
+        this.accession = accession;
+    }
+
+    @Override
+    public Long getAccession() {
+        return accession;
+    }
 }

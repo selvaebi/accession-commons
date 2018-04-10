@@ -17,11 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.test.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningRepository;
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 
@@ -29,11 +29,13 @@ import java.util.Collection;
 import java.util.function.Function;
 
 public class TestMonotonicDatabaseService
-        extends BasicSpringDataRepositoryDatabaseService<TestModel, TestMonotonicEntity, String, Long>
+        extends BasicSpringDataRepositoryDatabaseService<TestModel, TestMonotonicEntity, Long>
         implements MonotonicDatabaseService<TestModel, String> {
 
-    public TestMonotonicDatabaseService(AccessioningRepository<TestMonotonicEntity, String, Long> repository, Function<ModelHashAccession<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction, Function<TestMonotonicEntity, Long> getAccessionFunction, Function<TestMonotonicEntity, String> getHashedMessageFunction) {
-        super(repository, toEntityFunction, getAccessionFunction, getHashedMessageFunction);
+    public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, String, Long> repository,
+                                        Function<ModelHashAccession<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction,
+                                        Function<TestMonotonicEntity, TestModel> toModelFunction) {
+        super(repository, toEntityFunction, toModelFunction);
     }
 
     @Override

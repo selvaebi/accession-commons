@@ -30,18 +30,17 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 @Configuration
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
-public class TestDatabaseServiceTestConfiguration {
+public class TestJpaDatabaseServiceTestConfiguration {
 
     @Autowired
     private TestRepository repository;
 
     @Bean
-    public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> getService() {
+    public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> getService() {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
                 TestEntity::new,
-                TestEntity::getAccession,
-                TestEntity::getHashedMessage
+                TestModel.class::cast
         );
     }
 

@@ -15,12 +15,16 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repository;
 
-
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity.AccessionedEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
 
-@Repository
-public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String, String> {
+import java.io.Serializable;
+
+@NoRepositoryBean
+public interface JpaAccessionedObjectRepository<ENTITY extends AccessionedEntity, ACCESSION extends Serializable>
+        extends IAccessionedObjectRepository<ENTITY, String, ACCESSION> {
+
 }
