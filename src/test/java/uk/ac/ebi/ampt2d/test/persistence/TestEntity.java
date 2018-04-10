@@ -18,13 +18,10 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity.AccessionedStringEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedStringEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 public class TestEntity extends AccessionedStringEntity implements TestModel  {

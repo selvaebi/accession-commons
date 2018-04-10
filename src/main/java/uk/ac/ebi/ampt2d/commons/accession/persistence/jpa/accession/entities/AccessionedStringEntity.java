@@ -15,16 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repository;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
-import org.springframework.data.repository.NoRepositoryBean;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity.AccessionedEntity;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-import java.io.Serializable;
+@MappedSuperclass
+public abstract class AccessionedStringEntity extends AccessionedEntity<String> {
 
-@NoRepositoryBean
-public interface JpaAccessionedObjectRepository<ENTITY extends AccessionedEntity, ACCESSION extends Serializable>
-        extends IAccessionedObjectRepository<ENTITY, String, ACCESSION> {
+    @Id
+    private String accession;
 
+    public AccessionedStringEntity(String hash, String accession) {
+        super(hash, accession);
+        this.accession = accession;
+    }
+
+    @Override
+    public String getAccession() {
+        return accession;
+    }
 }

@@ -15,24 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entity;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AccessionedStringEntity extends AccessionedEntity<String> {
+public abstract class AccessionedLongEntity extends AccessionedEntity<Long> {
 
     @Id
-    private String accession;
+    private Long accession;
 
-    public AccessionedStringEntity(String hash, String accession) {
+    public AccessionedLongEntity(String hash, Long accession) {
         super(hash, accession);
         this.accession = accession;
     }
 
     @Override
-    public String getAccession() {
+    public Long getAccession() {
         return accession;
     }
 }
