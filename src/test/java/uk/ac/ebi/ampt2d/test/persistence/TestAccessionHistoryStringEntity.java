@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entity.AccessionHistoryStringEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities.AccessionHistoryStringEntity;
 
 import javax.persistence.Entity;
 

@@ -28,7 +28,8 @@ import uk.ac.ebi.ampt2d.test.configuration.TestStringAccessionHistoryConfigurati
 import uk.ac.ebi.ampt2d.test.persistence.TestAccessionHistoryStringEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestAccessionHistoryStringRepository;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,26 +47,34 @@ public class BasicAccessionHistoryTrackingServiceTestForAccessionStringType {
 
     @Test
     public void merge() throws Exception {
-        historyTrackingServiceForStringEntity.merge(Arrays.asList("Accession1", "Accession2", "Accession3"),
-                "MergeReason");
+        List<AccessionReasonModel<String>> accessionReasonModels = new ArrayList<>();
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession1", "MergeReason1"));
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession2", "MergeReason2"));
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession3", "MergeReason2"));
+        historyTrackingServiceForStringEntity.merge(accessionReasonModels);
 
         assertEquals(3, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.MERGED).size());
     }
 
     @Test
     public void update() throws Exception {
-        historyTrackingServiceForStringEntity.update(Arrays.asList("Accession1", "Accession2", "Accession3"),
-                "UpdateReason");
+        List<AccessionReasonModel<String>> accessionReasonModels = new ArrayList<>();
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession1", "UpdateReason1"));
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession2", "UpdateReason2"));
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession2", "UpdateReason3"));
+        historyTrackingServiceForStringEntity.update(accessionReasonModels);
 
         assertEquals(3, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.UPDATED).size());
     }
 
     @Test
     public void deprecate() throws Exception {
-        historyTrackingServiceForStringEntity.deprecate(Arrays.asList("Accession1", "Accession2", "Accession3"),
-                "DeprecateReason");
+        List<AccessionReasonModel<String>> accessionReasonModels = new ArrayList<>();
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession1", "DeprecateReason"));
+        accessionReasonModels.add(new AccessionReasonModel<>("Accession2", "DeprecateReason"));
+        historyTrackingServiceForStringEntity.deprecate(accessionReasonModels);
 
-        assertEquals(3, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.DEPRECATED).size());
+        assertEquals(2, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.DEPRECATED).size());
     }
 
 }

@@ -35,25 +35,26 @@ public class BasicAccessionHistoryTrackingService<ENTITY, ACCESSION>
         this.builder = builder;
     }
 
-    private void accessionStatus(List<ACCESSION> accessions, AccessionStatus accessionStatus, String reason) {
+    @Override
+    public void merge(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
+        accessionStatus(accessionReasonModels, AccessionStatus.MERGED);
+    }
+
+    @Override
+    public void update(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
+        accessionStatus(accessionReasonModels, AccessionStatus.UPDATED);
+    }
+
+    @Override
+    public void deprecate(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
+        accessionStatus(accessionReasonModels, AccessionStatus.DEPRECATED);
+    }
+
+    private void accessionStatus(List<AccessionReasonModel<ACCESSION>> accessions, AccessionStatus accessionStatus) {
         List<ENTITY> entities = new ArrayList<>();
-        accessions.stream().forEach(accession -> entities.add(builder.build(accession, accessionStatus, reason)));
+        accessions.stream().forEach(accessionReasonModel -> entities.add(builder.build(accessionReasonModel.getAccession(),
+                accessionStatus,accessionReasonModel.getReason())));
         accessionHistoryRepository.save(entities);
-    }
-
-    @Override
-    public void merge(List<ACCESSION> accessions, String reason) {
-        accessionStatus(accessions, AccessionStatus.MERGED, reason);
-    }
-
-    @Override
-    public void update(List<ACCESSION> accessions, String reason) {
-        accessionStatus(accessions, AccessionStatus.UPDATED, reason);
-    }
-
-    @Override
-    public void deprecate(List<ACCESSION> accessions, String reason) {
-        accessionStatus(accessions, AccessionStatus.DEPRECATED, reason);
     }
 
 }
