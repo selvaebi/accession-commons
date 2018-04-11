@@ -28,6 +28,6 @@ import java.util.Collection;
 public interface AccessionHistoryRepository<ENTITY, ID extends Serializable>
         extends CrudRepository<ENTITY, ID> {
 
-    Collection<ENTITY> findAllByAccessionStatus(AccessionStatus accessionStatus);
+    Collection<ENTITY> findByAccessionStatus(AccessionStatus accessionStatus);
 
 }

@@ -45,20 +45,20 @@ public class BasicAccessionHistoryTrackingServiceTestForAccessionLongType {
     @Test
     public void merge() throws Exception {
         historyTrackingServiceForLongEntity.merge("MergeReason", 1L, 2L, 3L);
-        assertEquals(3, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.MERGED).size());
+        assertEquals(3, longAccessionRepository.findByAccessionStatus(AccessionStatus.MERGED).size());
     }
 
     @Test
     public void update() throws Exception {
         historyTrackingServiceForLongEntity.update("UpdateReason1", 1L, 2L);
         historyTrackingServiceForLongEntity.update("UpdateReason2", 3L);
-        assertEquals(3, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.UPDATED).size());
+        assertEquals(3, longAccessionRepository.findByAccessionStatus(AccessionStatus.UPDATED).size());
     }
 
     @Test
     public void deprecate() throws Exception {
         historyTrackingServiceForLongEntity.deprecate("DeprecateReason", 1L, 2L);
-        assertEquals(2, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.DEPRECATED).size());
+        assertEquals(2, longAccessionRepository.findByAccessionStatus(AccessionStatus.DEPRECATED).size());
     }
 
 }

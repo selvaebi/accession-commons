@@ -17,6 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
 
+/**
+ * Interface for services that allow to interact with the components to track the history of accessions.
+ *
+ * @param <ACCESSION>
+ */
 public interface IAccessionHistoryTrackingService<ACCESSION> {
 
     void merge(String reason, ACCESSION... accessions);

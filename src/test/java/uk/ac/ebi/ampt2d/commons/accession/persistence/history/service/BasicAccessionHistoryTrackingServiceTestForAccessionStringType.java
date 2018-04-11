@@ -45,7 +45,7 @@ public class BasicAccessionHistoryTrackingServiceTestForAccessionStringType {
     @Test
     public void merge() throws Exception {
         historyTrackingServiceForStringEntity.merge("MergeReason", "Accession1", "Accession2", "Accession3");
-        assertEquals(3, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.MERGED).size());
+        assertEquals(3, stringAccessionRepository.findByAccessionStatus(AccessionStatus.MERGED).size());
     }
 
     @Test
@@ -53,13 +53,13 @@ public class BasicAccessionHistoryTrackingServiceTestForAccessionStringType {
         historyTrackingServiceForStringEntity.update("UpdateReason1", "Accession1", "Accession2");
         historyTrackingServiceForStringEntity.update("UpdateReason2", "Accession3");
 
-        assertEquals(3, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.UPDATED).size());
+        assertEquals(3, stringAccessionRepository.findByAccessionStatus(AccessionStatus.UPDATED).size());
     }
 
     @Test
     public void deprecate() throws Exception {
         historyTrackingServiceForStringEntity.deprecate("DeprecateReason", "Accession1", "Accession2");
-        assertEquals(2, stringAccessionRepository.findAllByAccessionStatus(AccessionStatus.DEPRECATED).size());
+        assertEquals(2, stringAccessionRepository.findByAccessionStatus(AccessionStatus.DEPRECATED).size());
     }
 
 }

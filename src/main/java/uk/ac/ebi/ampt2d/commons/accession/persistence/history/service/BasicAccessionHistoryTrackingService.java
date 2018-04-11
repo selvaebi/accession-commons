@@ -24,6 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Implementation of {@link IAccessionHistoryTrackingService} for tracking history of accessions
+ *
+ * @param <ENTITY>
+ * @param <ACCESSION>
+ */
 public class BasicAccessionHistoryTrackingService<ENTITY, ACCESSION>
         implements IAccessionHistoryTrackingService<ACCESSION> {
 
@@ -38,20 +44,20 @@ public class BasicAccessionHistoryTrackingService<ENTITY, ACCESSION>
 
     @Override
     public void merge(String reason, ACCESSION... accessions) {
-        accessionStatus(reason, AccessionStatus.MERGED, accessions);
+        saveAccessionsStatusChange(reason, AccessionStatus.MERGED, accessions);
     }
 
     @Override
     public void update(String reason, ACCESSION... accessions) {
-        accessionStatus(reason, AccessionStatus.UPDATED, accessions);
+        saveAccessionsStatusChange(reason, AccessionStatus.UPDATED, accessions);
     }
 
     @Override
     public void deprecate(String reason, ACCESSION... accessions) {
-        accessionStatus(reason, AccessionStatus.DEPRECATED, accessions);
+        saveAccessionsStatusChange(reason, AccessionStatus.DEPRECATED, accessions);
     }
 
-    private void accessionStatus(String reason, AccessionStatus accessionStatus, ACCESSION... accessions) {
+    private void saveAccessionsStatusChange(String reason, AccessionStatus accessionStatus, ACCESSION... accessions) {
         List<ENTITY> entities = new ArrayList<>();
         Stream.of(accessions).forEach(accession -> entities.add(builder.build(accession, accessionStatus, reason)));
         accessionHistoryRepository.save(entities);
