@@ -17,14 +17,12 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
 
-import java.util.List;
-
 public interface IAccessionHistoryTrackingService<ACCESSION> {
 
-    void merge(List<AccessionReasonModel<ACCESSION>> accessionReasonModels);
+    void merge(String reason, ACCESSION... accessions);
 
-    void update(List<AccessionReasonModel<ACCESSION>> accessionReasonModels);
+    void update(String reason, ACCESSION... accessions);
 
-    void deprecate(List<AccessionReasonModel<ACCESSION>> accessionReasonModels);
+    void deprecate(String reason, ACCESSION... accessions);
 
 }

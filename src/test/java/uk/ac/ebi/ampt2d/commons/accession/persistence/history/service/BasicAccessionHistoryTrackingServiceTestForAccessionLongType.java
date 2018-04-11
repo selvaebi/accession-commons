@@ -28,9 +28,6 @@ import uk.ac.ebi.ampt2d.test.configuration.TestLongAccessionHistoryConfiguration
 import uk.ac.ebi.ampt2d.test.persistence.TestAccessionHistoryLongEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestAccessionHistoryLongRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -47,33 +44,20 @@ public class BasicAccessionHistoryTrackingServiceTestForAccessionLongType {
 
     @Test
     public void merge() throws Exception {
-        List<AccessionReasonModel<Long>> accessionReasonModels = new ArrayList<>();
-        accessionReasonModels.add(new AccessionReasonModel<>(1L, "MergeReason1"));
-        accessionReasonModels.add(new AccessionReasonModel<>(2L, "MergeReason2"));
-        accessionReasonModels.add(new AccessionReasonModel<>(3L, "MergeReason2"));
-        historyTrackingServiceForLongEntity.merge(accessionReasonModels);
-
+        historyTrackingServiceForLongEntity.merge("MergeReason", 1L, 2L, 3L);
         assertEquals(3, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.MERGED).size());
     }
 
     @Test
     public void update() throws Exception {
-        List<AccessionReasonModel<Long>> accessionReasonModels = new ArrayList<>();
-        accessionReasonModels.add(new AccessionReasonModel<>(1L, "UpdateReason1"));
-        accessionReasonModels.add(new AccessionReasonModel<>(2L, "UpdateReason2"));
-        accessionReasonModels.add(new AccessionReasonModel<>(3L, "UpdateReason3"));
-        historyTrackingServiceForLongEntity.update(accessionReasonModels);
-
+        historyTrackingServiceForLongEntity.update("UpdateReason1", 1L, 2L);
+        historyTrackingServiceForLongEntity.update("UpdateReason2", 3L);
         assertEquals(3, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.UPDATED).size());
     }
 
     @Test
     public void deprecate() throws Exception {
-        List<AccessionReasonModel<Long>> accessionReasonModels = new ArrayList<>();
-        accessionReasonModels.add(new AccessionReasonModel<>(1L, "DeprecateReason"));
-        accessionReasonModels.add(new AccessionReasonModel<>(2L, "DeprecateReason"));
-        historyTrackingServiceForLongEntity.deprecate(accessionReasonModels);
-
+        historyTrackingServiceForLongEntity.deprecate("DeprecateReason", 1L, 2L);
         assertEquals(2, longAccessionRepository.findAllByAccessionStatus(AccessionStatus.DEPRECATED).size());
     }
 

@@ -22,6 +22,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.history.repositories.Acces
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class BasicAccessionHistoryTrackingService<ENTITY, ACCESSION>
         implements IAccessionHistoryTrackingService<ACCESSION> {
@@ -36,24 +37,23 @@ public class BasicAccessionHistoryTrackingService<ENTITY, ACCESSION>
     }
 
     @Override
-    public void merge(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
-        accessionStatus(accessionReasonModels, AccessionStatus.MERGED);
+    public void merge(String reason, ACCESSION... accessions) {
+        accessionStatus(reason, AccessionStatus.MERGED, accessions);
     }
 
     @Override
-    public void update(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
-        accessionStatus(accessionReasonModels, AccessionStatus.UPDATED);
+    public void update(String reason, ACCESSION... accessions) {
+        accessionStatus(reason, AccessionStatus.UPDATED, accessions);
     }
 
     @Override
-    public void deprecate(List<AccessionReasonModel<ACCESSION>> accessionReasonModels) {
-        accessionStatus(accessionReasonModels, AccessionStatus.DEPRECATED);
+    public void deprecate(String reason, ACCESSION... accessions) {
+        accessionStatus(reason, AccessionStatus.DEPRECATED, accessions);
     }
 
-    private void accessionStatus(List<AccessionReasonModel<ACCESSION>> accessions, AccessionStatus accessionStatus) {
+    private void accessionStatus(String reason, AccessionStatus accessionStatus, ACCESSION... accessions) {
         List<ENTITY> entities = new ArrayList<>();
-        accessions.stream().forEach(accessionReasonModel -> entities.add(builder.build(accessionReasonModel.getAccession(),
-                accessionStatus,accessionReasonModel.getReason())));
+        Stream.of(accessions).forEach(accession -> entities.add(builder.build(accession, accessionStatus, reason)));
         accessionHistoryRepository.save(entities);
     }
 
