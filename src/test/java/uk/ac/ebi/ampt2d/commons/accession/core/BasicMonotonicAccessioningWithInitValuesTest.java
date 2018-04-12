@@ -34,7 +34,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -58,13 +58,15 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, Long>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
+
         assertEquals(3, accessions.size());
-        accessions.entrySet().stream().forEach(entry -> assertTrue(entry.getKey() >= 100L));
+        accessions.stream().forEach(entry -> assertTrue(entry.getAccession() >= 100L));
     }
 
     private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService() {
@@ -80,21 +82,22 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, Long>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
-        accessions.entrySet().stream().forEach(entry -> assertTrue(entry.getKey() >= 100L));
+        accessions.stream().forEach(entry -> assertTrue(entry.getAccession() >= 100L));
     }
 
     @Test
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
+        List<AccessionModel<TestModel, String, Long>> accessions = accessioningService.getAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -107,11 +110,12 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
         repository.save(new TestMonotonicEntity(
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
+        List<AccessionModel<TestModel, String, Long>> accessions = accessioningService.getAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -124,17 +128,20 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
         repository.save(new TestMonotonicEntity(
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, Long>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
-        accessions.entrySet().stream().forEach(entry -> assertTrue(entry.getKey() == 0L || entry.getKey() >= 100L));
+        accessions.stream().forEach(entry ->
+                assertTrue(entry.getAccession() == 0L || entry.getAccession() >= 100L));
     }
 
 }

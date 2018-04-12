@@ -49,7 +49,7 @@ public class BasicRestControllerTest {
     public void testNoContentIfAccessioningDoesNotExist() throws Exception {
         mockMvc.perform(get("/v1/test/notExistingId").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("{}"));
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -58,9 +58,9 @@ public class BasicRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"simpleTest\" }]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.[*].value", hasSize(1)))
-                .andExpect(jsonPath("$.[*].value", containsInAnyOrder("simpleTest")));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("simpleTest")));
     }
 
     @Test
@@ -69,9 +69,9 @@ public class BasicRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"simpleTest2\" }, { \"value\" : \"simpleTest3\" }]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.[*].value", hasSize(2)))
-                .andExpect(jsonPath("$.[*].value", containsInAnyOrder("simpleTest2", "simpleTest3")));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("simpleTest2", "simpleTest3")));
     }
 
     @Test

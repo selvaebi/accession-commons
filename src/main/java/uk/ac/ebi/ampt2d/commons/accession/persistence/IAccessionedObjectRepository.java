@@ -19,17 +19,17 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 
 @NoRepositoryBean
-public interface IAccessionedObjectRepository<ENTITY, HASH, ACCESSION extends Serializable>
-        extends CrudRepository<ENTITY, ACCESSION> {
+public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
+        ACCESSION extends Serializable> extends CrudRepository<ENTITY, ACCESSION> {
 
-    Collection<ENTITY> findByHashedMessageIn(Collection<HASH> hashes);
+    Collection<ENTITY> findByHashedMessageIn(Collection<String> hashes);
 
-
+    void enableByHashedMessageIn(Set<String> hashes);
 
 }

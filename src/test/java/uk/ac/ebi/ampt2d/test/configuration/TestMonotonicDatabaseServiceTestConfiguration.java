@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BaseJpaAccessionedObjectRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
@@ -33,7 +34,8 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 @Configuration
 @EnableSpringDataContiguousIdService
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
-@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
+@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence", repositoryBaseClass =
+        BaseJpaAccessionedObjectRepository.class)
 public class TestMonotonicDatabaseServiceTestConfiguration {
 
     private static final int BLOCK_SIZE = 1000;

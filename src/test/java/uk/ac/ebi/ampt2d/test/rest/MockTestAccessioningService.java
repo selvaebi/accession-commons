@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
@@ -25,15 +26,14 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessio
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Mock service, generates accessions using in-memory data structures
  */
-public class MockTestAccessioningService implements AccessioningService<BasicRestModel, String> {
+public class MockTestAccessioningService implements AccessioningService<BasicRestModel, String, String> {
 
-    private HashMap<String, BasicRestModel> accessionToObject;
+    private HashMap<String, AccessionModel<BasicRestModel, String, String>> accessionToObject;
     private HashMap<String, String> valueToAccession;
 
     public MockTestAccessioningService() {
@@ -42,20 +42,18 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     @Override
-    public Map<String, BasicRestModel> getOrCreateAccessions(List<? extends BasicRestModel> messages)
+    public List<AccessionModel<BasicRestModel, String, String>> getOrCreateAccessions(
+            List<? extends BasicRestModel> messages)
             throws AccessionCouldNotBeGeneratedException {
         for (BasicRestModel message : messages) {
             generateAccession(message);
         }
-        return messages.stream().collect(Collectors.toMap(
-                o -> valueToAccession.get(o.getValue()),
-                o -> o
-        ));
+        return getAccessions(messages);
     }
 
     private synchronized void generateAccession(BasicRestModel model) throws AccessionCouldNotBeGeneratedException {
         if (model.getValue().contains("MissingUnsavedAccessions")) {
-            throw new MissingUnsavedAccessions(new HashMap<>(), new ArrayList<>());
+            throw new MissingUnsavedAccessions(new ArrayList<>(), new ArrayList<>());
         }
         if (model.getValue().contains("AccessionIsNotPending")) {
             throw new AccessionIsNotPending(-1);
@@ -64,20 +62,27 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
             throw new AccessionCouldNotBeGeneratedException("Test");
         }
         String accession = "Accession-" + accessionToObject.size();
-        accessionToObject.put(accession, model);
+        accessionToObject.put(accession, AccessionModel.of(accession, "dummy_hash", model));
         valueToAccession.put(model.getValue(), accession);
     }
 
     @Override
-    public Map<String, BasicRestModel> getAccessions(List<? extends BasicRestModel> accessionedObjects) {
-        return accessionedObjects.stream().filter(o -> valueToAccession.containsKey(o.getValue()))
-                .collect(Collectors.toMap(o -> valueToAccession.get(o.getValue()), o -> o));
+    public List<AccessionModel<BasicRestModel, String, String>> getAccessions(
+            List<? extends BasicRestModel> objects) {
+        return objects.stream()
+                .map(BasicRestModel::getValue)
+                .filter(valueToAccession::containsKey)
+                .map(valueToAccession::get)
+                .map(accessionToObject::get)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Map<String, ? extends BasicRestModel> getByAccessions(List<String> strings) {
+    public List<AccessionModel<BasicRestModel, String, String>> getByAccessions(List<String> strings,
+                                                                                boolean hideDeprecated) {
         return strings.stream().filter(accessionToObject::containsKey)
-                .collect(Collectors.toMap(o -> o, o -> accessionToObject.get(o)));
+                .map(accessionToObject::get)
+                .collect(Collectors.toList());
     }
 
 }

@@ -15,30 +15,12 @@
  * limitations under the License.
  *
  */
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-package uk.ac.ebi.ampt2d.commons.accession.generators;
+public class AccessionWasNotSaved extends RuntimeException {
 
-public interface ModelHashAccession<MODEL, HASH, ACCESSION> {
-
-    MODEL model();
-
-    HASH hash();
-
-    ACCESSION accession();
-
-    static <X, Y, Z> ModelHashAccession<X, Y, Z> of(X model, Y hash, Z accession) {
-        return new ModelHashAccession<X, Y, Z>() {
-            public X model() {
-                return model;
-            }
-
-            public Y hash() {
-                return hash;
-            }
-
-            public Z accession() {
-                return accession;
-            }
-        };
+    public <ACCESSION> AccessionWasNotSaved(ACCESSION accession) {
+        super("Accession '"+accession+"' was not saved.");
     }
+
 }

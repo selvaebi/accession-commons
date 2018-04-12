@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BaseJpaAccessionedObjectRepository;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
@@ -31,7 +32,8 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 @Configuration
 @EnableJpaAuditing
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
-@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
+@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence",
+        repositoryBaseClass = BaseJpaAccessionedObjectRepository.class)
 public class TestJpaDatabaseServiceTestConfiguration {
 
     @Autowired

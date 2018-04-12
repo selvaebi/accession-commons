@@ -17,25 +17,26 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class MissingUnsavedAccessions extends RuntimeException {
 
-    public <ACCESSION, MODEL> MissingUnsavedAccessions(Map<ACCESSION, MODEL> unsavedObjectAccessions,
-                                                       List<MODEL> unsavedObjects) {
-        super("Unsaved objects could not be found: " + generateMessage(unsavedObjectAccessions, unsavedObjects));
+    public <MODEL, HASH, ACCESSION> MissingUnsavedAccessions(List<AccessionModel<MODEL, HASH, ACCESSION>> dbAccessions,
+                                                             List<AccessionModel<MODEL, HASH, ACCESSION>>
+                                                                     saveFailedAccessions) {
+        super("Unsaved objects could not be found: " + generateMessage(dbAccessions, saveFailedAccessions));
     }
 
-    private static <ACCESSION, MODEL> String generateMessage(Map<ACCESSION, MODEL> unsavedObjectAccessions,
-                                                             List<MODEL> unsavedObjects) {
+    private static <MODEL, HASH, ACCESSION> String generateMessage(List<AccessionModel<MODEL, HASH, ACCESSION>>
+                                                                           dbAccessions,
+                                                                   List<AccessionModel<MODEL, HASH, ACCESSION>>
+                                                                           unsavedObjects) {
         List<MODEL> missingObjects = new ArrayList<>();
 
-        unsavedObjects.forEach(model -> {
-            if (unsavedObjectAccessions.values().contains(model))
-                missingObjects.add(model);
-        });
+// TODO REDO FUNCTION
         return missingObjects.toString();
     }
 }

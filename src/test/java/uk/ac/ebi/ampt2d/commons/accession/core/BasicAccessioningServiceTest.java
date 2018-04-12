@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
@@ -33,7 +33,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,11 +52,12 @@ public class BasicAccessioningServiceTest {
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        Map<String, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
     }
 
@@ -76,12 +77,13 @@ public class BasicAccessioningServiceTest {
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        Map<String, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
     }
 
@@ -89,11 +91,12 @@ public class BasicAccessioningServiceTest {
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        Map<String, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(0, accessions.size());
     }
 
@@ -102,11 +105,12 @@ public class BasicAccessioningServiceTest {
         repository.save(new TestEntity(
                 "id-service-test-3",
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        Map<String, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
+        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -119,15 +123,17 @@ public class BasicAccessioningServiceTest {
         repository.save(new TestEntity(
                 "id-service-test-3",
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        Map<String, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
     }
 

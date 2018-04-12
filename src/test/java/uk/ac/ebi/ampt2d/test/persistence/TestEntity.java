@@ -17,27 +17,27 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedStringEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Entity;
 
 @Entity
-public class TestEntity extends AccessionedStringEntity implements TestModel  {
+public class TestEntity extends AccessionedStringEntity implements TestModel {
 
     private String something;
 
     TestEntity() {
-        super(null, null);
+        super(null, null, true);
     }
 
-    public TestEntity(ModelHashAccession<TestModel, String, String> triple) {
-        this(triple.accession(),triple.hash(),triple.model().getSomething());
+    public TestEntity(AccessionModel<TestModel, String, String> model) {
+        this(model.getAccession(), model.getHash(), model.isActive(), model.getData().getSomething());
     }
 
-    public TestEntity(String accession, String hashedMessage, String something) {
-        super(hashedMessage,accession);
+    public TestEntity(String accession, String hashedMessage, boolean active, String something) {
+        super(hashedMessage, accession, active);
         this.something = something;
     }
 

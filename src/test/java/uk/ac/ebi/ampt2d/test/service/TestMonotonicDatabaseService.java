@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
@@ -32,8 +32,9 @@ public class TestMonotonicDatabaseService
         extends BasicSpringDataRepositoryDatabaseService<TestModel, TestMonotonicEntity, Long>
         implements MonotonicDatabaseService<TestModel, String> {
 
-    public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, String, Long> repository,
-                                        Function<ModelHashAccession<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction,
+    public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
+                                        Function<AccessionModel<TestModel, String, Long>, TestMonotonicEntity>
+                                                toEntityFunction,
                                         Function<TestMonotonicEntity, TestModel> toModelFunction) {
         super(repository, toEntityFunction, toModelFunction);
     }

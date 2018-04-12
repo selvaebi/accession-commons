@@ -18,6 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
@@ -36,15 +37,15 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
     @Column(nullable = false, unique = true)
     private String hashedMessage;
 
-    private boolean active;
+    private boolean active = true;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
-    public AccessionedEntity(String hashedMessage, ACCESSION accession) {
+    public AccessionedEntity(String hashedMessage, ACCESSION accession, boolean active) {
         this.hashedMessage = hashedMessage;
-        active = true;
+        this.active = active;
     }
 
     @Override

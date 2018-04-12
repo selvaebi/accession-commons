@@ -26,21 +26,32 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
+
+    public static final AccessionModel<TestModel, String, String> TEST_MODEL_1 =
+            AccessionModel.of("a1", "h1", TestModel.of("something1"));
+    public static final AccessionModel<TestModel, String, String> TEST_MODEL_2 =
+            AccessionModel.of("a2", "h2", TestModel.of("something2"));
+    public static final AccessionModel<TestModel, String, String> TEST_MODEL_3 =
+            AccessionModel.of("a3", "h3", TestModel.of("something3"));
 
     @Autowired
     private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> service;
@@ -52,39 +63,38 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         assertEquals(0, service.getExistingAccessions(Arrays.asList("h1", "h2")).size());
     }
 
+    @Autowired
+    private TestRepository repository;
+
     @Test
     public void saveUniqueElements() {
-        service.save(Arrays.asList(
-                ModelHashAccession.of(TestModel.of("something1"), "h1", "a1"),
-                ModelHashAccession.of(TestModel.of("something2"), "h2", "a2"),
-                ModelHashAccession.of(TestModel.of("something3"), "h3", "a3")
-        ));
+        service.save(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        Map<String, ? extends TestModel> accessionsToModels = service.findAllAccessionMappingsByAccessions(
+        List<AccessionModel<TestModel, String, String>> result = service.findAllAccessionMappingsByAccessions(
                 Arrays.asList("a1", "a2"));
-        assertEquals(2, accessionsToModels.size());
-        assertEquals("something1", accessionsToModels.get("a1").getSomething());
-        assertEquals("something2", accessionsToModels.get("a2").getSomething());
+        assertEquals(2, result.size());
+        assertTrue(result.contains(TEST_MODEL_1));
+        assertTrue(result.contains(TEST_MODEL_2));
 
-        Map<String, ? extends TestModel> accessionsToModels2 = service.findAllAccessionsByHash(
+        List<AccessionModel<TestModel, String, String>> results2 = service.findAllAccessionsByHash(
                 Arrays.asList("h1", "h2"));
-        assertEquals(2, accessionsToModels2.size());
-        assertEquals("something1", accessionsToModels2.get("a1").getSomething());
-        assertEquals("something2", accessionsToModels2.get("a2").getSomething());
+        assertEquals(2, results2.size());
+        assertTrue(result.contains(TEST_MODEL_1));
+        assertTrue(result.contains(TEST_MODEL_2));
 
         Map<String, String> hashToAccession = service.getExistingAccessions(Arrays.asList("h1", "h3"));
         assertEquals(2, hashToAccession.size());
-        assertEquals("a1", hashToAccession.get("h1"));
-        assertEquals("a3", hashToAccession.get("h3"));
+        assertTrue(hashToAccession.containsKey(TEST_MODEL_1.getHash()));
+        assertTrue(hashToAccession.containsKey(TEST_MODEL_3.getHash()));
     }
 
     @Test(expected = DataIntegrityViolationException.class)
     @Commit
     public void saveNonUniqueElements() {
         service.save(Arrays.asList(
-                ModelHashAccession.of(TestModel.of("something1"), "h1", "a1"),
-                ModelHashAccession.of(TestModel.of("something2"), "h1", "a2"),
-                ModelHashAccession.of(TestModel.of("something3"), "h3", "a3")
+                TEST_MODEL_1,
+                AccessionModel.of("a2", "h1", TestModel.of("something2")),
+                TEST_MODEL_3
         ));
         TestTransaction.end();
     }

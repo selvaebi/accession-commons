@@ -26,8 +26,8 @@ public abstract class AccessionedLongEntity extends AccessionedEntity<Long> {
     @Id
     private Long accession;
 
-    public AccessionedLongEntity(String hash, Long accession) {
-        super(hash, accession);
+    public AccessionedLongEntity(String hash, Long accession, boolean active) {
+        super(hash, accession, active);
         this.accession = accession;
     }
 

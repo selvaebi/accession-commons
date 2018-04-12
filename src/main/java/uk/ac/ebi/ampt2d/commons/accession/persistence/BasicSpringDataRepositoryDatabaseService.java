@@ -18,11 +18,11 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,14 +41,14 @@ import java.util.stream.Collectors;
 public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAccessionedObject<ACCESSION>,
         ACCESSION extends Serializable> implements DatabaseService<MODEL, String, ACCESSION> {
 
-    private IAccessionedObjectRepository<ENTITY, String, ACCESSION> repository;
+    private IAccessionedObjectRepository<ENTITY, ACCESSION> repository;
 
-    private final Function<ModelHashAccession<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
+    private final Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
 
     private final Function<ENTITY, MODEL> toModelFunction;
 
-    public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, String, ACCESSION> repository,
-                                                    Function<ModelHashAccession<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
+    public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
+                                                    Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
                                                     Function<ENTITY, MODEL> toModelFunction) {
         this.repository = repository;
         this.toEntityFunction = toEntityFunction;
@@ -56,9 +56,11 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     }
 
     @Override
-    public Map<ACCESSION, MODEL> findAllAccessionsByHash(Collection<String> hashes) {
+    public List<AccessionModel<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
         return repository.findByHashedMessageIn(hashes).stream()
-                .collect(Collectors.toMap(IAccessionedObject::getAccession, toModelFunction));
+                .map(entity -> AccessionModel.of(entity.getAccession(), entity.getHashedMessage(),
+                        toModelFunction.apply(entity)))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -69,17 +71,25 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     @Override
     @Transactional
-    public void save(List<ModelHashAccession<MODEL, String, ACCESSION>> objects) {
+    public void save(List<AccessionModel<MODEL, String, ACCESSION>> objects) {
         Set<ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
         repository.save(entitySet);
     }
 
     @Override
-    public Map<ACCESSION, MODEL> findAllAccessionMappingsByAccessions(List<ACCESSION> accessions) {
-        Map<ACCESSION, MODEL> result = new HashMap<>();
+    public List<AccessionModel<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessions(
+            List<ACCESSION> accessions) {
+        List<AccessionModel<MODEL, String, ACCESSION>> result = new ArrayList<>();
         repository.findAll(accessions).iterator().forEachRemaining(
-                entity -> result.put(entity.getAccession(), toModelFunction.apply(entity)));
+                entity -> result.add(new AccessionModel<>(entity.getAccession(), entity.getHashedMessage(),
+                        entity.isActive(), toModelFunction.apply(entity))));
         return result;
+    }
+
+    @Override
+    public void enableAccessions(List<AccessionModel<MODEL, String, ACCESSION>> accessionedObjects) {
+        repository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionModel::getHash)
+                .collect(Collectors.toSet()));
     }
 
 }

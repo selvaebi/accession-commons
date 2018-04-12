@@ -23,7 +23,7 @@ import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
 
 @RestController
 @RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String> {
+public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String, String> {
 
     public TestController() {
         super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));

@@ -26,8 +26,8 @@ public abstract class AccessionedStringEntity extends AccessionedEntity<String> 
     @Id
     private String accession;
 
-    public AccessionedStringEntity(String hash, String accession) {
-        super(hash, accession);
+    public AccessionedStringEntity(String hash, String accession, boolean active) {
+        super(hash, accession, active);
         this.accession = accession;
     }
 

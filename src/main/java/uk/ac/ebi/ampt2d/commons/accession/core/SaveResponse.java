@@ -17,25 +17,50 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import java.util.Map;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionWasNotSaved;
 
-public class SaveResponse<ACCESSION, MODEL> {
+import java.util.HashSet;
+import java.util.Set;
 
-    private final Map<ACCESSION, MODEL> savedAccessions;
-    private final Map<ACCESSION, MODEL> unsavedAccessions;
+public class SaveResponse<ACCESSION> {
 
-    public SaveResponse(Map<ACCESSION, MODEL> savedAccessions,
-                        Map<ACCESSION, MODEL> unsavedAccessions) {
-        this.savedAccessions = savedAccessions;
-        this.unsavedAccessions = unsavedAccessions;
+    private final Set<ACCESSION> savedAccessions;
+    private final Set<ACCESSION> saveFailedAccessions;
+
+    public SaveResponse() {
+        this(new HashSet<>(), new HashSet<>());
     }
 
-    public Map<ACCESSION, MODEL> getSavedAccessions() {
+    public SaveResponse(Set<ACCESSION> savedAccessions, Set<ACCESSION> saveFailedAccessions) {
+        this.savedAccessions = savedAccessions;
+        this.saveFailedAccessions = saveFailedAccessions;
+    }
+
+    public Set<ACCESSION> getSavedAccessions() {
         return savedAccessions;
     }
 
-    public Map<ACCESSION, MODEL> getUnsavedAccessions() {
-        return unsavedAccessions;
+    public Set<ACCESSION> getSaveFailedAccessions() {
+        return saveFailedAccessions;
     }
 
+    public void addSavedAccessions(AccessionModel<?, ?, ACCESSION> accessionModel) {
+        savedAccessions.add(accessionModel.getAccession());
+    }
+
+    public void addSaveFailedAccession(AccessionModel<?, ?, ACCESSION> accessionModel) {
+        saveFailedAccessions.add(accessionModel.getAccession());
+    }
+
+    public boolean isSavedAccession(AccessionModel<?, ?, ACCESSION> accessionModel) {
+        if(savedAccessions.contains(accessionModel.getAccession())){
+            return true;
+        }else{
+            if(saveFailedAccessions.contains(accessionModel.getAccession())){
+                return false;
+            }else{
+                throw new AccessionWasNotSaved(accessionModel.getAccession());
+            }
+        }
+    }
 }

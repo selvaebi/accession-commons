@@ -21,5 +21,5 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
 
 @Repository
-public interface TestMonotonicRepository extends IAccessionedObjectRepository<TestMonotonicEntity, String, Long> {
+public interface TestMonotonicRepository extends IAccessionedObjectRepository<TestMonotonicEntity, Long> {
 }

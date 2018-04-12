@@ -22,5 +22,5 @@ import org.springframework.stereotype.Repository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
 
 @Repository
-public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String, String> {
+public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String> {
 }
