@@ -29,5 +29,5 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     List<AccessionModel<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
 
     List<AccessionModel<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
-                                                                        boolean hideDeprecated);
+                                                                 boolean hideDeprecated);
 }

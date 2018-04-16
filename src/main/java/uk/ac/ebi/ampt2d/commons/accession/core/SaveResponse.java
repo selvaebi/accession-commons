@@ -53,12 +53,12 @@ public class SaveResponse<ACCESSION> {
     }
 
     public boolean isSavedAccession(AccessionModel<?, ?, ACCESSION> accessionModel) {
-        if(savedAccessions.contains(accessionModel.getAccession())){
+        if (savedAccessions.contains(accessionModel.getAccession())) {
             return true;
-        }else{
-            if(saveFailedAccessions.contains(accessionModel.getAccession())){
+        } else {
+            if (saveFailedAccessions.contains(accessionModel.getAccession())) {
                 return false;
-            }else{
+            } else {
                 throw new AccessionWasNotSaved(accessionModel.getAccession());
             }
         }

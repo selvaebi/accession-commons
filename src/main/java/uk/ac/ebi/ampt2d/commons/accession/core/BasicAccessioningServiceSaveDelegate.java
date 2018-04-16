@@ -68,7 +68,7 @@ class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
                     int end = partition.end;
                     partitions.add(new Partition(start, middle));
                     partitions.add(new Partition(middle, end));
-                }else{
+                } else {
                     saveResponse.addSaveFailedAccession(partitionToSave.get(0));
                 }
             }

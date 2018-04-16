@@ -32,10 +32,8 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

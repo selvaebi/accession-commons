@@ -21,7 +21,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 

@@ -33,7 +33,6 @@ import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfigurati
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;

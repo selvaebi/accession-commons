@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 public class AccessionWasNotSaved extends RuntimeException {
 
     public <ACCESSION> AccessionWasNotSaved(ACCESSION accession) {
-        super("Accession '"+accession+"' was not saved.");
+        super("Accession '" + accession + "' was not saved.");
     }
 
 }

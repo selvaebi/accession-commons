@@ -40,14 +40,14 @@ import java.util.HashMap;
 public class SpringDataContiguousIdServiceConfiguration {
 
     @Bean
-    @ConfigurationProperties(prefix="accessioning.monotonic.init")
-    public HashMap<String, String> contiguousBlockInitializations(){
+    @ConfigurationProperties(prefix = "accessioning.monotonic.init")
+    public HashMap<String, String> contiguousBlockInitializations() {
         return new HashMap<>();
     }
 
     @Bean
     public ContiguousIdBlockService contiguousIdBlockService(@Autowired ContiguousIdBlockRepository
-                                                                         contiguousIdBlockRepository) {
+                                                                     contiguousIdBlockRepository) {
         return new ContiguousIdBlockService(contiguousIdBlockRepository, contiguousBlockInitializations());
     }
 
