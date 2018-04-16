@@ -117,8 +117,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     /**
      * We try to recover all elements that could not be saved to return their accession to the user. This is only
      * expected when another application instance or thread has saved that element already with a different id. If
-     * all the elements could not be retrieved from the database it is considered an unexpected event and we throw
-     * {@link MissingUnsavedAccessions} to alert the system.
+     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessions} to alert the system.
      *
      * @param saveFailedAccessions
      * @return
