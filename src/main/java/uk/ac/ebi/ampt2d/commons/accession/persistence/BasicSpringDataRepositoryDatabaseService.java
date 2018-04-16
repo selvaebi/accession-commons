@@ -43,14 +43,18 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     private IAccessionedObjectRepository<ENTITY, ACCESSION> repository;
 
+    private ICustomMethodsRepository customMethodsRepository;
+
     private final Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
 
     private final Function<ENTITY, MODEL> toModelFunction;
 
     public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
+                                                    ICustomMethodsRepository customMethodsRepository,
                                                     Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
                                                     Function<ENTITY, MODEL> toModelFunction) {
         this.repository = repository;
+        this.customMethodsRepository = customMethodsRepository;
         this.toEntityFunction = toEntityFunction;
         this.toModelFunction = toModelFunction;
     }
@@ -88,7 +92,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     @Override
     public void enableAccessions(List<AccessionModel<MODEL, String, ACCESSION>> accessionedObjects) {
-        repository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionModel::getHash)
+        customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionModel::getHash)
                 .collect(Collectors.toSet()));
     }
 

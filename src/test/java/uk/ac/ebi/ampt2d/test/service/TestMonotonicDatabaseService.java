@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.test.service;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.ICustomMethodsRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
@@ -33,10 +34,11 @@ public class TestMonotonicDatabaseService
         implements MonotonicDatabaseService<TestModel, String> {
 
     public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
+                                        ICustomMethodsRepository customMethodsRepository,
                                         Function<AccessionModel<TestModel, String, Long>, TestMonotonicEntity>
                                                 toEntityFunction,
                                         Function<TestMonotonicEntity, TestModel> toModelFunction) {
-        super(repository, toEntityFunction, toModelFunction);
+        super(repository, customMethodsRepository, toEntityFunction, toModelFunction);
     }
 
     @Override

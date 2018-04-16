@@ -22,14 +22,11 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Set;
 
 @NoRepositoryBean
 public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
         ACCESSION extends Serializable> extends CrudRepository<ENTITY, ACCESSION> {
 
     Collection<ENTITY> findByHashedMessageIn(Collection<String> hashes);
-
-    void enableByHashedMessageIn(Set<String> hashes);
 
 }

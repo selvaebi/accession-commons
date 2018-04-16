@@ -17,11 +17,15 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.ICustomMethodsRepository;
 
-@Repository
-public interface TestMonotonicRepository extends IAccessionedObjectRepository<TestMonotonicEntity, Long>,
-        ICustomMethodsRepository {
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.JpaCustomMethodsRepositoryImpl;
+
+import javax.persistence.EntityManager;
+
+public class TestRepositoryImpl extends JpaCustomMethodsRepositoryImpl<TestEntity> {
+
+    public TestRepositoryImpl(EntityManager entityManager) {
+        super(TestEntity.class, entityManager);
+    }
+
 }
