@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionWasNotSaved;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.UnsavedAccessionException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,7 +59,7 @@ public class SaveResponse<ACCESSION> {
             if (saveFailedAccessions.contains(accessionWrapper.getAccession())) {
                 return false;
             } else {
-                throw new AccessionWasNotSaved(accessionWrapper.getAccession());
+                throw new UnsavedAccessionException(accessionWrapper.getAccession());
             }
         }
     }

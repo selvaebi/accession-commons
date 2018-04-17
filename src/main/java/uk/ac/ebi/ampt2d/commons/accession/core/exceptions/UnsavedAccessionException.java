@@ -17,9 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-public class AccessionWasNotSaved extends RuntimeException {
+public class UnsavedAccessionException extends RuntimeException {
 
-    public <ACCESSION> AccessionWasNotSaved(ACCESSION accession) {
+    public <ACCESSION> UnsavedAccessionException(ACCESSION accession) {
         super("Accession '" + accession + "' was not saved.");
     }
 
