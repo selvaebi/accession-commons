@@ -64,7 +64,7 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        SaveResponse<String> generatedAccessions = delegate.doSaveAccessionedModels(getAccessioningService()
+        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
                 .getAccessionGenerator().generateAccessions(accessions));
 
         assertEquals(3, generatedAccessions.getSavedAccessions().size());
@@ -89,7 +89,7 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        SaveResponse<String> generatedAccessions = delegate.doSaveAccessionedModels(getAccessioningService()
+        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
                 .getAccessionGenerator().generateAccessions(accessions));
         assertEquals(2, generatedAccessions.getSavedAccessions().size());
         assertEquals(1, generatedAccessions.getSaveFailedAccessions().size());

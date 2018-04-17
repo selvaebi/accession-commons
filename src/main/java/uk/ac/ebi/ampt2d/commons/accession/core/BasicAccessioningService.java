@@ -82,33 +82,34 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     /**
-     * Execute {@link BasicAccessioningServiceSaveDelegate#doSaveAccessionedModels(List)} This operation will generate two
+     * Execute {@link BasicAccessioningServiceSaveDelegate#doSaveAccessions(List)} This operation will generate two
      * lists on {@link SaveResponse} saved elements and not saved elements. Not saved elements are elements that
      * could not be stored on database due to constraint exceptions. This should only happen when elements have been
      * already stored by another application instance / thread with a different id.
-     * See {@link #getUnsavedAccessions(List)} } for more details.
+     * See {@link #getPreexistingAccessions(List)} } for more details.
      *
      * @param accessions
      * @return
      */
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
-        SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessionedModels(accessions);
+        SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
         accessionGenerator.postSave(response);
 
         final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
-        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = new ArrayList<>();
         accessions.stream().forEach(accessionModel -> {
             if (response.isSavedAccession(accessionModel)) {
                 savedAccessions.add(accessionModel);
             } else {
-                saveFailedAccessions.add(accessionModel);
+                unsavedAccessions.add(accessionModel);
             }
         });
 
-        if (!saveFailedAccessions.isEmpty()) {
-            List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = getUnsavedAccessions(saveFailedAccessions);
-            savedAccessions.addAll(unsavedAccessions);
-            dbService.enableAccessions(unsavedAccessions);
+        if (!unsavedAccessions.isEmpty()) {
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
+                    getPreexistingAccessions(unsavedAccessions);
+            savedAccessions.addAll(preexistingAccessions);
+            dbService.enableAccessions(preexistingAccessions);
         }
 
         return savedAccessions;
@@ -122,13 +123,13 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @param saveFailedAccessions
      * @return
      */
-    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getUnsavedAccessions(
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
 
-        Set<HASH> saveFailedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
+        Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet());
-        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(saveFailedHashes);
-        if (dbAccessions.size() != saveFailedHashes.size()) {
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(unsavedHashes);
+        if (dbAccessions.size() != unsavedHashes.size()) {
             throw new MissingUnsavedAccessions(dbAccessions, saveFailedAccessions);
         }
         return dbAccessions;

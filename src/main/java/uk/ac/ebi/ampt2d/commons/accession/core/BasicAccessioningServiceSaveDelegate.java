@@ -48,7 +48,7 @@ class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
      * @param accessionedModels
      * @return
      */
-    public SaveResponse<ACCESSION> doSaveAccessionedModels(
+    public SaveResponse<ACCESSION> doSaveAccessions(
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedModels) {
         Stack<Partition> partitions = new Stack<>();
         partitions.add(new Partition(0, accessionedModels.size()));
