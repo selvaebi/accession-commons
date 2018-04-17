@@ -25,16 +25,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.ICustomMethodsRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.JpaCustomMethodsRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 @Configuration
-@ComponentScan(basePackageClasses = ICustomMethodsRepository.class)
+@ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
 @EnableJpaAuditing
-@ComponentScan(basePackageClasses = JpaCustomMethodsRepositoryImpl.class)
+@ComponentScan(basePackageClasses = BasicJpaAccessionedObjectCustomRepositoryImpl.class)
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
 @EnableJpaRepositories(basePackages = {"uk.ac.ebi.ampt2d.test.persistence",
         "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories"

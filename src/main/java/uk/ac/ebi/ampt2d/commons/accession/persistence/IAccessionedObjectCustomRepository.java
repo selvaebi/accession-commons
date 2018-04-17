@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import java.util.Set;
 
-public interface ICustomMethodsRepository {
+public interface IAccessionedObjectCustomRepository {
 
     void enableByHashedMessageIn(Set<String> hashes);
 

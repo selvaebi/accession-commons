@@ -22,21 +22,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.ICustomMethodsRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Set;
 
-public abstract class JpaCustomMethodsRepositoryImpl<ENTITY> implements ICustomMethodsRepository {
+public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY extends AccessionedEntity<?>>
+        implements IAccessionedObjectCustomRepository {
 
-    private final static Logger logger = LoggerFactory.getLogger(JpaCustomMethodsRepositoryImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(BasicJpaAccessionedObjectCustomRepositoryImpl.class);
 
     private JpaEntityInformation<ENTITY, ?> entityInformation;
 
     private EntityManager entityManager;
 
-    public JpaCustomMethodsRepositoryImpl(Class<ENTITY> entityClass, EntityManager entityManager) {
+    public BasicJpaAccessionedObjectCustomRepositoryImpl(Class<ENTITY> entityClass, EntityManager entityManager) {
         entityInformation = JpaEntityInformationSupport.getEntityInformation(entityClass, entityManager);
         this.entityManager = entityManager;
     }

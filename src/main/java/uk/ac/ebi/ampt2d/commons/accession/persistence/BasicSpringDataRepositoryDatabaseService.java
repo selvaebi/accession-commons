@@ -43,14 +43,14 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     private IAccessionedObjectRepository<ENTITY, ACCESSION> repository;
 
-    private ICustomMethodsRepository customMethodsRepository;
+    private IAccessionedObjectCustomRepository customMethodsRepository;
 
     private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
 
     private final Function<ENTITY, MODEL> toModelFunction;
 
     public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
-                                                    ICustomMethodsRepository customMethodsRepository,
+                                                    IAccessionedObjectCustomRepository customMethodsRepository,
                                                     Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
                                                     Function<ENTITY, MODEL> toModelFunction) {
         this.repository = repository;

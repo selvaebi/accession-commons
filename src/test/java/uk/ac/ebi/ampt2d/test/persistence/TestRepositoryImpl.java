@@ -18,11 +18,11 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.JpaCustomMethodsRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
 import javax.persistence.EntityManager;
 
-public class TestRepositoryImpl extends JpaCustomMethodsRepositoryImpl<TestEntity> {
+public class TestRepositoryImpl extends BasicJpaAccessionedObjectCustomRepositoryImpl<TestEntity> {
 
     public TestRepositoryImpl(EntityManager entityManager) {
         super(TestEntity.class, entityManager);

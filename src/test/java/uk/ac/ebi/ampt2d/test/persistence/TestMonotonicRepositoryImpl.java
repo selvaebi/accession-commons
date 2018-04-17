@@ -18,11 +18,11 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.JpaCustomMethodsRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
 import javax.persistence.EntityManager;
 
-public class TestMonotonicRepositoryImpl extends JpaCustomMethodsRepositoryImpl<TestMonotonicEntity> {
+public class TestMonotonicRepositoryImpl extends BasicJpaAccessionedObjectCustomRepositoryImpl<TestMonotonicEntity> {
 
     public TestMonotonicRepositoryImpl(EntityManager entityManager) {
         super(TestMonotonicEntity.class, entityManager);
