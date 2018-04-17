@@ -23,11 +23,11 @@ import java.util.List;
 
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
-    List<AccessionModel<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
-    List<AccessionModel<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
 
-    List<AccessionModel<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
-                                                                 boolean hideDeprecated);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
+                                                                   boolean hideDeprecated);
 }

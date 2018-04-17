@@ -17,22 +17,22 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MissingUnsavedAccessions extends RuntimeException {
 
-    public <MODEL, HASH, ACCESSION> MissingUnsavedAccessions(List<AccessionModel<MODEL, HASH, ACCESSION>> dbAccessions,
-                                                             List<AccessionModel<MODEL, HASH, ACCESSION>>
+    public <MODEL, HASH, ACCESSION> MissingUnsavedAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions,
+                                                             List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                      saveFailedAccessions) {
         super("Unsaved objects could not be found: " + generateMessage(dbAccessions, saveFailedAccessions));
     }
 
-    private static <MODEL, HASH, ACCESSION> String generateMessage(List<AccessionModel<MODEL, HASH, ACCESSION>>
+    private static <MODEL, HASH, ACCESSION> String generateMessage(List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                            dbAccessions,
-                                                                   List<AccessionModel<MODEL, HASH, ACCESSION>>
+                                                                   List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                            unsavedObjects) {
         List<MODEL> missingObjects = new ArrayList<>();
 

@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
 import java.util.function.Function;
 
@@ -43,11 +43,11 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
     AccessionResponseDTO() {
     }
 
-    public AccessionResponseDTO(AccessionModel<MODEL, HASH, ACCESSION> accessionModel, Function<MODEL, DTO> modelToDto) {
-        this.accession = accessionModel.getAccession();
-        this.hash = accessionModel.getHash();
-        this.active = accessionModel.isActive();
-        this.data = modelToDto.apply(accessionModel.getData());
+    public AccessionResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> accessionWrapper, Function<MODEL, DTO> modelToDto) {
+        this.accession = accessionWrapper.getAccession();
+        this.hash = accessionWrapper.getHash();
+        this.active = accessionWrapper.isActive();
+        this.data = modelToDto.apply(accessionWrapper.getData());
     }
 
     public ACCESSION getAccession() {

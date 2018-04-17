@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedLongEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
@@ -32,7 +32,7 @@ public class TestMonotonicEntity extends AccessionedLongEntity implements TestMo
         super(null, null, true);
     }
 
-    public TestMonotonicEntity(AccessionModel<TestModel, String, Long> triple) {
+    public TestMonotonicEntity(AccessionWrapper<TestModel, String, Long> triple) {
         this(triple.getAccession(), triple.getHash(), triple.isActive(), triple.getData().getSomething());
     }
 

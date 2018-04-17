@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     private ICustomMethodsRepository customMethodsRepository;
 
-    private final Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
+    private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
 
     private final Function<ENTITY, MODEL> toModelFunction;
 
     public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
                                                     ICustomMethodsRepository customMethodsRepository,
-                                                    Function<AccessionModel<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
+                                                    Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
                                                     Function<ENTITY, MODEL> toModelFunction) {
         this.repository = repository;
         this.customMethodsRepository = customMethodsRepository;
@@ -60,9 +60,9 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     }
 
     @Override
-    public List<AccessionModel<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
         return repository.findByHashedMessageIn(hashes).stream()
-                .map(entity -> AccessionModel.of(entity.getAccession(), entity.getHashedMessage(),
+                .map(entity -> AccessionWrapper.of(entity.getAccession(), entity.getHashedMessage(),
                         toModelFunction.apply(entity)))
                 .collect(Collectors.toList());
     }
@@ -75,24 +75,24 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     @Override
     @Transactional
-    public void save(List<AccessionModel<MODEL, String, ACCESSION>> objects) {
+    public void save(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
         Set<ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
         repository.save(entitySet);
     }
 
     @Override
-    public List<AccessionModel<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessions(
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessions(
             List<ACCESSION> accessions) {
-        List<AccessionModel<MODEL, String, ACCESSION>> result = new ArrayList<>();
+        List<AccessionWrapper<MODEL, String, ACCESSION>> result = new ArrayList<>();
         repository.findAll(accessions).iterator().forEachRemaining(
-                entity -> result.add(new AccessionModel<>(entity.getAccession(), entity.getHashedMessage(),
+                entity -> result.add(new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(),
                         entity.isActive(), toModelFunction.apply(entity))));
         return result;
     }
 
     @Override
-    public void enableAccessions(List<AccessionModel<MODEL, String, ACCESSION>> accessionedObjects) {
-        customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionModel::getHash)
+    public void enableAccessions(List<AccessionWrapper<MODEL, String, ACCESSION>> accessionedObjects) {
+        customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet()));
     }
 

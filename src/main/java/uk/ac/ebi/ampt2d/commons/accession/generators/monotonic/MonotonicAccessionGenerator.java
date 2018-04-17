@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
@@ -131,13 +131,13 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     }
 
     @Override
-    public <HASH> List<AccessionModel<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages)
+    public <HASH> List<AccessionWrapper<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         long[] accessions = generateAccessions(messages.size());
         int i = 0;
-        List<AccessionModel<MODEL, HASH, Long>> accessionedModels = new ArrayList<>();
+        List<AccessionWrapper<MODEL, HASH, Long>> accessionedModels = new ArrayList<>();
         for (Map.Entry<HASH, ? extends MODEL> entry : messages.entrySet()) {
-            accessionedModels.add(AccessionModel.of(accessions[i], entry.getKey(), entry.getValue()));
+            accessionedModels.add(AccessionWrapper.of(accessions[i], entry.getKey(), entry.getValue()));
             i++;
         }
 

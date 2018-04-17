@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 
@@ -39,7 +39,7 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * @param messages Set of objects to accession
      * @return A map of objects to unique accessions
      */
-    <HASH> List<AccessionModel<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
+    <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
     /**

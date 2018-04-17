@@ -52,7 +52,7 @@ public class BasicAccessioningServiceTest {
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -77,7 +77,7 @@ public class BasicAccessioningServiceTest {
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -91,7 +91,7 @@ public class BasicAccessioningServiceTest {
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getAccessions(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getAccessions(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -110,7 +110,7 @@ public class BasicAccessioningServiceTest {
 
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getAccessions(Arrays.asList(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getAccessions(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -128,7 +128,7 @@ public class BasicAccessioningServiceTest {
 
         BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
 
-        List<AccessionModel<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),

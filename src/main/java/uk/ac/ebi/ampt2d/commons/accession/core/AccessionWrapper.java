@@ -25,7 +25,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
  * @param <HASH>
  * @param <ACCESSION>
  */
-public class AccessionModel<MODEL, HASH, ACCESSION> {
+public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
@@ -35,7 +35,7 @@ public class AccessionModel<MODEL, HASH, ACCESSION> {
 
     private MODEL data;
 
-    public AccessionModel(ACCESSION accession, HASH hash, boolean active, MODEL data) {
+    public AccessionWrapper(ACCESSION accession, HASH hash, boolean active, MODEL data) {
         this.accession = accession;
         this.hash = hash;
         this.active = active;
@@ -58,17 +58,17 @@ public class AccessionModel<MODEL, HASH, ACCESSION> {
         return data;
     }
 
-    public static <MODEL, HASH, ACCESSION> AccessionModel<MODEL, HASH, ACCESSION> of(ACCESSION accession, HASH hash,
-                                                                                     MODEL data) {
-        return new AccessionModel<>(accession, hash, true, data);
+    public static <MODEL, HASH, ACCESSION> AccessionWrapper<MODEL, HASH, ACCESSION> of(ACCESSION accession, HASH hash,
+                                                                                       MODEL data) {
+        return new AccessionWrapper<>(accession, hash, true, data);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AccessionModel)) return false;
+        if (!(o instanceof AccessionWrapper)) return false;
 
-        AccessionModel<?, ?, ?> that = (AccessionModel<?, ?, ?>) o;
+        AccessionWrapper<?, ?, ?> that = (AccessionWrapper<?, ?, ?>) o;
 
         if (active != that.active) return false;
         if (!accession.equals(that.accession)) return false;

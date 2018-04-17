@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
@@ -45,11 +45,11 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
     }
 
     @Override
-    public <HASH> List<AccessionModel<MODEL, HASH, String>> generateAccessions(Map<HASH, MODEL> messages) throws
+    public <HASH> List<AccessionWrapper<MODEL, HASH, String>> generateAccessions(Map<HASH, MODEL> messages) throws
             AccessionCouldNotBeGeneratedException {
-        List<AccessionModel<MODEL, HASH, ACCESSION>> accessions = generator.generateAccessions(messages);
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions = generator.generateAccessions(messages);
         return accessions.stream()
-                .map(mha -> AccessionModel.of(decorateAccession.apply(mha.getAccession()), mha.getHash(),
+                .map(mha -> AccessionWrapper.of(decorateAccession.apply(mha.getAccession()), mha.getHash(),
                         mha.getData()))
                 .collect(Collectors.toList());
     }

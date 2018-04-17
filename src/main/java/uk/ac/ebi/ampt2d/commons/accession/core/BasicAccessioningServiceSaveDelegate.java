@@ -49,14 +49,14 @@ class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
      * @return
      */
     public SaveResponse<ACCESSION> doSaveAccessionedModels(
-            List<AccessionModel<MODEL, HASH, ACCESSION>> accessionedModels) {
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedModels) {
         Stack<Partition> partitions = new Stack<>();
         partitions.add(new Partition(0, accessionedModels.size()));
         SaveResponse<ACCESSION> saveResponse = new SaveResponse<>();
 
         while (!partitions.isEmpty()) {
             Partition partition = partitions.pop();
-            final List<AccessionModel<MODEL, HASH, ACCESSION>> partitionToSave = accessionedModels
+            final List<AccessionWrapper<MODEL, HASH, ACCESSION>> partitionToSave = accessionedModels
                     .subList(partition.start, partition.end);
             try {
                 dbService.save(partitionToSave);

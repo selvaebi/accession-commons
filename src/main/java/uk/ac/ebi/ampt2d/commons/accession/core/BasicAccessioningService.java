@@ -66,7 +66,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @return
      */
     @Override
-    public List<AccessionModel<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         return saveAccessions(accessionGenerator.generateAccessions(mapHashOfMessages(messages)));
     }
@@ -91,12 +91,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @param accessions
      * @return
      */
-    private List<AccessionModel<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionModel<MODEL, HASH, ACCESSION>> accessions) {
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
         SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessionedModels(accessions);
         accessionGenerator.postSave(response);
 
-        final List<AccessionModel<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
-        final List<AccessionModel<MODEL, HASH, ACCESSION>> saveFailedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions = new ArrayList<>();
         accessions.stream().forEach(accessionModel -> {
             if (response.isSavedAccession(accessionModel)) {
                 savedAccessions.add(accessionModel);
@@ -106,7 +106,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         });
 
         if (!saveFailedAccessions.isEmpty()) {
-            List<AccessionModel<MODEL, HASH, ACCESSION>> unsavedAccessions = getUnsavedAccessions(saveFailedAccessions);
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = getUnsavedAccessions(saveFailedAccessions);
             savedAccessions.addAll(unsavedAccessions);
             dbService.enableAccessions(unsavedAccessions);
         }
@@ -122,12 +122,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @param saveFailedAccessions
      * @return
      */
-    private List<AccessionModel<MODEL, HASH, ACCESSION>> getUnsavedAccessions(
-            List<AccessionModel<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getUnsavedAccessions(
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
 
-        Set<HASH> saveFailedHashes = saveFailedAccessions.stream().map(AccessionModel::getHash)
+        Set<HASH> saveFailedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet());
-        List<AccessionModel<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(saveFailedHashes);
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(saveFailedHashes);
         if (dbAccessions.size() != saveFailedHashes.size()) {
             throw new MissingUnsavedAccessions(dbAccessions, saveFailedAccessions);
         }
@@ -135,7 +135,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionModel<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects) {
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects) {
         return dbService.findAllAccessionsByHash(getHashes(accessionedObjects));
     }
 
@@ -144,8 +144,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionModel<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
-                                                                        boolean hideDeprecated) {
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
+                                                                          boolean hideDeprecated) {
         return dbService.findAllAccessionMappingsByAccessions(accessions);
     }
 
