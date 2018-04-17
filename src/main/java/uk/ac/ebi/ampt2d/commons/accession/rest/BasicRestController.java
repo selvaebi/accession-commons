@@ -51,20 +51,20 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public List<AccessionDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
             throws AccessionCouldNotBeGeneratedException {
         return service.getOrCreateAccessions(dtos).stream()
-                .map(accessionModel -> new AccessionDTO<>(accessionModel, modelToDTO))
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
-    public List<AccessionDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions,
-                                                               @RequestParam(name = "hideDeprecated", required = false,
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions,
+                                                                       @RequestParam(name = "hideDeprecated", required = false,
                                                                        defaultValue = "false")
                                                                        boolean hideDeprecated) {
         return service.getByAccessions(accessions, hideDeprecated).stream()
-                .map(accessionModel -> new AccessionDTO<>(accessionModel, modelToDTO))
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 

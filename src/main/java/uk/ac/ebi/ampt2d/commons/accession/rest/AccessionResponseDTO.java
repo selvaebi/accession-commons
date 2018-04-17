@@ -30,7 +30,7 @@ import java.util.function.Function;
  * @param <HASH>
  * @param <ACCESSION>
  */
-public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
+public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
@@ -40,10 +40,10 @@ public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private DTO data;
 
-    AccessionDTO() {
+    AccessionResponseDTO() {
     }
 
-    public AccessionDTO(AccessionModel<MODEL, HASH, ACCESSION> accessionModel, Function<MODEL, DTO> modelToDto) {
+    public AccessionResponseDTO(AccessionModel<MODEL, HASH, ACCESSION> accessionModel, Function<MODEL, DTO> modelToDto) {
         this.accession = accessionModel.getAccession();
         this.hash = accessionModel.getHash();
         this.active = accessionModel.isActive();
