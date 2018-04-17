@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
@@ -118,7 +118,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     /**
      * We try to recover all elements that could not be saved to return their accession to the user. This is only
      * expected when another application instance or thread has saved that element already with a different id. If
-     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessions} to alert the system.
+     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessionsException} to alert the system.
      *
      * @param saveFailedAccessions
      * @return
@@ -130,7 +130,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
                 .collect(Collectors.toSet());
         List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(unsavedHashes);
         if (dbAccessions.size() != unsavedHashes.size()) {
-            throw new MissingUnsavedAccessions(dbAccessions, saveFailedAccessions);
+            throw new MissingUnsavedAccessionsException(dbAccessions, saveFailedAccessions);
         }
         return dbAccessions;
     }

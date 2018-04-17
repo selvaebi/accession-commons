@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.junit.Test;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -46,13 +46,13 @@ public class BlockManagerTest {
         assertFalse(manager.hasAvailableAccessions(101));
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void commitAccessionsThatHaveNotBeenGenerated() {
         BlockManager manager = new BlockManager();
         manager.commit(new long[]{1, 3, 5});
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void releaseAccessionsThatHaveNotBeenGenerated() {
         BlockManager manager = new BlockManager();
         manager.release(new long[]{1, 3, 5});

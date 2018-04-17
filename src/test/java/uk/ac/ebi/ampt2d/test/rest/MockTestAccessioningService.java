@@ -20,8 +20,8 @@ package uk.ac.ebi.ampt2d.test.rest;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,11 +52,11 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     private synchronized void generateAccession(BasicRestModel model) throws AccessionCouldNotBeGeneratedException {
-        if (model.getValue().contains("MissingUnsavedAccessions")) {
-            throw new MissingUnsavedAccessions(new ArrayList<>(), new ArrayList<>());
+        if (model.getValue().contains("MissingUnsavedAccessionsException")) {
+            throw new MissingUnsavedAccessionsException(new ArrayList<>(), new ArrayList<>());
         }
-        if (model.getValue().contains("AccessionIsNotPending")) {
-            throw new AccessionIsNotPending(-1);
+        if (model.getValue().contains("AccessionIsNotPendingException")) {
+            throw new AccessionIsNotPendingException(-1);
         }
         if (model.getValue().contains("AccessionCouldNotBeGeneratedException")) {
             throw new AccessionCouldNotBeGeneratedException("Test");

@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -330,7 +330,7 @@ public class MonotonicAccessionGeneratorTest {
                 contains(new MonotonicRange(4, 4), new MonotonicRange(6, BLOCK_SIZE - 1)));
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void assertReleaseAndCommitSameElement() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(BLOCK_SIZE);
@@ -338,7 +338,7 @@ public class MonotonicAccessionGeneratorTest {
         generator.commit(2);
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void assertCommitAndReleaseSameElement() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(BLOCK_SIZE);
@@ -346,7 +346,7 @@ public class MonotonicAccessionGeneratorTest {
         generator.release(2);
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void releaseSomeIdsTwice() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(TENTH_BLOCK_SIZE);

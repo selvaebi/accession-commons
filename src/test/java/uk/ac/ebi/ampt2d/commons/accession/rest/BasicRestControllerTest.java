@@ -78,16 +78,16 @@ public class BasicRestControllerTest {
     public void testThrowExceptions() throws Exception {
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .content("[{ \"value\" : \"MissingUnsavedAccessions\" }]"))
+                .content("[{ \"value\" : \"MissingUnsavedAccessionsException\" }]"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.exception")
-                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions"));
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .content("[{ \"value\" : \"AccessionIsNotPending\" }]"))
+                .content("[{ \"value\" : \"AccessionIsNotPendingException\" }]"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.exception")
-                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending"));
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"AccessionCouldNotBeGeneratedException\" }]"))

@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -76,9 +76,9 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
      * ranges.
      *
      * @param committedElements
-     * @throws AccessionIsNotPending
+     * @throws AccessionIsNotPendingException
      */
-    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPending {
+    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         blockManager.recoverState(committedElements);
     }
 
@@ -118,11 +118,11 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size));
     }
 
-    public synchronized void commit(long... accessions) throws AccessionIsNotPending {
+    public synchronized void commit(long... accessions) throws AccessionIsNotPendingException {
         blockService.save(blockManager.commit(accessions));
     }
 
-    public synchronized void release(long... accessions) throws AccessionIsNotPending {
+    public synchronized void release(long... accessions) throws AccessionIsNotPendingException {
         blockManager.release(accessions);
     }
 

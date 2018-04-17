@@ -17,9 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-public class AccessionIsNotPending extends RuntimeException {
+public class AccessionIsNotPendingException extends RuntimeException {
 
-    public AccessionIsNotPending(long accession) {
+    public AccessionIsNotPendingException(long accession) {
         super("Accession '" + accession + "' is not pending confirmation.");
     }
 
