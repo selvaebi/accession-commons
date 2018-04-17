@@ -23,4 +23,6 @@ public interface IAccessionedObjectCustomRepository {
 
     void enableByHashedMessageIn(Set<String> hashes);
 
+    <ENTITY> void insert(Set<ENTITY> entitySet);
+
 }

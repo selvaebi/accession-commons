@@ -22,10 +22,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
@@ -35,7 +33,6 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +56,6 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void testFindInEmptyRepository() {
         assertEquals(0, service.findAllAccessionMappingsByAccessions(Arrays.asList("a1", "a2")).size());
         assertEquals(0, service.findAllAccessionsByHash(Arrays.asList("h1", "h2")).size());
-        assertEquals(0, service.getExistingAccessions(Arrays.asList("h1", "h2")).size());
     }
 
     @Autowired
@@ -67,7 +63,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
     @Test
     public void saveUniqueElements() {
-        service.save(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
+        service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
         List<AccessionWrapper<TestModel, String, String>> result = service.findAllAccessionMappingsByAccessions(
                 Arrays.asList("a1", "a2"));
@@ -81,21 +77,15 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         assertTrue(result.contains(TEST_MODEL_1));
         assertTrue(result.contains(TEST_MODEL_2));
 
-        Map<String, String> hashToAccession = service.getExistingAccessions(Arrays.asList("h1", "h3"));
-        assertEquals(2, hashToAccession.size());
-        assertTrue(hashToAccession.containsKey(TEST_MODEL_1.getHash()));
-        assertTrue(hashToAccession.containsKey(TEST_MODEL_3.getHash()));
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    @Commit
     public void saveNonUniqueElements() {
-        service.save(Arrays.asList(
+        service.insert(Arrays.asList(
                 TEST_MODEL_1,
                 AccessionWrapper.of("a2", "h1", TestModel.of("something2")),
                 TEST_MODEL_3
         ));
-        TestTransaction.end();
     }
 
 }

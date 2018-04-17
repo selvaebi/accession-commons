@@ -23,7 +23,9 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -33,8 +35,12 @@ import java.time.LocalDateTime;
 public abstract class AccessionedEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION> {
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Id
     private String hashedMessage;
+
+    @NotNull
+    @Column(nullable = false)
+    private ACCESSION accession;
 
     private boolean active = true;
 
@@ -44,12 +50,18 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
 
     public AccessionedEntity(String hashedMessage, ACCESSION accession, boolean active) {
         this.hashedMessage = hashedMessage;
+        this.accession = accession;
         this.active = active;
     }
 
     @Override
     public String getHashedMessage() {
         return hashedMessage;
+    }
+
+    @Override
+    public ACCESSION getAccession() {
+        return accession;
     }
 
     @Override
