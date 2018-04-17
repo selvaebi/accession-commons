@@ -27,7 +27,7 @@ public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private HASH hash;
 
-    private boolean valid;
+    private boolean active;
 
     private DTO data;
 
@@ -37,7 +37,7 @@ public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
     public AccessionDTO(AccessionModel<MODEL, HASH, ACCESSION> accessionModel, Function<MODEL, DTO> modelToDto) {
         this.accession = accessionModel.getAccession();
         this.hash = accessionModel.getHash();
-        this.valid = accessionModel.isActive();
+        this.active = accessionModel.isActive();
         this.data = modelToDto.apply(accessionModel.getData());
     }
 
@@ -49,8 +49,8 @@ public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
         return hash;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isActive() {
+        return active;
     }
 
     public DTO getData() {
