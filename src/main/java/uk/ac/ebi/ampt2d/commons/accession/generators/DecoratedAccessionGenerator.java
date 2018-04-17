@@ -34,14 +34,14 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
 
     private Function<ACCESSION, String> decorateAccession;
 
-    private Function<String, ACCESSION> undecoratedAccession;
+    private Function<String, ACCESSION> undecorateAccession;
 
     public DecoratedAccessionGenerator(AccessionGenerator<MODEL, ACCESSION> generator,
                                        Function<ACCESSION, String> decorateAccession,
-                                       Function<String, ACCESSION> undecoratedAccession) {
+                                       Function<String, ACCESSION> undecorateAccession) {
         this.generator = generator;
         this.decorateAccession = decorateAccession;
-        this.undecoratedAccession = undecoratedAccession;
+        this.undecorateAccession = undecorateAccession;
     }
 
     @Override
@@ -56,9 +56,9 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
 
     @Override
     public void postSave(SaveResponse<String> response) {
-        Set<ACCESSION> savedAccessions = response.getSavedAccessions().stream().map(undecoratedAccession)
+        Set<ACCESSION> savedAccessions = response.getSavedAccessions().stream().map(undecorateAccession)
                 .collect(Collectors.toSet());
-        Set<ACCESSION> saveFailedAccessions = response.getSaveFailedAccessions().stream().map(undecoratedAccession)
+        Set<ACCESSION> saveFailedAccessions = response.getSaveFailedAccessions().stream().map(undecorateAccession)
                 .collect(Collectors.toSet());
         generator.postSave(new SaveResponse<>(savedAccessions, saveFailedAccessions));
     }
