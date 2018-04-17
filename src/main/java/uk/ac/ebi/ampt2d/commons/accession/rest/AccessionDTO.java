@@ -21,6 +21,15 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessionModel;
 
 import java.util.function.Function;
 
+/**
+ * Response containing the object that has been accessioned, as well as additional information like the accession or a
+ * flag indicating whether the accession is active. To be used at the REST API layer.
+ *
+ * @param <DTO>
+ * @param <MODEL>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
 public class AccessionDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
