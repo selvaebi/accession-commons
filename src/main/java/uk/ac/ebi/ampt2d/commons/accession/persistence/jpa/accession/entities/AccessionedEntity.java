@@ -25,7 +25,6 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -42,11 +41,15 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
     @Column(nullable = false)
     private ACCESSION accession;
 
-    private boolean active = true;
+    private boolean active;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
+
+    public AccessionedEntity(String hashedMessage, ACCESSION accession) {
+        this(hashedMessage, accession, true);
+    }
 
     public AccessionedEntity(String hashedMessage, ACCESSION accession, boolean active) {
         this.hashedMessage = hashedMessage;
