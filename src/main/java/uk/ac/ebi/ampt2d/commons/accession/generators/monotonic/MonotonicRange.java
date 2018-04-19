@@ -181,4 +181,11 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         return end == that.end;
     }
 
+    @Override
+    public int hashCode() {
+        int result = (int) (start ^ (start >>> 32));
+        result = 31 * result + (int) (end ^ (end >>> 32));
+        return result;
+    }
+
 }

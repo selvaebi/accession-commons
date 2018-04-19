@@ -19,13 +19,14 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.springframework.data.util.Pair;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -96,14 +97,7 @@ class BlockManager {
         return availableRanges.getNumOfValuesInQueue() >= accessionsNeeded;
     }
 
-    private void addToCommitted(long[] accessions) {
-        for (long accession : accessions) {
-            committedAccessions.add(accession);
-            generatedAccessions.remove(accession);
-        }
-    }
-
-    public List<ContiguousIdBlock> commit(long[] accessions) throws AccessionIsNotPending {
+    public Set<ContiguousIdBlock> commit(long[] accessions) throws AccessionIsNotPending {
         assertAccessionsArePending(accessions);
         return doCommit(accessions);
     }
@@ -116,8 +110,8 @@ class BlockManager {
         }
     }
 
-    private List<ContiguousIdBlock> doCommit(long[] accessions) {
-        List<ContiguousIdBlock> blocksToUpdate = new ArrayList<>();
+    private Set<ContiguousIdBlock> doCommit(long[] accessions) {
+        Set<ContiguousIdBlock> blocksToUpdate = new HashSet<>();
         if (accessions == null || accessions.length == 0) {
             return blocksToUpdate;
         }
@@ -125,25 +119,25 @@ class BlockManager {
         addToCommitted(accessions);
 
         ContiguousIdBlock block = assignedBlocks.peek();
-        long lastCommitted = block.getLastCommitted();
-        while (committedAccessions.peek() != null && committedAccessions.peek() == lastCommitted + 1) {
-            lastCommitted++;
-            committedAccessions.poll();
-            if (lastCommitted == block.getLastValue()) {
+        while (block != null && committedAccessions.peek() != null &&
+                committedAccessions.peek() == block.getLastCommitted() + 1) {
+            //Next value continues sequence, change last committed value
+            block.setLastCommitted(committedAccessions.poll());
+            blocksToUpdate.add(block);
+            if (!block.isNotFull()) {
                 assignedBlocks.poll();
-                block.setLastCommitted(lastCommitted);
-                blocksToUpdate.add(block);
                 block = assignedBlocks.peek();
-                lastCommitted = block.getLastCommitted();
             }
         }
 
-        if (lastCommitted != block.getLastCommitted()) {
-            block.setLastCommitted(lastCommitted);
-            blocksToUpdate.add(block);
-        }
-
         return blocksToUpdate;
+    }
+
+    private void addToCommitted(long[] accessions) {
+        for (long accession : accessions) {
+            committedAccessions.add(accession);
+            generatedAccessions.remove(accession);
+        }
     }
 
     public void release(long[] accessions) throws AccessionIsNotPending {

@@ -142,4 +142,15 @@ public class BlockManagerTest {
         assertArrayEquals(new long[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, accessions);
     }
 
+    @Test
+    public void commitAllValuesOnBlockManager() throws AccessionCouldNotBeGeneratedException {
+        BlockManager manager = new BlockManager();
+        manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 10));
+        manager.addBlock(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 10, 10));
+        long[] accessions1 = manager.pollNext(10);
+        long[] accessions2 = manager.pollNext(10);
+        manager.commit(accessions1);
+        manager.commit(accessions2);
+    }
+
 }
