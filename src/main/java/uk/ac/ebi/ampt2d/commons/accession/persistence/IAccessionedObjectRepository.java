@@ -15,18 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.rest;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-@RestController
-@RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String, String> {
+import java.io.Serializable;
+import java.util.Collection;
 
-    public TestController() {
-        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
-    }
+@NoRepositoryBean
+public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
+        ACCESSION extends Serializable> extends CrudRepository<ENTITY, ACCESSION> {
+
+    Collection<ENTITY> findByHashedMessageIn(Collection<String> hashes);
 
 }

@@ -15,12 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
-public class AccessionIsNotPending extends RuntimeException {
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-    public AccessionIsNotPending(long accession) {
-        super("Accession '" + accession + "' is not pending confirmation.");
+@MappedSuperclass
+public abstract class AccessionedLongEntity extends AccessionedEntity<Long> {
+
+    @Id
+    private Long accession;
+
+    public AccessionedLongEntity(String hash, Long accession, boolean active) {
+        super(hash, accession, active);
+        this.accession = accession;
     }
 
+    @Override
+    public Long getAccession() {
+        return accession;
+    }
 }

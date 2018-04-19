@@ -31,10 +31,9 @@ import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfi
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -51,11 +50,12 @@ public class BasicMonotonicAccessioningTest {
     public void testCreateAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
     }
 
@@ -73,12 +73,13 @@ public class BasicMonotonicAccessioningTest {
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions.size());
     }
 
@@ -86,11 +87,12 @@ public class BasicMonotonicAccessioningTest {
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions = accessioningService.getAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(0, accessions.size());
     }
 
@@ -98,34 +100,36 @@ public class BasicMonotonicAccessioningTest {
     public void testGetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(1, accessions1.size());
 
 
-        Map<Long, TestModel> accessions2 = accessioningService.getAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(1, accessions2.size());
-        assertTrue(accessions2.containsKey(accessions1.keySet().iterator().next()));
+        assertEquals("service-test-3", accessions2.get(0).getData().getSomething());
     }
 
     @Test
     public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(1, accessions1.size());
 
 
-        Map<Long, TestModel> accessions2 = accessioningService.getByAccessions(Arrays.asList(
-                (Long) accessions1.keySet().iterator().next()
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getByAccessions(
+                Arrays.asList(accessions1.get(0).getAccession()), false);
         assertEquals(1, accessions2.size());
     }
 
@@ -133,18 +137,19 @@ public class BasicMonotonicAccessioningTest {
     public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
-        Map<Long, TestModel> accessions1 = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(1, accessions1.size());
 
-        Map<Long, TestModel> accessions2 = accessioningService.getOrCreateAccessions(Arrays.asList(
-                TestModel.of("service-test-1"),
-                TestModel.of("service-test-2"),
-                TestModel.of("service-test-3")
-        ));
+        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getOrCreateAccessions(
+                Arrays.asList(
+                        TestModel.of("service-test-1"),
+                        TestModel.of("service-test-2"),
+                        TestModel.of("service-test-3")
+                ));
         assertEquals(3, accessions2.size());
-        assertTrue(accessions2.containsKey(accessions1.keySet().iterator().next()));
     }
 
 }

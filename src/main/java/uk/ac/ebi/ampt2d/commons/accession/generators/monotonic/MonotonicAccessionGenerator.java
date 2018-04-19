@@ -17,15 +17,15 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
-import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.utils.ExponentialBackOff;
-import uk.ac.ebi.ampt2d.commons.accession.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.utils.ExponentialBackOff;
+import uk.ac.ebi.ampt2d.commons.accession.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,9 +76,9 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
      * ranges.
      *
      * @param committedElements
-     * @throws AccessionIsNotPending
+     * @throws AccessionIsNotPendingException
      */
-    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPending {
+    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         blockManager.recoverState(committedElements);
     }
 
@@ -118,11 +118,11 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size));
     }
 
-    public synchronized void commit(long... accessions) throws AccessionIsNotPending {
+    public synchronized void commit(long... accessions) throws AccessionIsNotPendingException {
         blockService.save(blockManager.commit(accessions));
     }
 
-    public synchronized void release(long... accessions) throws AccessionIsNotPending {
+    public synchronized void release(long... accessions) throws AccessionIsNotPendingException {
         blockManager.release(accessions);
     }
 
@@ -131,23 +131,23 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     }
 
     @Override
-    public <HASH> List<ModelHashAccession<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages)
+    public <HASH> List<AccessionWrapper<MODEL, HASH, Long>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         long[] accessions = generateAccessions(messages.size());
         int i = 0;
-        List<ModelHashAccession<MODEL, HASH, Long>> messageHashAccession = new ArrayList<>();
+        List<AccessionWrapper<MODEL, HASH, Long>> accessionedModels = new ArrayList<>();
         for (Map.Entry<HASH, ? extends MODEL> entry : messages.entrySet()) {
-            messageHashAccession.add(ModelHashAccession.of(entry.getValue(), entry.getKey(), accessions[i]));
+            accessionedModels.add(AccessionWrapper.of(accessions[i], entry.getKey(), entry.getValue()));
             i++;
         }
 
-        return messageHashAccession;
+        return accessionedModels;
     }
 
     @Override
-    public synchronized void postSave(SaveResponse<Long, MODEL> response) {
-        commit(response.getSavedAccessions().keySet().stream().mapToLong(l -> l).toArray());
-        release(response.getUnsavedAccessions().keySet().stream().mapToLong(l -> l).toArray());
+    public synchronized void postSave(SaveResponse<Long> response) {
+        commit(response.getSavedAccessions().stream().mapToLong(l -> l).toArray());
+        release(response.getSaveFailedAccessions().stream().mapToLong(l -> l).toArray());
     }
 
 }

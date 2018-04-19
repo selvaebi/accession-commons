@@ -18,13 +18,17 @@
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
 import org.junit.Test;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,21 +56,21 @@ public class SingleAccessionGeneratorTest {
         hashToModel.put("hash1", new TestUser("test_name1", "test_surname1"));
         hashToModel.put("hash2", new TestUser("test_name2", "test_surname2"));
 
-        List<ModelHashAccession<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
+        List<AccessionWrapper<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
         assertEquals(3, accessions.size());
         assertAccession(0, accessions, null);
     }
 
-    private void assertAccession(int i, List<ModelHashAccession<TestUser, String, String>> accessions,
+    private void assertAccession(int i, List<AccessionWrapper<TestUser, String, String>> accessions,
                                  Function<String, String> accessionHashingFunction) {
-        assertEquals("hash" + i, accessions.get(i).hash());
+        assertEquals("hash" + i, accessions.get(i).getHash());
         String accessionText = "test_name" + i + "_test_surname" + i;
         if (accessionHashingFunction != null) {
             accessionText = accessionHashingFunction.apply(accessionText);
         }
-        assertEquals(accessionText, accessions.get(i).accession());
-        assertEquals("test_name" + i, accessions.get(i).model().name);
-        assertEquals("test_surname" + i, accessions.get(i).model().surname);
+        assertEquals(accessionText, accessions.get(i).getAccession());
+        assertEquals("test_name" + i, accessions.get(i).getData().name);
+        assertEquals("test_surname" + i, accessions.get(i).getData().surname);
     }
 
     @Test
@@ -81,7 +85,7 @@ public class SingleAccessionGeneratorTest {
         hashToModel.put("hash1", new TestUser("test_name1", "test_surname1"));
         hashToModel.put("hash2", new TestUser("test_name2", "test_surname2"));
 
-        List<ModelHashAccession<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
+        List<AccessionWrapper<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
         assertEquals(3, accessions.size());
         assertAccession(0, accessions, new SHA1HashingFunction());
     }
@@ -97,13 +101,13 @@ public class SingleAccessionGeneratorTest {
         hashToModel.put("hash1", new TestUser("test_name1", "test_surname1"));
         hashToModel.put("hash2", new TestUser("test_name2", "test_surname2"));
 
-        List<ModelHashAccession<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
+        List<AccessionWrapper<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
         assertEquals(3, accessions.size());
         assertAccession(0, accessions, new SHA1HashingFunction());
     }
 
     @Test
-    public void testPostSaveAction(){
+    public void testPostSaveAction() {
         SingleAccessionGenerator<TestUser, String> generator = SingleAccessionGenerator.ofSHA1AccessionGenerator(
                 testUser -> testUser.name + "_" + testUser.surname
         );
@@ -113,8 +117,9 @@ public class SingleAccessionGeneratorTest {
         hashToModel.put("hash1", new TestUser("test_name1", "test_surname1"));
         hashToModel.put("hash2", new TestUser("test_name2", "test_surname2"));
 
-        List<ModelHashAccession<TestUser, String, String>> accessions = generator.generateAccessions(hashToModel);
-        generator.postSave(new SaveResponse<>(hashToModel, new HashMap<>()));
+        List<AccessionWrapper<TestUser, String, String>> modelAccessions = generator.generateAccessions(hashToModel);
+        Set<String> accessions = modelAccessions.stream().map(AccessionWrapper::getAccession).collect(Collectors.toSet());
+        generator.postSave(new SaveResponse<>(accessions, new HashSet<>()));
     }
 
 }

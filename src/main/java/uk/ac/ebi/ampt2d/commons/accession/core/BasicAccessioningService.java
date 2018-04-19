@@ -18,14 +18,15 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,8 @@ import java.util.stream.Collectors;
  * @param <ACCESSION>
  * @param <HASH>
  */
-public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements AccessioningService<MODEL, ACCESSION> {
+public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializable>
+        implements AccessioningService<MODEL, HASH, ACCESSION> {
 
     private final BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> basicAccessioningServiceSaveDelegate;
 
@@ -44,9 +46,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
 
     private DatabaseService<MODEL, HASH, ACCESSION> dbService;
 
-    private final Function<MODEL, String> summaryFunction;
-
-    private final Function<String, HASH> hashingFunction;
+    private final Function<MODEL, HASH> hashingFunction;
 
     public BasicAccessioningService(AccessionGenerator<MODEL, ACCESSION> accessionGenerator,
                                     DatabaseService<MODEL, HASH, ACCESSION> dbService,
@@ -54,8 +54,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
                                     Function<String, HASH> hashingFunction) {
         this.accessionGenerator = accessionGenerator;
         this.dbService = dbService;
-        this.summaryFunction = summaryFunction;
-        this.hashingFunction = hashingFunction;
+        this.hashingFunction = summaryFunction.andThen(hashingFunction);
         this.basicAccessioningServiceSaveDelegate = new BasicAccessioningServiceSaveDelegate<>(dbService);
     }
 
@@ -67,17 +66,9 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * @return
      */
     @Override
-    public Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages)
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
-        Map<HASH, MODEL> hashToMessages = mapHashOfMessages(messages);
-        Map<HASH, ACCESSION> existingAccessions = dbService.getExistingAccessions(hashToMessages.keySet());
-        Map<HASH, MODEL> newMessages = filterNotExistingAccessions(hashToMessages, existingAccessions);
-
-        Map<ACCESSION, MODEL> accessions = joinExistingAccessionsWithMessages(existingAccessions, hashToMessages);
-        if (!newMessages.isEmpty()) {
-            accessions.putAll(saveAccessions(accessionGenerator.generateAccessions(newMessages)));
-        }
-        return accessions;
+        return saveAccessions(accessionGenerator.generateAccessions(mapHashOfMessages(messages)));
     }
 
     /**
@@ -87,21 +78,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * @return
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
-        return messages.stream()
-                .collect(Collectors.toMap(summaryFunction.andThen(hashingFunction), e -> e, (r, o) -> r));
-    }
-
-    private Map<HASH, MODEL> filterNotExistingAccessions(Map<HASH, MODEL> hashToMessages,
-                                                         Map<HASH, ACCESSION> existingAccessions) {
-        return hashToMessages.entrySet().stream()
-                .filter(entry -> !existingAccessions.containsKey(entry.getKey()))
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
-    }
-
-    private Map<ACCESSION, MODEL> joinExistingAccessionsWithMessages(Map<HASH, ACCESSION> existingAccessions,
-                                                                     Map<HASH, MODEL> hashToMessages) {
-        return existingAccessions.entrySet().stream()
-                .collect(Collectors.toMap(e -> e.getValue(), e -> hashToMessages.get(e.getKey())));
+        return messages.stream().collect(Collectors.toMap(hashingFunction, e -> e, (r, o) -> r));
     }
 
     /**
@@ -109,51 +86,68 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION> implements Accessi
      * lists on {@link SaveResponse} saved elements and not saved elements. Not saved elements are elements that
      * could not be stored on database due to constraint exceptions. This should only happen when elements have been
      * already stored by another application instance / thread with a different id.
-     * See {@link #getUnsavedAccessions(SaveResponse)} for more details.
+     * See {@link #getPreexistingAccessions(List)} } for more details.
      *
      * @param accessions
      * @return
      */
-    private Map<ACCESSION, MODEL> saveAccessions(List<ModelHashAccession<MODEL, HASH, ACCESSION>> accessions) {
-        SaveResponse<ACCESSION, MODEL> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
+        SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
         accessionGenerator.postSave(response);
-        Map<ACCESSION, MODEL> savedAccessions = response.getSavedAccessions();
-        if (!response.getUnsavedAccessions().isEmpty()) {
-            savedAccessions.putAll(getUnsavedAccessions(response));
+
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = new ArrayList<>();
+        accessions.stream().forEach(accessionModel -> {
+            if (response.isSavedAccession(accessionModel)) {
+                savedAccessions.add(accessionModel);
+            } else {
+                unsavedAccessions.add(accessionModel);
+            }
+        });
+
+        if (!unsavedAccessions.isEmpty()) {
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
+                    getPreexistingAccessions(unsavedAccessions);
+            savedAccessions.addAll(preexistingAccessions);
+            dbService.enableAccessions(preexistingAccessions);
         }
+
         return savedAccessions;
     }
 
     /**
      * We try to recover all elements that could not be saved to return their accession to the user. This is only
      * expected when another application instance or thread has saved that element already with a different id. If
-     * all the elements could not be retrieved from the database it is considered an unexpected event and we throw
-     * {@link MissingUnsavedAccessions} to alert the system.
+     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessionsException} to alert the system.
      *
-     * @param response
+     * @param saveFailedAccessions
      * @return
      */
-    private Map<ACCESSION, MODEL> getUnsavedAccessions(SaveResponse<ACCESSION, MODEL> response) {
-        List<MODEL> unsavedObjects = new ArrayList<>(response.getUnsavedAccessions().values());
-        final Map<ACCESSION, MODEL> unsavedObjectAccessions = getAccessions(unsavedObjects);
-        if (unsavedObjectAccessions.size() != unsavedObjects.size()) {
-            throw new MissingUnsavedAccessions(unsavedObjectAccessions, unsavedObjects);
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
+
+        Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
+                .collect(Collectors.toSet());
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(unsavedHashes);
+        if (dbAccessions.size() != unsavedHashes.size()) {
+            throw new MissingUnsavedAccessionsException(dbAccessions, saveFailedAccessions);
         }
-        return unsavedObjectAccessions;
+        return dbAccessions;
     }
 
     @Override
-    public Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects) {
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects) {
         return dbService.findAllAccessionsByHash(getHashes(accessionedObjects));
     }
 
-    @Override
-    public Map<ACCESSION, MODEL> getByAccessions(List<ACCESSION> accessions) {
-        return dbService.findAllAccessionMappingsByAccessions(accessions);
+    private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
+        return accessionObjects.stream().map(hashingFunction).collect(Collectors.toList());
     }
 
-    private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
-        return accessionObjects.stream().map(summaryFunction.andThen(hashingFunction)).collect(Collectors.toList());
+    @Override
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
+                                                                          boolean hideDeprecated) {
+        return dbService.findAllAccessionMappingsByAccessions(accessions);
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

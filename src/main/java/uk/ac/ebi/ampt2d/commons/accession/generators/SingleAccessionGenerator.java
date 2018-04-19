@@ -17,9 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
-import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,22 +43,22 @@ public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGene
     }
 
     @Override
-    public <HASH> List<ModelHashAccession<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
+    public <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
         return messages.entrySet()
                 .stream()
-                .map(entry -> ModelHashAccession.of(entry.getValue(), entry.getKey(),
-                        generateAccessionFunction.apply(entry.getValue())))
+                .map(entry -> AccessionWrapper.of(generateAccessionFunction.apply(entry.getValue()), entry.getKey(),
+                        entry.getValue()
+                ))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void postSave(SaveResponse<ACCESSION, MODEL> response) {
+    public void postSave(SaveResponse<ACCESSION> response) {
         // No action performed, as all the accessions are generated on the fly.
     }
 
-    public static <MODEL, ACCESSION> SingleAccessionGenerator<MODEL, ACCESSION> ofHashAccessionGenerator(
-            Function<MODEL, String> summaryFunction,
-            Function<String, ACCESSION> hashingFunction) {
+    public static <MODEL, ACCESSION extends Serializable> SingleAccessionGenerator<MODEL, ACCESSION>
+    ofHashAccessionGenerator(Function<MODEL, String> summaryFunction, Function<String, ACCESSION> hashingFunction) {
         return new SingleAccessionGenerator<>(message -> summaryFunction.andThen(hashingFunction).apply(message));
     }
 

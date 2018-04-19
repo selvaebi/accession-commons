@@ -18,8 +18,10 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
 
 @Repository
-public interface TestMonotonicRepository extends AccessioningRepository<TestMonotonicEntity, String, Long> {
+public interface TestMonotonicRepository extends IAccessionedObjectRepository<TestMonotonicEntity, Long>,
+        IAccessionedObjectCustomRepository {
 }

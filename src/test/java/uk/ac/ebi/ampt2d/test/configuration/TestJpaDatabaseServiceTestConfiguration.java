@@ -20,28 +20,37 @@ package uk.ac.ebi.ampt2d.test.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 @Configuration
+@ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
+@EnableJpaAuditing
+@ComponentScan(basePackageClasses = BasicJpaAccessionedObjectCustomRepositoryImpl.class)
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
-@EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
-public class TestDatabaseServiceTestConfiguration {
+@EnableJpaRepositories(basePackages = {"uk.ac.ebi.ampt2d.test.persistence",
+        "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories"
+})
+public class TestJpaDatabaseServiceTestConfiguration {
 
     @Autowired
     private TestRepository repository;
 
     @Bean
-    public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> getService() {
+    public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> getService() {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
+                repository,
                 TestEntity::new,
-                TestEntity::getAccession,
-                TestEntity::getHashedMessage
+                TestModel.class::cast
         );
     }
 

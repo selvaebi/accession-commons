@@ -1,21 +1,19 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
 /**
  * This class is delegate for {@link BasicAccessioningService} to manage the save operation.
- *
+ * <p>
  * The save operation can fail when an object has been already accessioned with a different value while having the
  * same hash message and elements. In this case a database constraint exception can be raised. Due to limited
  * information in those cases of error on JDBC driver, the save operation is implemented as an iterative version of a
  * binary partition.
- *
+ * <p>
  * If the save operation works, all elements have been stored, otherwise, because the save operation is expected to
  * be transactional, the saved elements are dropped from database. And we split in two the batch of elements to save
  * and try to save each part separately until all the split batches have been saved correctly and we find the specific
@@ -44,32 +42,37 @@ class BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> {
         this.dbService = dbService;
     }
 
-    public SaveResponse<ACCESSION, MODEL> doSaveAccessions(
-            List<ModelHashAccession<MODEL, HASH, ACCESSION>> modelHashAccessions) {
+    /**
+     * Perform save operation, return saved elements
+     *
+     * @param accessionedModels
+     * @return
+     */
+    public SaveResponse<ACCESSION> doSaveAccessions(
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedModels) {
         Stack<Partition> partitions = new Stack<>();
-        partitions.add(new Partition(0, modelHashAccessions.size()));
-        HashMap<ACCESSION, MODEL> savedAccessions = new HashMap<ACCESSION, MODEL>();
-        HashMap<ACCESSION, MODEL> notSavedAccessions = new HashMap<ACCESSION, MODEL>();
+        partitions.add(new Partition(0, accessionedModels.size()));
+        SaveResponse<ACCESSION> saveResponse = new SaveResponse<>();
 
         while (!partitions.isEmpty()) {
             Partition partition = partitions.pop();
-            final List<ModelHashAccession<MODEL, HASH, ACCESSION>> partitionToSave = modelHashAccessions
+            final List<AccessionWrapper<MODEL, HASH, ACCESSION>> partitionToSave = accessionedModels
                     .subList(partition.start, partition.end);
             try {
                 dbService.save(partitionToSave);
-                partitionToSave.stream().forEach(mha -> savedAccessions.put(mha.accession(), mha.model()));
+                partitionToSave.stream().forEach(saveResponse::addSavedAccessions);
             } catch (DataIntegrityViolationException e) {
-                if (partitionToSave.size() == 1) {
-                    notSavedAccessions.put(partitionToSave.get(0).accession(), partitionToSave.get(0).model());
-                } else {
+                if (partitionToSave.size() != 1) {
                     int start = partition.start;
                     int middle = (partition.end - partition.start) / 2;
                     int end = partition.end;
                     partitions.add(new Partition(start, middle));
                     partitions.add(new Partition(middle, end));
+                } else {
+                    saveResponse.addSaveFailedAccession(partitionToSave.get(0));
                 }
             }
         }
-        return new SaveResponse<>(savedAccessions, notSavedAccessions);
+        return saveResponse;
     }
 }

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
@@ -50,9 +50,9 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     public TestMonotonicDatabaseService getService() {
         return new TestMonotonicDatabaseService(
                 repository,
+                repository,
                 TestMonotonicEntity::new,
-                TestMonotonicEntity::getAccession,
-                TestMonotonicEntity::getHashedMessage
+                TestModel.class::cast
         );
     }
 

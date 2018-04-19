@@ -17,12 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,20 +45,22 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
     }
 
     @Override
-    public <HASH> List<ModelHashAccession<MODEL, HASH, String>> generateAccessions(Map<HASH, MODEL> messages) throws AccessionCouldNotBeGeneratedException {
-        List<ModelHashAccession<MODEL, HASH, ACCESSION>> accessions = generator.generateAccessions(messages);
+    public <HASH> List<AccessionWrapper<MODEL, HASH, String>> generateAccessions(Map<HASH, MODEL> messages) throws
+            AccessionCouldNotBeGeneratedException {
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions = generator.generateAccessions(messages);
         return accessions.stream()
-                .map(mha -> ModelHashAccession.of(mha.model(), mha.hash(), decorateAccession.apply(mha.accession())))
+                .map(mha -> AccessionWrapper.of(decorateAccession.apply(mha.getAccession()), mha.getHash(),
+                        mha.getData()))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void postSave(SaveResponse<String, MODEL> response) {
-        Map<ACCESSION, MODEL> savedAccession = response.getSavedAccessions().entrySet().stream()
-                .collect(Collectors.toMap(o -> undecorateAccession.apply(o.getKey()), o -> o.getValue()));
-        Map<ACCESSION, MODEL> unsavedAccession = response.getUnsavedAccessions().entrySet().stream()
-                .collect(Collectors.toMap(o -> undecorateAccession.apply(o.getKey()), o -> o.getValue()));
-        generator.postSave(new SaveResponse<>(savedAccession, unsavedAccession));
+    public void postSave(SaveResponse<String> response) {
+        Set<ACCESSION> savedAccessions = response.getSavedAccessions().stream().map(undecorateAccession)
+                .collect(Collectors.toSet());
+        Set<ACCESSION> saveFailedAccessions = response.getSaveFailedAccessions().stream().map(undecorateAccession)
+                .collect(Collectors.toSet());
+        generator.postSave(new SaveResponse<>(savedAccessions, saveFailedAccessions));
     }
 
     public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> buildPrefixSuffixMonotonicAccessionGenerator(

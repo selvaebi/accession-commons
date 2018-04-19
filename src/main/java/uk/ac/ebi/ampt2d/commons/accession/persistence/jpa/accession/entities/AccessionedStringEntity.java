@@ -15,18 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.rest;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-@RestController
-@RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String, String> {
+@MappedSuperclass
+public abstract class AccessionedStringEntity extends AccessionedEntity<String> {
 
-    public TestController() {
-        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
+    @Id
+    private String accession;
+
+    public AccessionedStringEntity(String hash, String accession, boolean active) {
+        super(hash, accession, active);
+        this.accession = accession;
     }
 
+    @Override
+    public String getAccession() {
+        return accession;
+    }
 }

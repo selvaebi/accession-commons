@@ -21,28 +21,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
-import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BasicRestController<MODEL, DTO extends MODEL, ACCESSIONING> {
+public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
-    private AccessioningService<MODEL, ACCESSIONING> service;
+    private AccessioningService<MODEL, HASH, ACCESSION> service;
     private Function<MODEL, DTO> modelToDTO;
 
-    public BasicRestController(AccessioningService<MODEL, ACCESSIONING> service,
+    public BasicRestController(AccessioningService<MODEL, HASH, ACCESSION> service,
                                Function<MODEL, DTO> modelToDTO) {
         this.service = service;
         this.modelToDTO = modelToDTO;
     }
 
-    protected AccessioningService<MODEL, ACCESSIONING> getService() {
+    protected AccessioningService<MODEL, HASH, ACCESSION> getService() {
         return service;
     }
 
@@ -52,16 +51,21 @@ public class BasicRestController<MODEL, DTO extends MODEL, ACCESSIONING> {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public Map<ACCESSIONING, DTO> generateAccessions(@RequestBody @Valid List<DTO> dtos)
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
             throws AccessionCouldNotBeGeneratedException {
-        return service.getOrCreateAccessions(dtos).entrySet().stream().collect(Collectors.toMap(o -> o.getKey(),
-                o -> modelToDTO.apply(o.getValue())));
+        return service.getOrCreateAccessions(dtos).stream()
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
-    public Map<ACCESSIONING, DTO> get(@PathVariable List<ACCESSIONING> accessions) {
-        return service.getByAccessions(accessions).entrySet().stream().collect(Collectors.toMap(o -> o.getKey(),
-                o -> modelToDTO.apply(o.getValue())));
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions,
+                                                                       @RequestParam(name = "hideDeprecated", required = false,
+                                                                       defaultValue = "false")
+                                                                       boolean hideDeprecated) {
+        return service.getByAccessions(accessions, hideDeprecated).stream()
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
+                .collect(Collectors.toList());
     }
 
 }

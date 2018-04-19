@@ -15,18 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import java.time.LocalDateTime;
 
-import java.io.Serializable;
-import java.util.Collection;
+public interface IAccessionedObject<ACCESSION> {
 
-@NoRepositoryBean
-public interface AccessioningRepository<ENTITY, HASH, ACCESSION extends Serializable>
-        extends CrudRepository<ENTITY, ACCESSION> {
+    ACCESSION getAccession();
 
-    Collection<ENTITY> findByHashedMessageIn(Collection<HASH> hashes);
+    String getHashedMessage();
+
+    boolean isActive();
+
+    LocalDateTime getCreatedDate();
 
 }

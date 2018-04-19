@@ -49,7 +49,7 @@ public class BasicRestControllerTest {
     public void testNoContentIfAccessioningDoesNotExist() throws Exception {
         mockMvc.perform(get("/v1/test/notExistingId").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("{}"));
+                .andExpect(content().string("[]"));
     }
 
     @Test
@@ -58,9 +58,9 @@ public class BasicRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"simpleTest\" }]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.[*].value", hasSize(1)))
-                .andExpect(jsonPath("$.[*].value", containsInAnyOrder("simpleTest")));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("simpleTest")));
     }
 
     @Test
@@ -69,25 +69,25 @@ public class BasicRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"simpleTest2\" }, { \"value\" : \"simpleTest3\" }]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.[*].value", hasSize(2)))
-                .andExpect(jsonPath("$.[*].value", containsInAnyOrder("simpleTest2", "simpleTest3")));
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("simpleTest2", "simpleTest3")));
     }
 
     @Test
     public void testThrowExceptions() throws Exception {
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .content("[{ \"value\" : \"MissingUnsavedAccessions\" }]"))
+                .content("[{ \"value\" : \"MissingUnsavedAccessionsException\" }]"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.exception")
-                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions"));
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .content("[{ \"value\" : \"AccessionIsNotPending\" }]"))
+                .content("[{ \"value\" : \"AccessionIsNotPendingException\" }]"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.exception")
-                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending"));
+                        .value("uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException"));
         mockMvc.perform(post("/v1/test")
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
                 .content("[{ \"value\" : \"AccessionCouldNotBeGeneratedException\" }]"))

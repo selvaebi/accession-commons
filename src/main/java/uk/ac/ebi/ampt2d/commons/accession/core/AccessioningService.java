@@ -20,13 +20,14 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 
 import java.util.List;
-import java.util.Map;
 
-public interface AccessioningService<MODEL, ACCESSION> {
+public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
-    Map<ACCESSION, MODEL> getOrCreateAccessions(List<? extends MODEL> messages) throws AccessionCouldNotBeGeneratedException;
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+            throws AccessionCouldNotBeGeneratedException;
 
-    Map<ACCESSION, MODEL> getAccessions(List<? extends MODEL> accessionedObjects);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
 
-    Map<ACCESSION, ? extends MODEL> getByAccessions(List<ACCESSION> accessions);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
+                                                                   boolean hideDeprecated);
 }

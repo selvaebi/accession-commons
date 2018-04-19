@@ -34,7 +34,6 @@ import java.time.ZonedDateTime;
 /**
  * Base entity that represents an entry in an accession history table.
  * Must be extended to include the attribute that will represent the type of actual accession.
- *
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

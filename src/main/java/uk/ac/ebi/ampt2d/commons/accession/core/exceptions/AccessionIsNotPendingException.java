@@ -15,18 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.rest;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
+public class AccessionIsNotPendingException extends RuntimeException {
 
-@RestController
-@RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String, String> {
-
-    public TestController() {
-        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
+    public AccessionIsNotPendingException(long accession) {
+        super("Accession '" + accession + "' is not pending confirmation.");
     }
 
 }

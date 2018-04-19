@@ -15,21 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
-import java.util.Collection;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
-/**
- * Extension of the {@link DatabaseService} that allows getting all the existing accessions in a range of values.
- *
- * @param <MODEL>
- * @param <HASH>
- */
-public interface MonotonicDatabaseService<MODEL, HASH> extends DatabaseService<MODEL, HASH, Long> {
+import javax.persistence.EntityManager;
 
-    long[] getAccessionsInRanges(Collection<MonotonicRange> ranges);
+public class TestRepositoryImpl extends BasicJpaAccessionedObjectCustomRepositoryImpl<TestEntity> {
+
+    public TestRepositoryImpl(EntityManager entityManager) {
+        super(TestEntity.class, entityManager);
+    }
 
 }

@@ -15,18 +15,21 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.rest;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
+import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
-@RestController
-@RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, BasicRestModel, String, String> {
+import java.util.Collection;
 
-    public TestController() {
-        super(new MockTestAccessioningService(), model -> new BasicRestModel(model.getValue()));
-    }
+/**
+ * Extension of the {@link DatabaseService} that allows getting all the existing accessions in a range of values.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ */
+public interface MonotonicDatabaseService<MODEL, HASH> extends DatabaseService<MODEL, HASH, Long> {
+
+    long[] getAccessionsInRanges(Collection<MonotonicRange> ranges);
 
 }

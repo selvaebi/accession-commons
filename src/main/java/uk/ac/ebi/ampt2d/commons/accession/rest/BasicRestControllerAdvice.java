@@ -24,8 +24,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessions;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 /**
  * Spring {@link RestControllerAdvice} bean to handle exception from the application at rest level and return
@@ -36,8 +36,8 @@ public class BasicRestControllerAdvice {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicRestControllerAdvice.class);
 
-    @ExceptionHandler(value = {AccessionIsNotPending.class, AccessionCouldNotBeGeneratedException.class,
-            MissingUnsavedAccessions.class})
+    @ExceptionHandler(value = {AccessionIsNotPendingException.class, AccessionCouldNotBeGeneratedException.class,
+            MissingUnsavedAccessionsException.class})
     public ResponseEntity<ErrorMessage> handleInternalServerErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex),

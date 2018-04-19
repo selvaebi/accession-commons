@@ -17,25 +17,50 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import java.util.Map;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.UnsavedAccessionException;
 
-public class SaveResponse<ACCESSION, MODEL> {
+import java.util.HashSet;
+import java.util.Set;
 
-    private final Map<ACCESSION, MODEL> savedAccessions;
-    private final Map<ACCESSION, MODEL> unsavedAccessions;
+public class SaveResponse<ACCESSION> {
 
-    public SaveResponse(Map<ACCESSION, MODEL> savedAccessions,
-                        Map<ACCESSION, MODEL> unsavedAccessions) {
-        this.savedAccessions = savedAccessions;
-        this.unsavedAccessions = unsavedAccessions;
+    private final Set<ACCESSION> savedAccessions;
+    private final Set<ACCESSION> saveFailedAccessions;
+
+    public SaveResponse() {
+        this(new HashSet<>(), new HashSet<>());
     }
 
-    public Map<ACCESSION, MODEL> getSavedAccessions() {
+    public SaveResponse(Set<ACCESSION> savedAccessions, Set<ACCESSION> saveFailedAccessions) {
+        this.savedAccessions = savedAccessions;
+        this.saveFailedAccessions = saveFailedAccessions;
+    }
+
+    public Set<ACCESSION> getSavedAccessions() {
         return savedAccessions;
     }
 
-    public Map<ACCESSION, MODEL> getUnsavedAccessions() {
-        return unsavedAccessions;
+    public Set<ACCESSION> getSaveFailedAccessions() {
+        return saveFailedAccessions;
     }
 
+    public void addSavedAccessions(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        savedAccessions.add(accessionWrapper.getAccession());
+    }
+
+    public void addSaveFailedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        saveFailedAccessions.add(accessionWrapper.getAccession());
+    }
+
+    public boolean isSavedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        if (savedAccessions.contains(accessionWrapper.getAccession())) {
+            return true;
+        } else {
+            if (saveFailedAccessions.contains(accessionWrapper.getAccession())) {
+                return false;
+            } else {
+                throw new UnsavedAccessionException(accessionWrapper.getAccession());
+            }
+        }
+    }
 }

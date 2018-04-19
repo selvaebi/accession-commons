@@ -23,23 +23,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
-import uk.ac.ebi.ampt2d.commons.accession.generators.ModelHashAccession;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.repositories.ContiguousIdBlockRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -330,7 +330,7 @@ public class MonotonicAccessionGeneratorTest {
                 contains(new MonotonicRange(4, 4), new MonotonicRange(6, BLOCK_SIZE - 1)));
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void assertReleaseAndCommitSameElement() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(BLOCK_SIZE);
@@ -338,7 +338,7 @@ public class MonotonicAccessionGeneratorTest {
         generator.commit(2);
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void assertCommitAndReleaseSameElement() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(BLOCK_SIZE);
@@ -346,7 +346,7 @@ public class MonotonicAccessionGeneratorTest {
         generator.release(2);
     }
 
-    @Test(expected = AccessionIsNotPending.class)
+    @Test(expected = AccessionIsNotPendingException.class)
     public void releaseSomeIdsTwice() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(TENTH_BLOCK_SIZE);
@@ -374,25 +374,25 @@ public class MonotonicAccessionGeneratorTest {
         objects.put("hash1", "object2");
         objects.put("hash2", "object2");
 
-        List<ModelHashAccession<String, String, Long>> generatedAccessions = generator.generateAccessions(objects);
+        List<AccessionWrapper<String, String, Long>> generatedAccessions = generator.generateAccessions(objects);
 
         assertEquals(1, repository.count());
-        assertEquals(0L, (long) generatedAccessions.get(0).accession());
-        assertEquals(1L, (long) generatedAccessions.get(1).accession());
+        assertEquals(0L, (long) generatedAccessions.get(0).getAccession());
+        assertEquals(1L, (long) generatedAccessions.get(1).getAccession());
     }
 
     @Test
     public void postSaveAction() throws Exception {
         MonotonicAccessionGenerator generator = getMonotonicAccessionGenerator();
         generator.generateAccessions(BLOCK_SIZE);
-        Map<Long, String> committed = new HashMap<>();
-        committed.put(0L,"0");
-        committed.put(1L,"1");
-        committed.put(3L,"3");
-        committed.put(4L,"4");
-        Map<Long, String> released = new HashMap<>();
-        released.put(2L,"0");
-        released.put(5L,"0");
+        Set<Long> committed = new HashSet<>();
+        committed.add(0L);
+        committed.add(1L);
+        committed.add(3L);
+        committed.add(4L);
+        Set<Long> released = new HashSet<>();
+        released.add(2L);
+        released.add(5L);
         generator.postSave(new SaveResponse(committed,released));
         long[] accessions = generator.generateAccessions(BLOCK_SIZE);
         assertEquals(2,accessions[0]);

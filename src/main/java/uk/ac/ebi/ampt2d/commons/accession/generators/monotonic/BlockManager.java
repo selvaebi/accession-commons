@@ -19,8 +19,8 @@ package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import org.springframework.data.util.Pair;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPending;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -97,15 +97,15 @@ class BlockManager {
         return availableRanges.getNumOfValuesInQueue() >= accessionsNeeded;
     }
 
-    public Set<ContiguousIdBlock> commit(long[] accessions) throws AccessionIsNotPending {
+    public Set<ContiguousIdBlock> commit(long[] accessions) throws AccessionIsNotPendingException {
         assertAccessionsArePending(accessions);
         return doCommit(accessions);
     }
 
-    private void assertAccessionsArePending(long[] accessions) throws AccessionIsNotPending {
+    private void assertAccessionsArePending(long[] accessions) throws AccessionIsNotPendingException {
         for (long accession : accessions) {
             if (!generatedAccessions.contains(accession)) {
-                throw new AccessionIsNotPending(accession);
+                throw new AccessionIsNotPendingException(accession);
             }
         }
     }
@@ -140,7 +140,7 @@ class BlockManager {
         }
     }
 
-    public void release(long[] accessions) throws AccessionIsNotPending {
+    public void release(long[] accessions) throws AccessionIsNotPendingException {
         assertAccessionsArePending(accessions);
         doRelease(accessions);
     }
@@ -155,9 +155,9 @@ class BlockManager {
      * ranges.
      *
      * @param committedElements
-     * @throws AccessionIsNotPending
+     * @throws AccessionIsNotPendingException
      */
-    public void recoverState(long[] committedElements) throws AccessionIsNotPending {
+    public void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);
         List<MonotonicRange> newAvailableRanges = new ArrayList<>();
         for (MonotonicRange monotonicRange : this.availableRanges) {

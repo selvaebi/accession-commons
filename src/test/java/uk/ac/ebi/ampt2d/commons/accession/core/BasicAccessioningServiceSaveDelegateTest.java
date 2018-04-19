@@ -25,12 +25,12 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
-import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
-import uk.ac.ebi.ampt2d.test.configuration.TestDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
@@ -41,18 +41,19 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@ContextConfiguration(classes = {TestDatabaseServiceTestConfiguration.class})
+@ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BasicAccessioningServiceSaveDelegateTest {
 
     @Autowired
     private TestRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String, String> databaseService;
+    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> databaseService;
 
     @Test
     public void testUpdateWhenHashAndAccessionCoincide() throws AccessionCouldNotBeGeneratedException {
-        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", "test-3"));
+        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", true,
+                "test-3"));
         TestTransaction.end();
 
         Map<String, TestModel> accessions = new HashMap<>();
@@ -63,10 +64,10 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        SaveResponse<String, TestModel> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
+        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
                 .getAccessionGenerator().generateAccessions(accessions));
 
-        assertEquals(3,generatedAccessions.getSavedAccessions().size());
+        assertEquals(3, generatedAccessions.getSavedAccessions().size());
 
         TestTransaction.start();
         TestTransaction.flagForCommit();
@@ -77,7 +78,7 @@ public class BasicAccessioningServiceSaveDelegateTest {
     @Test
     @Commit
     public void testDoNotAccessionWhenHashIsEqualButIdDifferent() throws AccessionCouldNotBeGeneratedException {
-        repository.save(new TestEntity("id-test--1", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", "test-3"));
+        repository.save(new TestEntity("id-test--1", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", true, "test-3"));
         TestTransaction.end();
 
         Map<String, TestModel> accessions = new HashMap<>();
@@ -88,10 +89,10 @@ public class BasicAccessioningServiceSaveDelegateTest {
         BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
                 new BasicAccessioningServiceSaveDelegate<>(databaseService);
 
-        SaveResponse<String, TestModel> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
+        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
                 .getAccessionGenerator().generateAccessions(accessions));
-        assertEquals(2,generatedAccessions.getSavedAccessions().size());
-        assertEquals(1,generatedAccessions.getUnsavedAccessions().size());
+        assertEquals(2, generatedAccessions.getSavedAccessions().size());
+        assertEquals(1, generatedAccessions.getSaveFailedAccessions().size());
 
         TestTransaction.start();
         TestTransaction.flagForCommit();

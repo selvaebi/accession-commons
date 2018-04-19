@@ -15,30 +15,17 @@
  * limitations under the License.
  *
  */
+package uk.ac.ebi.ampt2d.test.persistence;
 
-package uk.ac.ebi.ampt2d.commons.accession.generators;
 
-public interface ModelHashAccession<MODEL, HASH, ACCESSION> {
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
-    MODEL model();
+import javax.persistence.EntityManager;
 
-    HASH hash();
+public class TestMonotonicRepositoryImpl extends BasicJpaAccessionedObjectCustomRepositoryImpl<TestMonotonicEntity> {
 
-    ACCESSION accession();
-
-    static <X, Y, Z> ModelHashAccession<X, Y, Z> of(X model, Y hash, Z accession) {
-        return new ModelHashAccession<X, Y, Z>() {
-            public X model() {
-                return model;
-            }
-
-            public Y hash() {
-                return hash;
-            }
-
-            public Z accession() {
-                return accession;
-            }
-        };
+    public TestMonotonicRepositoryImpl(EntityManager entityManager) {
+        super(TestMonotonicEntity.class, entityManager);
     }
+
 }
