@@ -49,7 +49,7 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
             AccessionCouldNotBeGeneratedException {
         List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions = generator.generateAccessions(messages);
         return accessions.stream()
-                .map(mha -> AccessionWrapper.of(decorateAccession.apply(mha.getAccession()), mha.getHash(),
+                .map(mha -> new AccessionWrapper<>(decorateAccession.apply(mha.getAccession()), mha.getHash(),
                         mha.getData()))
                 .collect(Collectors.toList());
     }

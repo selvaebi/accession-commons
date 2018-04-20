@@ -41,7 +41,7 @@ import static junit.framework.TestCase.assertTrue;
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BaseJpaAccessionedObjectRepositoryTest {
 
-    public static final TestEntity ENTITY = new TestEntity(AccessionWrapper.of("a1", "h1",
+    public static final TestEntity ENTITY = new TestEntity(new AccessionWrapper("a1", "h1",
             TestModel.of("something1")));
 
     @Autowired
@@ -70,7 +70,7 @@ public class BaseJpaAccessionedObjectRepositoryTest {
 
     @Test
     public void testEnableEntitiesByHash() {
-        TestEntity savedEntity = repository.save(new TestEntity("a1", "h1", false, "something1"));
+        TestEntity savedEntity = repository.save(new TestEntity("a1", "h1", 1, false, "something1"));
         assertFalse(savedEntity.isActive());
         HashSet<String> hashes = new HashSet<>();
         hashes.add("h1");

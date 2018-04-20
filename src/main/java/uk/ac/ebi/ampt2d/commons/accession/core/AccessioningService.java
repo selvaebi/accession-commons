@@ -18,6 +18,8 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import java.util.List;
 
@@ -30,4 +32,6 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
                                                                    boolean hideDeprecated);
+
+    AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message) throws AccessionDoesNotExistException, HashAlreadyExistsException;
 }

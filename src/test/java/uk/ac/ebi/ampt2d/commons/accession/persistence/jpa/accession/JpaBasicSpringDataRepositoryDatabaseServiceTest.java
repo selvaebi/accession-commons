@@ -43,11 +43,11 @@ import static org.junit.Assert.assertTrue;
 public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_1 =
-            AccessionWrapper.of("a1", "h1", TestModel.of("something1"));
+            new AccessionWrapper("a1", "h1", TestModel.of("something1"));
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_2 =
-            AccessionWrapper.of("a2", "h2", TestModel.of("something2"));
+            new AccessionWrapper("a2", "h2", TestModel.of("something2"));
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_3 =
-            AccessionWrapper.of("a3", "h3", TestModel.of("something3"));
+            new AccessionWrapper("a3", "h3", TestModel.of("something3"));
 
     @Autowired
     private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> service;
@@ -83,7 +83,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void saveNonUniqueElements() {
         service.insert(Arrays.asList(
                 TEST_MODEL_1,
-                AccessionWrapper.of("a2", "h1", TestModel.of("something2")),
+                new AccessionWrapper("a2", "h1", TestModel.of("something2")),
                 TEST_MODEL_3
         ));
     }

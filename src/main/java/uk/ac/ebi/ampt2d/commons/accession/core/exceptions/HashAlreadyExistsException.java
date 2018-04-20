@@ -15,20 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import java.time.LocalDateTime;
-
-public interface IAccessionedObject<ACCESSION> {
-
-    ACCESSION getAccession();
-
-    String getHashedMessage();
-
-    boolean isActive();
-
-    LocalDateTime getCreatedDate();
-
-    int getVersion();
-
+public class HashAlreadyExistsException extends Exception {
+    public HashAlreadyExistsException(String hash, Class<?> clazz) {
+        super("Hash '" + hash + "' already exists for model '" + clazz.getName() + "'");
+    }
 }

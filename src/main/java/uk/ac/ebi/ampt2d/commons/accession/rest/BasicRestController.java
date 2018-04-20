@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -61,11 +63,19 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
     public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions,
                                                                        @RequestParam(name = "hideDeprecated", required = false,
-                                                                       defaultValue = "false")
-                                                                       boolean hideDeprecated) {
+                                                                               defaultValue = "false")
+                                                                               boolean hideDeprecated) {
         return service.getByAccessions(accessions, hideDeprecated).stream()
                 .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{accession}", method = RequestMethod.POST, produces = "application/json",
+            consumes = "application/json")
+    public AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> update(@PathVariable ACCESSION accession,
+                                                                    @RequestBody @Valid DTO dto)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException {
+        return new AccessionResponseDTO<>(service.update(accession, dto), modelToDTO);
     }
 
 }

@@ -20,10 +20,13 @@ package uk.ac.ebi.ampt2d.test.rest;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +36,12 @@ import java.util.stream.Collectors;
  */
 public class MockTestAccessioningService implements AccessioningService<BasicRestModel, String, String> {
 
-    private HashMap<String, AccessionWrapper<BasicRestModel, String, String>> accessionToObject;
-    private HashMap<String, String> valueToAccession;
+    private HashMap<String, AccessionWrapper<BasicRestModel, String, String>> hashToObject;
+    private HashMap<String, List<AccessionWrapper<BasicRestModel, String, String>>> accessionIndex;
 
     public MockTestAccessioningService() {
-        this.accessionToObject = new HashMap<>();
-        this.valueToAccession = new HashMap<>();
+        this.hashToObject = new HashMap<>();
+        this.accessionIndex = new HashMap<>();
     }
 
     @Override
@@ -61,28 +64,65 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
         if (model.getValue().contains("AccessionCouldNotBeGeneratedException")) {
             throw new AccessionCouldNotBeGeneratedException("Test");
         }
-        String accession = "Accession-" + accessionToObject.size();
-        accessionToObject.put(accession, AccessionWrapper.of(accession, "dummy_hash", model));
-        valueToAccession.put(model.getValue(), accession);
+        String hash = getHash(model);
+        String accession = "Accession-" + accessionIndex.size();
+        if (!hashToObject.containsKey(hash)) {
+            AccessionWrapper<BasicRestModel, String, String> wrappedObject =
+                    new AccessionWrapper<>(accession, hash, model);
+            put(wrappedObject);
+        }
+    }
+
+    private void put(AccessionWrapper<BasicRestModel, String, String> object) {
+        hashToObject.put(object.getHash(), object);
+        if (accessionIndex.containsKey(object.getAccession())) {
+            accessionIndex.get(object.getAccession()).add(object);
+        } else {
+            accessionIndex.put(object.getAccession(), Arrays.asList(object));
+        }
+    }
+
+    private String getHash(BasicRestModel model) {
+        return "hash-" + model.getValue();
     }
 
     @Override
     public List<AccessionWrapper<BasicRestModel, String, String>> getAccessions(
             List<? extends BasicRestModel> objects) {
         return objects.stream()
-                .map(BasicRestModel::getValue)
-                .filter(valueToAccession::containsKey)
-                .map(valueToAccession::get)
-                .map(accessionToObject::get)
+                .map(this::getHash)
+                .filter(hashToObject::containsKey)
+                .map(hashToObject::get)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessions(List<String> strings,
                                                                                   boolean hideDeprecated) {
-        return strings.stream().filter(accessionToObject::containsKey)
-                .map(accessionToObject::get)
+        return strings.stream().filter(hashToObject::containsKey)
+                .map(hashToObject::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AccessionWrapper<BasicRestModel, String, String> update(String accession, BasicRestModel message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException {
+        if (!accessionIndex.containsKey(accession)) {
+            throw new AccessionDoesNotExistException(accession);
+        }
+
+        final String hash = getHash(message);
+        if (hashToObject.containsKey(hash)) {
+            throw new HashAlreadyExistsException(message.getValue(), BasicRestModel.class);
+        }
+
+        int version = accessionIndex.get(accession).size() + 1;
+
+        AccessionWrapper<BasicRestModel, String, String> wrappedObject =
+                new AccessionWrapper<>(accession, hash, message, version, true);
+        put(wrappedObject);
+
+        return wrappedObject;
     }
 
 }

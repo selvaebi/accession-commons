@@ -19,7 +19,10 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -42,4 +45,8 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessionMappingsByAccessions(List<ACCESSION> accessions);
 
     void enableAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedObjects);
+
+    AccessionWrapper<MODEL,HASH,ACCESSION> update(AccessionWrapper<MODEL, HASH, ACCESSION> accession)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException;
+
 }

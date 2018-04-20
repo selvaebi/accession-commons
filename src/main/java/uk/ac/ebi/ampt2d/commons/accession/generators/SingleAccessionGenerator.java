@@ -46,7 +46,7 @@ public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGene
     public <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
         return messages.entrySet()
                 .stream()
-                .map(entry -> AccessionWrapper.of(generateAccessionFunction.apply(entry.getValue()), entry.getKey(),
+                .map(entry -> new AccessionWrapper<>(generateAccessionFunction.apply(entry.getValue()), entry.getKey(),
                         entry.getValue()
                 ))
                 .collect(Collectors.toList());
