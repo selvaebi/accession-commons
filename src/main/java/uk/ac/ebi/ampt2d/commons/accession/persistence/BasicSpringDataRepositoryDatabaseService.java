@@ -105,7 +105,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
         int version = 1;
         for (ENTITY accessionedElement : accessionedElements) {
-            if (version < accessionedElement.getVersion()) {
+            if (version <= accessionedElement.getVersion()) {
                 version = accessionedElement.getVersion() + 1;
             }
         }

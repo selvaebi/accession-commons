@@ -30,6 +30,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static junit.framework.TestCase.assertEquals;
@@ -78,6 +79,14 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         long count = repository.count();
         TestEntity dbEntity = repository.findOne("h1");
         assertTrue(dbEntity.isActive());
+    }
+
+    @Test
+    public void testInsertTwoVersionsSameAccession() {
+        TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
+        TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
+        repository.insert(Arrays.asList(testEntity1, testEntity2));
+        assertEquals(2, repository.count());
     }
 
 }
