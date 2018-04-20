@@ -231,4 +231,17 @@ public class BasicRestControllerTest {
                 .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-test-1b")));
     }
 
+    @Test
+    public void testAccessionNotOk() throws Exception {
+        mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content("[{},{}]"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.exception")
+                        .value("javax.validation.ValidationException"))
+                .andExpect(jsonPath("$.message")
+                        .value("basicRestModelList[0] : Please provide a value\n" +
+                                "basicRestModelList[1] : Please provide a value\n"));
+    }
+
 }

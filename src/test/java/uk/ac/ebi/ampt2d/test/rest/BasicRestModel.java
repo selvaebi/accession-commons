@@ -17,8 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
+import javax.validation.constraints.NotNull;
+
 public class BasicRestModel {
 
+    @NotNull(message = "Please provide a value")
     private String value;
 
     BasicRestModel() {

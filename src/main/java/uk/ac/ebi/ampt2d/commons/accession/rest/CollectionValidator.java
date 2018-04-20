@@ -1,0 +1,63 @@
+/*
+ *
+ * Copyright 2018 EMBL - European Bioinformatics Institute
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package uk.ac.ebi.ampt2d.commons.accession.rest;
+
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidationException;
+import java.util.Collection;
+import java.util.Set;
+
+/**
+ * Validator class for Collection of DTOs
+ */
+public class CollectionValidator implements Validator {
+
+    private LocalValidatorFactoryBean validator;
+
+    public CollectionValidator(LocalValidatorFactoryBean validator) {
+        this.validator = validator;
+    }
+
+    @Override
+    public boolean supports(Class<?> aClass) {
+        return Collection.class.isAssignableFrom(aClass);
+    }
+
+    public void validate(Object target, Errors errors) {
+        Collection collection = (Collection) target;
+        final StringBuilder message = new StringBuilder();
+        int indexOfObjects = 0;
+        for (Object object : collection) {
+            Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object, new Class[0]);
+            if (constraintViolations != null && constraintViolations.size() > 0) {
+                message.append(errors.getObjectName() + "[" + indexOfObjects + "] : ");
+                constraintViolations.stream().forEach(constraintViolation -> {
+                    message.append(constraintViolation.getMessage() + "\n");
+                });
+            }
+            indexOfObjects++;
+        }
+        if (message.length() > 0) {
+            throw new ValidationException(message.toString());
+        }
+    }
+}
