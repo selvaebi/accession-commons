@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,30 +60,24 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     @Override
     public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
-        return repository.findByHashedMessageIn(hashes).stream()
-                .map(entity -> AccessionWrapper.of(entity.getAccession(), entity.getHashedMessage(),
-                        toModelFunction.apply(entity)))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Map<String, ACCESSION> getExistingAccessions(Collection<String> hashes) {
-        return repository.findByHashedMessageIn(hashes).stream()
-                .collect(Collectors.toMap(IAccessionedObject::getHashedMessage, IAccessionedObject::getAccession));
+        List<AccessionWrapper<MODEL, String, ACCESSION>> wrappedAccessions = new ArrayList<>();
+        repository.findAll(hashes).iterator().forEachRemaining(entity -> wrappedAccessions.add(
+                AccessionWrapper.of(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity))));
+        return wrappedAccessions;
     }
 
     @Override
     @Transactional
-    public void save(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
+    public void insert(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
         Set<ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
-        repository.save(entitySet);
+        customMethodsRepository.insert(entitySet);
     }
 
     @Override
     public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessions(
             List<ACCESSION> accessions) {
         List<AccessionWrapper<MODEL, String, ACCESSION>> result = new ArrayList<>();
-        repository.findAll(accessions).iterator().forEachRemaining(
+        repository.findByAccessionIn(accessions).iterator().forEachRemaining(
                 entity -> result.add(new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(),
                         entity.isActive(), toModelFunction.apply(entity))));
         return result;

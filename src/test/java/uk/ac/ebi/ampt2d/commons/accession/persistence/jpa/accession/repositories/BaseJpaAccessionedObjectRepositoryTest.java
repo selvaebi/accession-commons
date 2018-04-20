@@ -76,7 +76,7 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         hashes.add("h1");
         repository.enableByHashedMessageIn(hashes);
         long count = repository.count();
-        TestEntity dbEntity = repository.findOne("a1");
+        TestEntity dbEntity = repository.findOne("h1");
         assertTrue(dbEntity.isActive());
     }
 

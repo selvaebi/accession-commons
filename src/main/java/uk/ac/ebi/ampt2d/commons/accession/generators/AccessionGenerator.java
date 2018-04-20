@@ -43,7 +43,7 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
             throws AccessionCouldNotBeGeneratedException;
 
     /**
-     * This method returns to the accession generator the result of the database save operation in case any operation
+     * This method returns to the accession generator the result of the database insert operation in case any operation
      * needs to be performed at the generator level.
      *
      * @param response

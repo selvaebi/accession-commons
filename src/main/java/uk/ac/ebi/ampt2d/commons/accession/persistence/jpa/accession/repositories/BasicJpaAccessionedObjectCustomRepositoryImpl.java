@@ -54,4 +54,11 @@ public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY exten
         entityManager.clear();
     }
 
+    @Transactional
+    public <ENTITY> void insert(Set<ENTITY> entities) {
+        for (ENTITY entity : entities) {
+            entityManager.persist(entity);
+        }
+    }
+
 }

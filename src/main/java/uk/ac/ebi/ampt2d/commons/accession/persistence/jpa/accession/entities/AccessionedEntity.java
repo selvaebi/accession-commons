@@ -23,6 +23,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -33,23 +34,37 @@ import java.time.LocalDateTime;
 public abstract class AccessionedEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION> {
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Id
     private String hashedMessage;
 
-    private boolean active = true;
+    @NotNull
+    @Column(nullable = false)
+    private ACCESSION accession;
+
+    private boolean active;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
+    public AccessionedEntity(String hashedMessage, ACCESSION accession) {
+        this(hashedMessage, accession, true);
+    }
+
     public AccessionedEntity(String hashedMessage, ACCESSION accession, boolean active) {
         this.hashedMessage = hashedMessage;
+        this.accession = accession;
         this.active = active;
     }
 
     @Override
     public String getHashedMessage() {
         return hashedMessage;
+    }
+
+    @Override
+    public ACCESSION getAccession() {
+        return accession;
     }
 
     @Override

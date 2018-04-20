@@ -36,10 +36,8 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessionsByHash(Collection<HASH> hashes);
 
-    Map<HASH, ACCESSION> getExistingAccessions(Collection<HASH> hashes);
-
     @Transactional
-    void save(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
+    void insert(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
 
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessionMappingsByAccessions(List<ACCESSION> accessions);
 

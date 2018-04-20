@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
@@ -51,7 +50,8 @@ public class BasicAccessioningServiceSaveDelegateTest {
     private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> databaseService;
 
     @Test
-    public void testUpdateWhenHashAndAccessionCoincide() throws AccessionCouldNotBeGeneratedException {
+    public void testUnsaveIfExistPreviousWithSameHash() throws AccessionCouldNotBeGeneratedException {
+        TestTransaction.flagForCommit();
         repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", true,
                 "test-3"));
         TestTransaction.end();
@@ -67,36 +67,14 @@ public class BasicAccessioningServiceSaveDelegateTest {
         SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
                 .getAccessionGenerator().generateAccessions(accessions));
 
-        assertEquals(3, generatedAccessions.getSavedAccessions().size());
-
-        TestTransaction.start();
-        TestTransaction.flagForCommit();
-        repository.delete("id-test-3");
-        TestTransaction.end();
-    }
-
-    @Test
-    @Commit
-    public void testDoNotAccessionWhenHashIsEqualButIdDifferent() throws AccessionCouldNotBeGeneratedException {
-        repository.save(new TestEntity("id-test--1", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", true, "test-3"));
-        TestTransaction.end();
-
-        Map<String, TestModel> accessions = new HashMap<>();
-        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB4", TestModel.of("test-1"));
-        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB3", TestModel.of("test-2"));
-        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB2", TestModel.of("test-3"));
-
-        BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
-                new BasicAccessioningServiceSaveDelegate<>(databaseService);
-
-        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
-                .getAccessionGenerator().generateAccessions(accessions));
         assertEquals(2, generatedAccessions.getSavedAccessions().size());
         assertEquals(1, generatedAccessions.getSaveFailedAccessions().size());
 
         TestTransaction.start();
         TestTransaction.flagForCommit();
-        repository.delete("id-test-2");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB2");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB3");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB4");
         TestTransaction.end();
     }
 
@@ -110,6 +88,38 @@ public class BasicAccessioningServiceSaveDelegateTest {
                 TestModel::getSomething,
                 new SHA1HashingFunction()
         );
+    }
+
+    @Test
+    public void testCompleteSaveIfSameAccessionDifferentHash() throws AccessionCouldNotBeGeneratedException {
+        TestTransaction.flagForCommit();
+        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", true,
+                "test-3"));
+        TestTransaction.end();
+
+        Map<String, TestModel> accessions = new HashMap<>();
+        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB4", TestModel.of("test-1"));
+        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB3", TestModel.of("test-2"));
+        accessions.put("3323D8A8F66A0602CC59372E866DD8E116DCCDB5", TestModel.of("test-3"));
+
+        BasicAccessioningServiceSaveDelegate<TestModel, String, String> delegate =
+                new BasicAccessioningServiceSaveDelegate<>(databaseService);
+
+        SaveResponse<String> generatedAccessions = delegate.doSaveAccessions(getAccessioningService()
+                .getAccessionGenerator().generateAccessions(accessions));
+
+        assertEquals(3, generatedAccessions.getSavedAccessions().size());
+        assertEquals(0, generatedAccessions.getSaveFailedAccessions().size());
+        assertEquals("id-test-3", repository.findOne("3323D8A8F66A0602CC59372E866DD8E116DCCDB5").getAccession());
+        assertEquals("id-test-3", repository.findOne("3323D8A8F66A0602CC59372E866DD8E116DCCDB2").getAccession());
+
+        TestTransaction.start();
+        TestTransaction.flagForCommit();
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB2");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB3");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB4");
+        repository.delete("3323D8A8F66A0602CC59372E866DD8E116DCCDB5");
+        TestTransaction.end();
     }
 
 }

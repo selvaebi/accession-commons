@@ -25,8 +25,8 @@ import java.util.Collection;
 
 @NoRepositoryBean
 public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> extends CrudRepository<ENTITY, ACCESSION> {
+        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String> {
 
-    Collection<ENTITY> findByHashedMessageIn(Collection<String> hashes);
+    Collection<ENTITY> findByAccessionIn(Collection<ACCESSION> hashes);
 
 }
