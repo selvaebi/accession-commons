@@ -43,18 +43,16 @@ public class CollectionValidator implements Validator {
     }
 
     public void validate(Object target, Errors errors) {
-        Collection collection = (Collection) target;
         final StringBuilder message = new StringBuilder();
-        int indexOfObjects = 0;
-        for (Object object : collection) {
-            Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object, new Class[0]);
+        Object[] objects = ((Collection) target).toArray();
+        for (int indexOfObjects = 0; indexOfObjects < objects.length; indexOfObjects++) {
+            Set<ConstraintViolation<Object>> constraintViolations = validator.validate(objects[indexOfObjects], new Class[0]);
             if (constraintViolations != null && constraintViolations.size() > 0) {
                 message.append(errors.getObjectName() + "[" + indexOfObjects + "] : ");
                 constraintViolations.stream().forEach(constraintViolation -> {
                     message.append(constraintViolation.getMessage() + "\n");
                 });
             }
-            indexOfObjects++;
         }
         if (message.length() > 0) {
             throw new ValidationException(message.toString());
