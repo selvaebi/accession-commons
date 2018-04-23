@@ -25,7 +25,7 @@ public class ErrorMessage {
 
     private long timestamp;
 
-    private HttpStatus status;
+    private int status;
 
     private String error;
 
@@ -35,7 +35,7 @@ public class ErrorMessage {
 
     public ErrorMessage(HttpStatus status, Exception ex, String message) {
         timestamp = new Date().getTime();
-        this.status = status;
+        this.status = status.value();
         this.error = status.getReasonPhrase();
 
         this.exception = ex.getClass().getCanonicalName();
@@ -46,7 +46,7 @@ public class ErrorMessage {
         return timestamp;
     }
 
-    public HttpStatus getStatus() {
+    public int getStatus() {
         return status;
     }
 

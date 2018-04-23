@@ -71,7 +71,7 @@ public class BasicRestControllerAdvice {
     }
 
     private ResponseEntity<ErrorMessage> buildResponseEntity(ErrorMessage errorMessage) {
-        return new ResponseEntity<>(errorMessage, errorMessage.getStatus());
+        return new ResponseEntity<>(errorMessage, HttpStatus.valueOf(errorMessage.getStatus()));
     }
 
     @InitBinder
