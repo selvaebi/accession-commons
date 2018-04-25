@@ -126,14 +126,14 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     @Override
-    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionAndVersion(String accessions,
+    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionAndVersion(String accession,
                                                                                            int version) {
-        if (accessionIndex.containsKey(accessions)) {
-            return accessionIndex.get(accessions).stream()
-                    .filter(wrapper -> wrapper.getVersion() == version)
-                    .collect(Collectors.toList());
+            if (accessionIndex.containsKey(accession)) {
+                return accessionIndex.get(accession).stream()
+                        .filter(wrapper -> wrapper.getVersion() == version)
+                        .collect(Collectors.toList());
+            }
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
-    }
 
-}
+    }
