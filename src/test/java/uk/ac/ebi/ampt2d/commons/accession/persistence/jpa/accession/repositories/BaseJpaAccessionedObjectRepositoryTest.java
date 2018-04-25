@@ -89,13 +89,24 @@ public class BaseJpaAccessionedObjectRepositoryTest {
     }
 
     @Test
-    public void testFindByAccession(){
+    public void testFindByAccession() {
         TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
         TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
         repository.insert(Arrays.asList(testEntity1, testEntity2));
         assertEquals(2, repository.count());
         assertEquals(2, repository.findByAccession("a1").size());
         assertEquals(2, repository.findByAccessionIn(Arrays.asList("a1")).size());
+    }
+
+    @Test
+    public void testFindByAccessionAndVersion() {
+        TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
+        TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
+        TestEntity testEntity3 = new TestEntity("a1", "h3", 2, true, "something2");
+        repository.insert(Arrays.asList(testEntity1, testEntity2, testEntity3));
+        assertEquals(3, repository.count());
+        assertEquals(1, repository.findByAccessionAndVersion("a1", 1).size());
+        assertEquals(2, repository.findByAccessionAndVersion("a1", 2).size());
     }
 
 }

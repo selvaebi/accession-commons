@@ -116,6 +116,14 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
         return newAccessionVersion;
     }
 
+    @Override
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessionAndVersion(ACCESSION accession, int version) {
+        return repository.findByAccessionAndVersion(accession, version).stream()
+                .map(this::createAccessionWrapperFromEntity)
+                .collect(Collectors.toList());
+
+    }
+
     private void assertHashDoesNotExist(AccessionWrapper<MODEL, String, ACCESSION> accession)
             throws HashAlreadyExistsException {
         if (repository.findOne(accession.getHash()) != null) {

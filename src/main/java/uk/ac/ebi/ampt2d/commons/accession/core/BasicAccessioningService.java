@@ -158,6 +158,11 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         return dbService.update(new AccessionWrapper<>(accession, hashingFunction.apply(message), message));
     }
 
+    @Override
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accessions, int version) {
+        return dbService.findAllAccessionMappingsByAccessionAndVersion(accessions, version);
+    }
+
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {
         return accessionGenerator;
     }

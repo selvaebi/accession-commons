@@ -31,4 +31,6 @@ public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<
 
     Collection<ENTITY> findByAccessionIn(Collection<ACCESSION> hashes);
 
+    Collection<ENTITY> findByAccessionAndVersion(ACCESSION accession, int Version);
+
 }

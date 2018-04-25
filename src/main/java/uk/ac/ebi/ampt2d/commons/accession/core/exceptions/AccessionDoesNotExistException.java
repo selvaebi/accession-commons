@@ -24,4 +24,8 @@ public class AccessionDoesNotExistException extends Exception {
     public AccessionDoesNotExistException(String accession) {
         super("Accession could not be found '" + accession + "'");
     }
+
+    public <ACCESSION> AccessionDoesNotExistException(ACCESSION accession, int version) {
+        super("No data found for accession '" + accession + "' and version '" + version + "'");
+    }
 }
