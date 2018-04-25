@@ -52,26 +52,26 @@ public class BasicRestControllerAdvice {
             MissingUnsavedAccessionsException.class})
     public ResponseEntity<ErrorMessage> handleInternalServerErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        return buildResponseEntity(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex, ex.getMessage()));
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex, ex.getMessage());
     }
 
     @ExceptionHandler(value = HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ErrorMessage> handleHttpMediaNotSupported(HttpMediaTypeNotSupportedException ex) {
-        return buildResponseEntity(new ErrorMessage(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex, ex.getMessage()));
+        return buildResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex, ex.getMessage());
     }
 
     @ExceptionHandler(value = ValidationException.class)
     public ResponseEntity<ErrorMessage> handleValidationException(ValidationException ex) {
-        return buildResponseEntity(new ErrorMessage(HttpStatus.BAD_REQUEST, ex, ex.getMessage()));
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getMessage());
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        return buildResponseEntity(new ErrorMessage(HttpStatus.BAD_REQUEST, ex, "Please provide accepted values"));
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, "Please provide accepted values");
     }
 
-    private ResponseEntity<ErrorMessage> buildResponseEntity(ErrorMessage errorMessage) {
-        return new ResponseEntity<>(errorMessage, HttpStatus.valueOf(errorMessage.getStatus()));
+    private ResponseEntity<ErrorMessage> buildResponseEntity(HttpStatus status, Exception ex, String message) {
+        return new ResponseEntity<>(new ErrorMessage(status, ex, message), status);
     }
 
     @InitBinder
