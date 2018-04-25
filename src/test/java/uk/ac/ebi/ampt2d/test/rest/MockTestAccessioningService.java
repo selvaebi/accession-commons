@@ -26,7 +26,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsExcep
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,11 +74,10 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
 
     private void put(AccessionWrapper<BasicRestModel, String, String> object) {
         hashToObject.put(object.getHash(), object);
-        if (accessionIndex.containsKey(object.getAccession())) {
-            accessionIndex.get(object.getAccession()).add(object);
-        } else {
-            accessionIndex.put(object.getAccession(), Arrays.asList(object));
+        if (!accessionIndex.containsKey(object.getAccession())) {
+            accessionIndex.put(object.getAccession(), new ArrayList<>());
         }
+        accessionIndex.get(object.getAccession()).add(object);
     }
 
     private String getHash(BasicRestModel model) {

@@ -24,7 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 /**
@@ -42,6 +44,20 @@ public class BasicRestControllerAdvice {
         logger.error(ex.getMessage(), ex);
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex),
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = {AccessionDoesNotExistException.class})
+    public ResponseEntity<ErrorMessage> handleNotFoundErrors(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND, ex),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {HashAlreadyExistsException.class})
+    public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return new ResponseEntity<>(new ErrorMessage(HttpStatus.CONFLICT, ex),
+                HttpStatus.CONFLICT);
     }
 
 }
