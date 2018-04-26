@@ -26,6 +26,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -147,9 +148,28 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
-                                                                          boolean hideDeprecated) {
-        return dbService.findAllAccessionMappingsByAccessions(accessions);
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions,
+                                                                            boolean hideDeprecated) {
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> allAccessionMappingsByAccessions
+                = dbService.findAllAccessionMappingsByAccessions(accessions);
+        Map<ACCESSION, Integer> accessionToMaxVersion = generateAccessionToMaxVersion(allAccessionMappingsByAccessions);
+        return allAccessionMappingsByAccessions.stream()
+                .filter(wrapper -> accessionToMaxVersion.get(wrapper.getAccession()) == wrapper.getVersion())
+                .collect(Collectors.toList());
+    }
+
+    private Map<ACCESSION, Integer> generateAccessionToMaxVersion(
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> allAccessionMappingsByAccessions) {
+        Map<ACCESSION, Integer> accessionToMaxVersion = new HashMap<>();
+        allAccessionMappingsByAccessions.stream().forEach(
+                wrapper -> {
+                    if (!accessionToMaxVersion.containsKey(wrapper.getAccession()) ||
+                            accessionToMaxVersion.get(wrapper.getAccession()) < wrapper.getVersion()) {
+                        accessionToMaxVersion.put(wrapper.getAccession(), wrapper.getVersion());
+                    }
+                }
+        );
+        return accessionToMaxVersion;
     }
 
     @Override
@@ -159,7 +179,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accession, int version) {
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIdAndVersion(ACCESSION accession, int version) {
         return dbService.findAllAccessionMappingsByAccessionAndVersion(accession, version);
     }
 

@@ -30,11 +30,11 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
-                                                                   boolean hideDeprecated);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions,
+                                                                     boolean hideDeprecated);
 
     AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message) throws AccessionDoesNotExistException, HashAlreadyExistsException;
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accession, int version);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIdAndVersion(ACCESSION accessions, int version);
 
 }

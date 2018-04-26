@@ -36,11 +36,8 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -167,11 +164,9 @@ public class BasicAccessioningServiceTest {
         accessioningService.update("id-service-test-3", TestModel.of("test-3b"));
 
         final List<AccessionWrapper<TestModel, String, String>> wrappedAccesions =
-                accessioningService.getByAccessions(Arrays.asList("id-service-test-3"), false);
-        final Set<Integer> accessions = wrappedAccesions.stream().map(AccessionWrapper::getVersion)
-                .collect(Collectors.toSet());
-        assertTrue(accessions.contains(1));
-        assertTrue(accessions.contains(2));
+                accessioningService.getByAccessionIds(Arrays.asList("id-service-test-3"), false);
+        assertEquals(1, wrappedAccesions.size());
+        assertEquals(2, wrappedAccesions.get(0).getVersion());
     }
 
     @Test
@@ -183,13 +178,13 @@ public class BasicAccessioningServiceTest {
                 TestModel.of("test-accession-versionb"));
 
         final List<AccessionWrapper<TestModel, String, String>> version1 = getAccessioningService()
-                .getByAccessionAndVersion("id-service-test-accession-version", 1);
+                .getByAccessionIdAndVersion("id-service-test-accession-version", 1);
         final List<AccessionWrapper<TestModel, String, String>> version2 = getAccessioningService()
-                .getByAccessionAndVersion("id-service-test-accession-version", 2);
+                .getByAccessionIdAndVersion("id-service-test-accession-version", 2);
         assertEquals(1, version1.size());
         assertEquals(1, version2.size());
-        assertEquals("test-accession-version",version1.get(0).getData().getSomething());
-        assertEquals("test-accession-versionb",version2.get(0).getData().getSomething());
+        assertEquals("test-accession-version", version1.get(0).getData().getSomething());
+        assertEquals("test-accession-versionb", version2.get(0).getData().getSomething());
     }
 
 }

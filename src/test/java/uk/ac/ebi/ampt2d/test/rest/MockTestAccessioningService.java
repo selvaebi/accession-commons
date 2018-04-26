@@ -28,6 +28,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessio
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -95,13 +96,32 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     @Override
-    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessions(List<String> accessions,
-                                                                                  boolean hideDeprecated) {
-        return accessions.stream()
+    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionIds(List<String> accessions,
+                                                                                    boolean hideDeprecated) {
+        final List<AccessionWrapper<BasicRestModel, String, String>> result = accessions.stream()
                 .filter(accessionIndex::containsKey)
                 .map(accessionIndex::get)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+
+        final Map<String, Integer> accessionToMaxVersion = generateAccessionToMaxVersion(result);
+        return result.stream()
+                .filter(wrapper -> accessionToMaxVersion.get(wrapper.getAccession()) == wrapper.getVersion())
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, Integer> generateAccessionToMaxVersion(
+            List<AccessionWrapper<BasicRestModel, String, String>> allAccessionMappingsByAccessions) {
+        Map<String, Integer> accessionToMaxVersion = new HashMap<>();
+        allAccessionMappingsByAccessions.stream().forEach(
+                wrapper -> {
+                    if (!accessionToMaxVersion.containsKey(wrapper.getAccession()) ||
+                            accessionToMaxVersion.get(wrapper.getAccession()) < wrapper.getVersion()) {
+                        accessionToMaxVersion.put(wrapper.getAccession(), wrapper.getVersion());
+                    }
+                }
+        );
+        return accessionToMaxVersion;
     }
 
     @Override
@@ -126,14 +146,15 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     @Override
-    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionAndVersion(String accession,
-                                                                                           int version) {
-            if (accessionIndex.containsKey(accession)) {
-                return accessionIndex.get(accession).stream()
-                        .filter(wrapper -> wrapper.getVersion() == version)
-                        .collect(Collectors.toList());
-            }
-            return new ArrayList<>();
+    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionIdAndVersion(String accession,
+                                                                                             int version) {
+        if (accessionIndex.containsKey(accession)) {
+            return accessionIndex.get(accession).stream()
+                    .filter(wrapper -> wrapper.getVersion() == version)
+                    .collect(Collectors.toList());
         }
+        return new ArrayList<>();
 
     }
+
+}

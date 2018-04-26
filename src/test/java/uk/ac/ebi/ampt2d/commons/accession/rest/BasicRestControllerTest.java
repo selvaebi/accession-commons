@@ -211,4 +211,23 @@ public class BasicRestControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void testGetAccession() throws Exception{
+        final MvcResult mvcResult = mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(
+                        new BasicRestModel("get-accession-test-1"))).getJson()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String accession = jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0)
+                .getAccession();
+        doUpdate(accession,new BasicRestModel("get-accession-test-1b"));
+
+        mockMvc.perform(get("/v1/test/"+accession).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-test-1b")));
+    }
+
 }
