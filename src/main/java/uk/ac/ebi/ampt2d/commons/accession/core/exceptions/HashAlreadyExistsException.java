@@ -15,20 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
-
-import java.io.Serializable;
-import java.util.Collection;
-
-@NoRepositoryBean
-public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String> {
-
-    Collection<ENTITY> findByAccession(ACCESSION accession);
-
-    Collection<ENTITY> findByAccessionIn(Collection<ACCESSION> hashes);
-
+public class HashAlreadyExistsException extends Exception {
+    public HashAlreadyExistsException(String hash, Class<?> clazz) {
+        super("Hash '" + hash + "' already exists for model '" + clazz.getName() + "'");
+    }
 }

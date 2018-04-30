@@ -24,6 +24,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
@@ -34,8 +36,11 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -105,6 +110,7 @@ public class BasicAccessioningServiceTest {
         repository.save(new TestEntity(
                 "id-service-test-3",
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                1,
                 true,
                 "service-test-3"));
 
@@ -123,6 +129,7 @@ public class BasicAccessioningServiceTest {
         repository.save(new TestEntity(
                 "id-service-test-3",
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
+                1,
                 true,
                 "service-test-3"));
 
@@ -135,6 +142,36 @@ public class BasicAccessioningServiceTest {
                         TestModel.of("service-test-3")
                 ));
         assertEquals(3, accessions.size());
+    }
+
+    @Test(expected = AccessionDoesNotExistException.class)
+    public void testUpdateFailsWhenAccessionDoesNotExist() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
+        accessioningService.update("id-service-test-3", TestModel.of("test-3"));
+    }
+
+    @Test(expected = HashAlreadyExistsException.class)
+    public void testUpdateFailsWhenHashAlreadyExists() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionCouldNotBeGeneratedException {
+        BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
+        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-3")));
+        accessioningService.update("id-service-test-3", TestModel.of("test-3"));
+    }
+
+    @Test
+    public void testUpdate() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionCouldNotBeGeneratedException {
+        BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
+        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-3")));
+        accessioningService.update("id-service-test-3", TestModel.of("test-3b"));
+
+        final List<AccessionWrapper<TestModel, String, String>> wrappedAccesions =
+                accessioningService.getByAccessions(Arrays.asList("id-service-test-3"), false);
+        final Set<Integer> accessions = wrappedAccesions.stream().map(AccessionWrapper::getVersion)
+                .collect(Collectors.toSet());
+        assertTrue(accessions.contains(1));
+        assertTrue(accessions.contains(2));
     }
 
 }

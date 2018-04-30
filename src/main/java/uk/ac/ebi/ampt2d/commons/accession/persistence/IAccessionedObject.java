@@ -29,4 +29,6 @@ public interface IAccessionedObject<ACCESSION> {
 
     LocalDateTime getCreatedDate();
 
+    int getVersion();
+
 }

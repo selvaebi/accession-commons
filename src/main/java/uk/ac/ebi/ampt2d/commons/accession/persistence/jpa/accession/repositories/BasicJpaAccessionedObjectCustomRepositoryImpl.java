@@ -27,6 +27,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.Acc
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.Collection;
 import java.util.Set;
 
 public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY extends AccessionedEntity<?>>
@@ -54,8 +55,9 @@ public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY exten
         entityManager.clear();
     }
 
+    @Override
     @Transactional
-    public <ENTITY> void insert(Set<ENTITY> entities) {
+    public <ENTITY> void insert(Collection<ENTITY> entities) {
         for (ENTITY entity : entities) {
             entityManager.persist(entity);
         }

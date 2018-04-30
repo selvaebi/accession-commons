@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +25,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
@@ -33,8 +35,11 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -43,11 +48,11 @@ import static org.junit.Assert.assertTrue;
 public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_1 =
-            AccessionWrapper.of("a1", "h1", TestModel.of("something1"));
+            new AccessionWrapper("a1", "h1", TestModel.of("something1"));
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_2 =
-            AccessionWrapper.of("a2", "h2", TestModel.of("something2"));
+            new AccessionWrapper("a2", "h2", TestModel.of("something2"));
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_3 =
-            AccessionWrapper.of("a3", "h3", TestModel.of("something3"));
+            new AccessionWrapper("a3", "h3", TestModel.of("something3"));
 
     @Autowired
     private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> service;
@@ -83,9 +88,50 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void saveNonUniqueElements() {
         service.insert(Arrays.asList(
                 TEST_MODEL_1,
-                AccessionWrapper.of("a2", "h1", TestModel.of("something2")),
+                new AccessionWrapper("a2", "h1", TestModel.of("something2")),
                 TEST_MODEL_3
         ));
+    }
+
+    @Test(expected = AccessionDoesNotExistException.class)
+    public void updateWithoutExistingAccessionFails() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        service.update(new AccessionWrapper("a2", "h1", TestModel.of("something2")));
+    }
+
+    @Test(expected = HashAlreadyExistsException.class)
+    public void updateWithExistingObjectFails() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
+        service.update(new AccessionWrapper("a2", "h1", TestModel.of("something2")));
+    }
+
+    @Test
+    public void update() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
+        service.update(new AccessionWrapper("a2", "h2", TestModel.of("something2b")));
+        List<AccessionWrapper<TestModel, String, String>> accessions =
+                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
+        assertEquals(2, accessions.size());
+        assertFalse(accessions.get(0).getVersion() == accessions.get(1).getVersion());
+    }
+
+    @Test
+    public void multipleUpdates() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
+        service.update(new AccessionWrapper("a2", "h2", TestModel.of("something2b")));
+        service.update(new AccessionWrapper("a2", "h3", TestModel.of("something2c")));
+
+        List<AccessionWrapper<TestModel, String, String>> accessions =
+                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
+        assertEquals(3, accessions.size());
+
+        Set<Integer> versions = accessions.stream().map(AccessionWrapper::getVersion).collect(Collectors.toSet());
+        assertTrue(versions.contains(1));
+        assertTrue(versions.contains(2));
+        assertTrue(versions.contains(3));
     }
 
 }

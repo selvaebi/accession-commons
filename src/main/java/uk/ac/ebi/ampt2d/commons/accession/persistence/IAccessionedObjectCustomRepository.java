@@ -17,12 +17,13 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
+import java.util.Collection;
 import java.util.Set;
 
 public interface IAccessionedObjectCustomRepository {
 
     void enableByHashedMessageIn(Set<String> hashes);
 
-    <ENTITY> void insert(Set<ENTITY> entitySet);
+    <ENTITY> void insert(Collection<ENTITY> entities);
 
 }

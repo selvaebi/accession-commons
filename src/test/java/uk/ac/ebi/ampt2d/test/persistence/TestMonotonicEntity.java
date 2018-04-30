@@ -29,15 +29,16 @@ public class TestMonotonicEntity extends AccessionedEntity<Long> implements Test
     private String something;
 
     TestMonotonicEntity() {
-        super(null, null, true);
+        super(null, null, 1, true);
     }
 
-    public TestMonotonicEntity(AccessionWrapper<TestModel, String, Long> triple) {
-        this(triple.getAccession(), triple.getHash(), triple.isActive(), triple.getData().getSomething());
+    public TestMonotonicEntity(AccessionWrapper<TestModel, String, Long> wrapper) {
+        this(wrapper.getAccession(), wrapper.getHash(), wrapper.getVersion(), wrapper.isActive(),
+                wrapper.getData().getSomething());
     }
 
-    public TestMonotonicEntity(Long accession, String hashedMessage, boolean active, String something) {
-        super(hashedMessage, accession, active);
+    public TestMonotonicEntity(Long accession, String hashedMessage, int version, boolean active, String something) {
+        super(hashedMessage, accession, version, active);
         this.something = something;
     }
 

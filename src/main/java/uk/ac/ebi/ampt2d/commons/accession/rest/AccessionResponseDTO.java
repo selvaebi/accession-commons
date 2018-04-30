@@ -38,6 +38,8 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private boolean active;
 
+    private int version;
+
     private DTO data;
 
     AccessionResponseDTO() {
@@ -47,6 +49,7 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
         this.accession = accessionWrapper.getAccession();
         this.hash = accessionWrapper.getHash();
         this.active = accessionWrapper.isActive();
+        this.version = accessionWrapper.getVersion();
         this.data = modelToDto.apply(accessionWrapper.getData());
     }
 
@@ -60,6 +63,10 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     public boolean isActive() {
         return active;
+    }
+
+    public int getVersion() {
+        return version;
     }
 
     public DTO getData() {

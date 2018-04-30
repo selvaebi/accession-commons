@@ -18,6 +18,8 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
@@ -148,6 +150,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions,
                                                                           boolean hideDeprecated) {
         return dbService.findAllAccessionMappingsByAccessions(accessions);
+    }
+
+    @Override
+    public AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException {
+        return dbService.update(new AccessionWrapper<>(accession, hashingFunction.apply(message), message));
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

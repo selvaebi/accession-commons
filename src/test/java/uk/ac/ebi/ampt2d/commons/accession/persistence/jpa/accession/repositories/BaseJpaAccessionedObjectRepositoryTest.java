@@ -30,6 +30,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static junit.framework.TestCase.assertEquals;
@@ -41,7 +42,7 @@ import static junit.framework.TestCase.assertTrue;
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BaseJpaAccessionedObjectRepositoryTest {
 
-    public static final TestEntity ENTITY = new TestEntity(AccessionWrapper.of("a1", "h1",
+    public static final TestEntity ENTITY = new TestEntity(new AccessionWrapper("a1", "h1",
             TestModel.of("something1")));
 
     @Autowired
@@ -70,14 +71,31 @@ public class BaseJpaAccessionedObjectRepositoryTest {
 
     @Test
     public void testEnableEntitiesByHash() {
-        TestEntity savedEntity = repository.save(new TestEntity("a1", "h1", false, "something1"));
+        TestEntity savedEntity = repository.save(new TestEntity("a1", "h1", 1, false, "something1"));
         assertFalse(savedEntity.isActive());
         HashSet<String> hashes = new HashSet<>();
         hashes.add("h1");
         repository.enableByHashedMessageIn(hashes);
-        long count = repository.count();
         TestEntity dbEntity = repository.findOne("h1");
         assertTrue(dbEntity.isActive());
+    }
+
+    @Test
+    public void testInsertTwoVersionsSameAccession() {
+        TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
+        TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
+        repository.insert(Arrays.asList(testEntity1, testEntity2));
+        assertEquals(2, repository.count());
+    }
+
+    @Test
+    public void testFindByAccession(){
+        TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
+        TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
+        repository.insert(Arrays.asList(testEntity1, testEntity2));
+        assertEquals(2, repository.count());
+        assertEquals(2, repository.findByAccession("a1").size());
+        assertEquals(2, repository.findByAccessionIn(Arrays.asList("a1")).size());
     }
 
 }

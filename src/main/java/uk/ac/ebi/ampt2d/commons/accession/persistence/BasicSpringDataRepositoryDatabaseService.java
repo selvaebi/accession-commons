@@ -19,9 +19,12 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -61,9 +64,14 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     @Override
     public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
         List<AccessionWrapper<MODEL, String, ACCESSION>> wrappedAccessions = new ArrayList<>();
-        repository.findAll(hashes).iterator().forEachRemaining(entity -> wrappedAccessions.add(
-                AccessionWrapper.of(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity))));
+        repository.findAll(hashes).iterator().forEachRemaining(
+                entity -> wrappedAccessions.add(createAccessionWrapperFromEntity(entity)));
         return wrappedAccessions;
+    }
+
+    private AccessionWrapper<MODEL, String, ACCESSION> createAccessionWrapperFromEntity(ENTITY entity) {
+        return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
+                entity.getVersion(), entity.isActive());
     }
 
     @Override
@@ -78,8 +86,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
             List<ACCESSION> accessions) {
         List<AccessionWrapper<MODEL, String, ACCESSION>> result = new ArrayList<>();
         repository.findByAccessionIn(accessions).iterator().forEachRemaining(
-                entity -> result.add(new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(),
-                        entity.isActive(), toModelFunction.apply(entity))));
+                entity -> result.add(createAccessionWrapperFromEntity(entity)));
         return result;
     }
 
@@ -87,6 +94,40 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     public void enableAccessions(List<AccessionWrapper<MODEL, String, ACCESSION>> accessionedObjects) {
         customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet()));
+    }
+
+    @Override
+    public AccessionWrapper<MODEL, String, ACCESSION> update(AccessionWrapper<MODEL, String, ACCESSION> accession)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException {
+        Collection<ENTITY> accessionedElements = repository.findByAccession(accession.getAccession());
+        assertAccessionExists(accession, accessionedElements);
+        assertHashDoesNotExist(accession);
+
+        int version = 1;
+        for (ENTITY accessionedElement : accessionedElements) {
+            if (version <= accessionedElement.getVersion()) {
+                version = accessionedElement.getVersion() + 1;
+            }
+        }
+
+        AccessionWrapper<MODEL, String, ACCESSION> newAccessionVersion =
+                new AccessionWrapper<>(accession.getAccession(), accession.getHash(), accession.getData(), version);
+        insert(Arrays.asList(newAccessionVersion));
+        return newAccessionVersion;
+    }
+
+    private void assertHashDoesNotExist(AccessionWrapper<MODEL, String, ACCESSION> accession)
+            throws HashAlreadyExistsException {
+        if (repository.findOne(accession.getHash()) != null) {
+            throw new HashAlreadyExistsException(accession.getHash(), accession.getData().getClass());
+        }
+    }
+
+    private void assertAccessionExists(AccessionWrapper<MODEL, String, ACCESSION> accession,
+                                       Collection<ENTITY> accessionedElements) throws AccessionDoesNotExistException {
+        if (accessionedElements.isEmpty()) {
+            throw new AccessionDoesNotExistException(accession.toString());
+        }
     }
 
 }

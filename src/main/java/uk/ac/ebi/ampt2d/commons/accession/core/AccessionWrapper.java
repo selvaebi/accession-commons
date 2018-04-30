@@ -35,11 +35,22 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     private MODEL data;
 
-    public AccessionWrapper(ACCESSION accession, HASH hash, boolean active, MODEL data) {
+    private int version;
+
+    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data) {
+        this(accession, hash, data, 1, true);
+    }
+
+    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version) {
+        this(accession, hash, data, version, true);
+    }
+
+    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version, boolean active) {
         this.accession = accession;
         this.hash = hash;
-        this.active = active;
         this.data = data;
+        this.version = version;
+        this.active = active;
     }
 
     public ACCESSION getAccession() {
@@ -58,9 +69,8 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
         return data;
     }
 
-    public static <MODEL, HASH, ACCESSION> AccessionWrapper<MODEL, HASH, ACCESSION> of(ACCESSION accession, HASH hash,
-                                                                                       MODEL data) {
-        return new AccessionWrapper<>(accession, hash, true, data);
+    public int getVersion() {
+        return version;
     }
 
     @Override
