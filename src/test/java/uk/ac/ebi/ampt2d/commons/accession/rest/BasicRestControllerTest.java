@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.rest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@JsonTest
+@AutoConfigureJsonTesters
 @ContextConfiguration(classes = {BasicRestControllerTestConfiguration.class})
 public class BasicRestControllerTest {
 
@@ -209,6 +210,25 @@ public class BasicRestControllerTest {
                 .andExpect(status().isNotFound());
         mockMvc.perform(get("/v1/test/"+accession+"/3").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetAccession() throws Exception{
+        final MvcResult mvcResult = mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(
+                        new BasicRestModel("get-accession-test-1"))).getJson()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String accession = jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0)
+                .getAccession();
+        doUpdate(accession,new BasicRestModel("get-accession-test-1b"));
+
+        mockMvc.perform(get("/v1/test/"+accession).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-test-1b")));
     }
 
 }

@@ -65,7 +65,7 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
                                                                        @RequestParam(name = "hideDeprecated", required = false,
                                                                                defaultValue = "false")
                                                                                boolean hideDeprecated) {
-        return service.getByAccessions(accessions, hideDeprecated).stream()
+        return service.getByAccessionIds(accessions, hideDeprecated).stream()
                 .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
@@ -83,7 +83,7 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
                                                                               @PathVariable int version)
             throws AccessionDoesNotExistException {
         final List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> result =
-                service.getByAccessionAndVersion(accession, version).stream()
+                service.getByAccessionIdAndVersion(accession, version).stream()
                         .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                         .collect(Collectors.toList());
         if (!result.isEmpty()) {

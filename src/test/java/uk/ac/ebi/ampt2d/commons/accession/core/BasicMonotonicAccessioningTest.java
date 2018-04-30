@@ -128,7 +128,7 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(1, accessions1.size());
 
 
-        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getByAccessions(
+        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getByAccessionIds(
                 Arrays.asList(accessions1.get(0).getAccession()), false);
         assertEquals(1, accessions2.size());
     }
