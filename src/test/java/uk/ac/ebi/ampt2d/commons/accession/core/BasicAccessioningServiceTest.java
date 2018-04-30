@@ -37,7 +37,6 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
