@@ -99,7 +99,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     @Override
     public AccessionWrapper<MODEL, String, ACCESSION> update(AccessionWrapper<MODEL, String, ACCESSION> accession)
             throws AccessionDoesNotExistException, HashAlreadyExistsException {
-        Collection<ENTITY> accessionedElements = repository.findByAccessionIn(Arrays.asList(accession.getAccession()));
+        Collection<ENTITY> accessionedElements = repository.findByAccession(accession.getAccession());
         assertAccessionExists(accession, accessionedElements);
         assertHashDoesNotExist(accession);
 

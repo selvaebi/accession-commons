@@ -27,6 +27,8 @@ import java.util.Collection;
 public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
         ACCESSION extends Serializable> extends CrudRepository<ENTITY, String> {
 
+    Collection<ENTITY> findByAccession(ACCESSION accession);
+
     Collection<ENTITY> findByAccessionIn(Collection<ACCESSION> hashes);
 
 }

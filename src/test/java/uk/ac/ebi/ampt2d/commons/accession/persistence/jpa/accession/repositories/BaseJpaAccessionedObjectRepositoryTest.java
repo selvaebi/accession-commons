@@ -76,7 +76,6 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         HashSet<String> hashes = new HashSet<>();
         hashes.add("h1");
         repository.enableByHashedMessageIn(hashes);
-        long count = repository.count();
         TestEntity dbEntity = repository.findOne("h1");
         assertTrue(dbEntity.isActive());
     }
@@ -87,6 +86,16 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
         repository.insert(Arrays.asList(testEntity1, testEntity2));
         assertEquals(2, repository.count());
+    }
+
+    @Test
+    public void testFindByAccession(){
+        TestEntity testEntity1 = new TestEntity("a1", "h1", 1, true, "something1");
+        TestEntity testEntity2 = new TestEntity("a1", "h2", 2, true, "something2");
+        repository.insert(Arrays.asList(testEntity1, testEntity2));
+        assertEquals(2, repository.count());
+        assertEquals(2, repository.findByAccession("a1").size());
+        assertEquals(2, repository.findByAccessionIn(Arrays.asList("a1")).size());
     }
 
 }
