@@ -35,6 +35,6 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
     AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message) throws AccessionDoesNotExistException, HashAlreadyExistsException;
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accessions, int version);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accession, int version);
 
 }

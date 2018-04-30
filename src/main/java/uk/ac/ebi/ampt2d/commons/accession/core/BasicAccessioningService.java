@@ -159,8 +159,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accessions, int version) {
-        return dbService.findAllAccessionMappingsByAccessionAndVersion(accessions, version);
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionAndVersion(ACCESSION accession, int version) {
+        return dbService.findAllAccessionMappingsByAccessionAndVersion(accession, version);
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {
