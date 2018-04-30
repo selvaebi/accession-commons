@@ -22,10 +22,8 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Interface to the database service that handles the storage and queries of a object with their hashed version and
@@ -46,7 +44,9 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     void enableAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedObjects);
 
-    AccessionWrapper<MODEL,HASH,ACCESSION> update(AccessionWrapper<MODEL, HASH, ACCESSION> accession)
+    AccessionWrapper<MODEL, HASH, ACCESSION> update(AccessionWrapper<MODEL, HASH, ACCESSION> accession)
             throws AccessionDoesNotExistException, HashAlreadyExistsException;
 
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessionMappingsByAccessionAndVersion(ACCESSION accession,
+                                                                                                 int version);
 }

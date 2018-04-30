@@ -174,4 +174,22 @@ public class BasicAccessioningServiceTest {
         assertTrue(accessions.contains(2));
     }
 
+    @Test
+    public void testGetAccessionVersion() throws AccessionCouldNotBeGeneratedException, AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        BasicAccessioningService<TestModel, String, String> accessioningService = getAccessioningService();
+        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-accession-version")));
+        accessioningService.update("id-service-test-accession-version",
+                TestModel.of("test-accession-versionb"));
+
+        final List<AccessionWrapper<TestModel, String, String>> version1 = getAccessioningService()
+                .getByAccessionAndVersion("id-service-test-accession-version", 1);
+        final List<AccessionWrapper<TestModel, String, String>> version2 = getAccessioningService()
+                .getByAccessionAndVersion("id-service-test-accession-version", 2);
+        assertEquals(1, version1.size());
+        assertEquals(1, version2.size());
+        assertEquals("test-accession-version",version1.get(0).getData().getSomething());
+        assertEquals("test-accession-versionb",version2.get(0).getData().getSomething());
+    }
+
 }

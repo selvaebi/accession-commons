@@ -95,10 +95,12 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
     }
 
     @Override
-    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessions(List<String> strings,
+    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessions(List<String> accessions,
                                                                                   boolean hideDeprecated) {
-        return strings.stream().filter(hashToObject::containsKey)
-                .map(hashToObject::get)
+        return accessions.stream()
+                .filter(accessionIndex::containsKey)
+                .map(accessionIndex::get)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
@@ -121,6 +123,17 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
         put(wrappedObject);
 
         return wrappedObject;
+    }
+
+    @Override
+    public List<AccessionWrapper<BasicRestModel, String, String>> getByAccessionAndVersion(String accessions,
+                                                                                           int version) {
+        if (accessionIndex.containsKey(accessions)) {
+            return accessionIndex.get(accessions).stream()
+                    .filter(wrapper -> wrapper.getVersion() == version)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
 }

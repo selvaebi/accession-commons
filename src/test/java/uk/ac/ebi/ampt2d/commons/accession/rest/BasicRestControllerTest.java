@@ -169,5 +169,46 @@ public class BasicRestControllerTest {
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    public void testGetAccessionVersion() throws Exception{
+        final MvcResult mvcResult = mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(
+                        new BasicRestModel("get-accession-version-test-1"))).getJson()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String accession = jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0)
+                .getAccession();
+        doUpdate(accession,new BasicRestModel("get-accession-version-test-1b"));
+
+        mockMvc.perform(get("/v1/test/"+accession+"/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-version-test-1")));
+        mockMvc.perform(get("/v1/test/"+accession+"/2").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-version-test-1b")));
+    }
+
+    @Test
+    public void testGetAccessionVersionNotExists() throws Exception{
+        final MvcResult mvcResult = mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(
+                        new BasicRestModel("get-accession-version-test-2"))).getJson()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String accession = jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0)
+                .getAccession();
+        doUpdate(accession,new BasicRestModel("get-accession-version-test-2b"));
+
+        mockMvc.perform(get("/v1/test/notexists/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/v1/test/"+accession+"/3").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
 }

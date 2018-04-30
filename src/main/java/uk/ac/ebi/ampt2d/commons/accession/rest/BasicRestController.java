@@ -78,4 +78,18 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
         return new AccessionResponseDTO<>(service.update(accession, dto), modelToDTO);
     }
 
+    @RequestMapping(value = "/{accession}/{version}", method = RequestMethod.GET, produces = "application/json")
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> getVersion(@PathVariable ACCESSION accession,
+                                                                              @PathVariable int version)
+            throws AccessionDoesNotExistException {
+        final List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> result =
+                service.getByAccessionAndVersion(accession, version).stream()
+                        .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
+                        .collect(Collectors.toList());
+        if (!result.isEmpty()) {
+            return result;
+        }
+        throw new AccessionDoesNotExistException(accession, version);
+    }
+
 }

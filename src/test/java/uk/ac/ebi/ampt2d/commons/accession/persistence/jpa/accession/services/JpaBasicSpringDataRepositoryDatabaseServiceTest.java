@@ -134,4 +134,24 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         assertTrue(versions.contains(3));
     }
 
+    @Test
+    public void testFindByAccessionAndVersion() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException {
+        service.insert(Arrays.asList(
+                new AccessionWrapper("a2", "h1", TestModel.of("something2"), 1),
+                new AccessionWrapper("a2", "h2", TestModel.of("something2b"), 2),
+                new AccessionWrapper("a2", "h3", TestModel.of("something2c"), 2)));
+
+        List<AccessionWrapper<TestModel, String, String>> accessions =
+                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
+        assertEquals(3, accessions.size());
+
+        List<AccessionWrapper<TestModel, String, String>> accessionOfVersion1 =
+                service.findAllAccessionMappingsByAccessionAndVersion("a2",1);
+        assertEquals(1, accessionOfVersion1.size());
+        List<AccessionWrapper<TestModel, String, String>> accessionsOfVersion2 =
+                service.findAllAccessionMappingsByAccessionAndVersion("a2",2);
+        assertEquals(2, accessionsOfVersion2.size());
+    }
+
 }
