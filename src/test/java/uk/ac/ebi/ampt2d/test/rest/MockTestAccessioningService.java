@@ -139,7 +139,7 @@ public class MockTestAccessioningService implements AccessioningService<BasicRes
         int version = accessionIndex.get(accession).size() + 1;
 
         AccessionWrapper<BasicRestModel, String, String> wrappedObject =
-                new AccessionWrapper<>(accession, hash, message, version, true);
+                new AccessionWrapper<>(accession, hash, message, version);
         put(wrappedObject);
 
         return wrappedObject;

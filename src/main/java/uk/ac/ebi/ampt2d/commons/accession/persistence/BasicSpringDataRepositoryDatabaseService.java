@@ -71,7 +71,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     private AccessionWrapper<MODEL, String, ACCESSION> createAccessionWrapperFromEntity(ENTITY entity) {
         return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
-                entity.getVersion(), entity.isActive());
+                entity.getVersion());
     }
 
     @Override
@@ -88,12 +88,6 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
         repository.findByAccessionIn(accessions).iterator().forEachRemaining(
                 entity -> result.add(createAccessionWrapperFromEntity(entity)));
         return result;
-    }
-
-    @Override
-    public void enableAccessions(List<AccessionWrapper<MODEL, String, ACCESSION>> accessionedObjects) {
-        customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionWrapper::getHash)
-                .collect(Collectors.toSet()));
     }
 
     @Override

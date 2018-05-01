@@ -29,16 +29,15 @@ public class TestEntity extends AccessionedEntity<String> implements TestModel {
     private String something;
 
     TestEntity() {
-        super(null, null, 1, true);
+        super(null, null, 1);
     }
 
     public TestEntity(AccessionWrapper<TestModel, String, String> model) {
-        this(model.getAccession(), model.getHash(), model.getVersion(), model.isActive(),
-                model.getData().getSomething());
+        this(model.getAccession(), model.getHash(), model.getVersion(), model.getData().getSomething());
     }
 
-    public TestEntity(String accession, String hashedMessage, int version, boolean active, String something) {
-        super(hashedMessage, accession, version, active);
+    public TestEntity(String accession, String hashedMessage, int version, String something) {
+        super(hashedMessage, accession, version);
         this.something = something;
     }
 

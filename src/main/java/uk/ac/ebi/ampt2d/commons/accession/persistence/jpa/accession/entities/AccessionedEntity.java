@@ -43,21 +43,18 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
 
     private int version;
 
-    private boolean active;
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
     public AccessionedEntity(String hashedMessage, ACCESSION accession) {
-        this(hashedMessage, accession, 1, true);
+        this(hashedMessage, accession, 1);
     }
 
-    public AccessionedEntity(String hashedMessage, ACCESSION accession, int version, boolean active) {
+    public AccessionedEntity(String hashedMessage, ACCESSION accession, int version) {
         this.hashedMessage = hashedMessage;
         this.accession = accession;
         this.version = version;
-        this.active = active;
     }
 
     @Override
@@ -73,11 +70,6 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
     @Override
     public int getVersion() {
         return version;
-    }
-
-    @Override
-    public boolean isActive() {
-        return active;
     }
 
     @Override

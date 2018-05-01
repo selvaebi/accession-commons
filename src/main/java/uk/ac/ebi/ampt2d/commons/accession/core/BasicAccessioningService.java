@@ -112,7 +112,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
                     getPreexistingAccessions(unsavedAccessions);
             savedAccessions.addAll(preexistingAccessions);
-            dbService.enableAccessions(preexistingAccessions);
         }
 
         return savedAccessions;

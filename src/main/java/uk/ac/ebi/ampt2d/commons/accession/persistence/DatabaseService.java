@@ -42,8 +42,6 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessionMappingsByAccessions(List<ACCESSION> accessions);
 
-    void enableAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessionedObjects);
-
     AccessionWrapper<MODEL, HASH, ACCESSION> update(AccessionWrapper<MODEL, HASH, ACCESSION> accession)
             throws AccessionDoesNotExistException, HashAlreadyExistsException;
 

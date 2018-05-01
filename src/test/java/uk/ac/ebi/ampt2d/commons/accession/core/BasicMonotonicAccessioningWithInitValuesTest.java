@@ -111,7 +111,6 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
                 1,
-                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
@@ -130,7 +129,6 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
                 1,
-                true,
                 "service-test-3"));
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();

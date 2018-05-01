@@ -25,8 +25,6 @@ public interface IAccessionedObject<ACCESSION> {
 
     String getHashedMessage();
 
-    boolean isActive();
-
     LocalDateTime getCreatedDate();
 
     int getVersion();

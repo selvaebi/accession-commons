@@ -31,26 +31,19 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     private HASH hash;
 
-    private boolean active;
-
     private MODEL data;
 
     private int version;
 
     public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data) {
-        this(accession, hash, data, 1, true);
+        this(accession, hash, data, 1);
     }
 
     public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version) {
-        this(accession, hash, data, version, true);
-    }
-
-    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version, boolean active) {
         this.accession = accession;
         this.hash = hash;
         this.data = data;
         this.version = version;
-        this.active = active;
     }
 
     public ACCESSION getAccession() {
@@ -59,10 +52,6 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     public HASH getHash() {
         return hash;
-    }
-
-    public boolean isActive() {
-        return active;
     }
 
     public MODEL getData() {
@@ -80,7 +69,6 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
         AccessionWrapper<?, ?, ?> that = (AccessionWrapper<?, ?, ?>) o;
 
-        if (active != that.active) return false;
         if (!accession.equals(that.accession)) return false;
         return hash.equals(that.hash);
     }
@@ -89,7 +77,6 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
     public int hashCode() {
         int result = accession.hashCode();
         result = 31 * result + hash.hashCode();
-        result = 31 * result + (active ? 1 : 0);
         return result;
     }
 }

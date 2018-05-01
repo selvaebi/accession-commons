@@ -22,8 +22,6 @@ import java.util.Set;
 
 public interface IAccessionedObjectCustomRepository {
 
-    void enableByHashedMessageIn(Set<String> hashes);
-
     <ENTITY> void insert(Collection<ENTITY> entities);
 
 }
