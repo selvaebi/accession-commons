@@ -19,15 +19,24 @@ package uk.ac.ebi.ampt2d.commons.accession.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
+
+import javax.validation.ValidationException;
+import java.util.stream.Collectors;
 
 /**
  * Spring {@link RestControllerAdvice} bean to handle exception from the application at rest level and return
@@ -38,26 +47,57 @@ public class BasicRestControllerAdvice {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicRestControllerAdvice.class);
 
+    @Autowired
+    private CollectionValidator collectionValidator;
+
     @ExceptionHandler(value = {AccessionIsNotPendingException.class, AccessionCouldNotBeGeneratedException.class,
             MissingUnsavedAccessionsException.class})
     public ResponseEntity<ErrorMessage> handleInternalServerErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, ex),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ErrorMessage> handleHttpMediaNotSupported(HttpMediaTypeNotSupportedException ex) {
+        return buildResponseEntity(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = ValidationException.class)
+    public ResponseEntity<ErrorMessage> handleValidationException(ValidationException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getBindingResult().getAllErrors().
+                stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining("\n")));
+    }
+
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorMessage> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, "Please provide accepted values");
     }
 
     @ExceptionHandler(value = {AccessionDoesNotExistException.class})
     public ResponseEntity<ErrorMessage> handleNotFoundErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND, ex),
-                HttpStatus.NOT_FOUND);
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
     }
 
     @ExceptionHandler(value = {HashAlreadyExistsException.class})
     public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.CONFLICT, ex),
-                HttpStatus.CONFLICT);
+        return buildResponseEntity(HttpStatus.CONFLICT, ex, ex.getMessage());
+    }
+
+    private ResponseEntity<ErrorMessage> buildResponseEntity(HttpStatus status, Exception ex, String message) {
+        return new ResponseEntity<>(new ErrorMessage(status, ex, message), status);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        if (binder.getTarget() != null && collectionValidator.supports(binder.getTarget().getClass()))
+            binder.addValidators(collectionValidator);
     }
 
 }

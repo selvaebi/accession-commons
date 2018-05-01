@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -229,6 +228,40 @@ public class BasicRestControllerTest {
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-test-1b")));
+    }
+
+    @Test
+    public void testCollectionOfDTOValidation() throws Exception {
+        mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(new BasicRestModel(), new BasicRestModel())).getJson()))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.exception")
+                        .value("javax.validation.ValidationException"))
+                .andExpect(jsonPath("$.message")
+                        .value("basicRestModelList[0] : Please provide a value\n" +
+                                "basicRestModelList[1] : Please provide a value\n"));
+    }
+
+    @Test
+    public void testDTOValidation() throws Exception {
+        final MvcResult mvcResult = mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(new BasicRestModel("update-test-1"))).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("update-test-1")))
+                .andReturn();
+        mockMvc.perform(post("/v1/test/" +
+                jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString())
+                        .get(0).getAccession())
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModel.write(new BasicRestModel()).getJson()))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.exception")
+                        .value("org.springframework.web.bind.MethodArgumentNotValidException"))
+                .andExpect(jsonPath("$.message").value("Please provide a value"));
     }
 
 }

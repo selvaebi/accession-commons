@@ -33,13 +33,13 @@ public class ErrorMessage {
 
     private String message;
 
-    public ErrorMessage(HttpStatus status, Exception ex) {
+    public ErrorMessage(HttpStatus status, Exception ex, String message) {
         timestamp = new Date().getTime();
         this.status = status.value();
         this.error = status.getReasonPhrase();
 
         this.exception = ex.getClass().getCanonicalName();
-        this.message = ex.getMessage();
+        this.message = message;
     }
 
     public long getTimestamp() {

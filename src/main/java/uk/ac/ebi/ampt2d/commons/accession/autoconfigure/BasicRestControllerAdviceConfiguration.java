@@ -17,10 +17,13 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.autoconfigure;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestControllerAdvice;
+import uk.ac.ebi.ampt2d.commons.accession.rest.CollectionValidator;
 
 /**
  * Basic configuration to inject a {@link BasicRestControllerAdvice} to return the appropriate response to the
@@ -35,5 +38,15 @@ import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestControllerAdvice;
         }
 )
 public class BasicRestControllerAdviceConfiguration {
+
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean();
+    }
+
+    @Bean
+    public CollectionValidator collectionValidatorBean() {
+        return new CollectionValidator(localValidatorFactoryBean());
+    }
 
 }
