@@ -45,18 +45,14 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
 
     private IAccessionedObjectRepository<ENTITY, ACCESSION> repository;
 
-    private IAccessionedObjectCustomRepository customMethodsRepository;
-
     private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
 
     private final Function<ENTITY, MODEL> toModelFunction;
 
     public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
-                                                    IAccessionedObjectCustomRepository customMethodsRepository,
                                                     Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
                                                     Function<ENTITY, MODEL> toModelFunction) {
         this.repository = repository;
-        this.customMethodsRepository = customMethodsRepository;
         this.toEntityFunction = toEntityFunction;
         this.toModelFunction = toModelFunction;
     }
@@ -78,7 +74,7 @@ public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAcc
     @Transactional
     public void insert(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
         Set<ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
-        customMethodsRepository.insert(entitySet);
+        repository.insert(entitySet);
     }
 
     @Override

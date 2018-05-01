@@ -34,11 +34,10 @@ public class TestMonotonicDatabaseService
         implements MonotonicDatabaseService<TestModel, String> {
 
     public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
-                                        IAccessionedObjectCustomRepository customMethodsRepository,
                                         Function<AccessionWrapper<TestModel, String, Long>, TestMonotonicEntity>
                                                 toEntityFunction,
                                         Function<TestMonotonicEntity, TestModel> toModelFunction) {
-        super(repository, customMethodsRepository, toEntityFunction, toModelFunction);
+        super(repository, toEntityFunction, toModelFunction);
     }
 
     @Override

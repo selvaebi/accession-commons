@@ -48,7 +48,6 @@ public class TestJpaDatabaseServiceTestConfiguration {
     public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> getService() {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
-                repository,
                 TestEntity::new,
                 TestModel.class::cast
         );

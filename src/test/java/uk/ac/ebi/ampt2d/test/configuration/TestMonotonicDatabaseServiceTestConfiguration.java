@@ -50,7 +50,6 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     public TestMonotonicDatabaseService getService() {
         return new TestMonotonicDatabaseService(
                 repository,
-                repository,
                 TestMonotonicEntity::new,
                 TestModel.class::cast
         );

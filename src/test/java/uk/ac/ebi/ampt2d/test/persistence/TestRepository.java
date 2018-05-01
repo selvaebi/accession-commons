@@ -23,5 +23,5 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectReposito
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
 
 @Repository
-public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String>, IAccessionedObjectCustomRepository {
+public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String> {
 }
