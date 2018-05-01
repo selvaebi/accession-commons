@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -35,6 +36,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsExcep
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
 import javax.validation.ValidationException;
+import java.util.stream.Collectors;
 
 /**
  * Spring {@link RestControllerAdvice} bean to handle exception from the application at rest level and return
@@ -43,10 +45,10 @@ import javax.validation.ValidationException;
 @RestControllerAdvice(assignableTypes = BasicRestController.class)
 public class BasicRestControllerAdvice {
 
+    private static final Logger logger = LoggerFactory.getLogger(BasicRestControllerAdvice.class);
+
     @Autowired
     private CollectionValidator collectionValidator;
-
-    private static final Logger logger = LoggerFactory.getLogger(BasicRestControllerAdvice.class);
 
     @ExceptionHandler(value = {AccessionIsNotPendingException.class, AccessionCouldNotBeGeneratedException.class,
             MissingUnsavedAccessionsException.class})
@@ -65,9 +67,27 @@ public class BasicRestControllerAdvice {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getMessage());
     }
 
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getBindingResult().getAllErrors().
+                stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining("\n")));
+    }
+
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorMessage> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, "Please provide accepted values");
+    }
+
+    @ExceptionHandler(value = {AccessionDoesNotExistException.class})
+    public ResponseEntity<ErrorMessage> handleNotFoundErrors(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {HashAlreadyExistsException.class})
+    public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.CONFLICT, ex, ex.getMessage());
     }
 
     private ResponseEntity<ErrorMessage> buildResponseEntity(HttpStatus status, Exception ex, String message) {
@@ -76,21 +96,8 @@ public class BasicRestControllerAdvice {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        binder.addValidators(collectionValidator);
-    }
-
-    @ExceptionHandler(value = {AccessionDoesNotExistException.class})
-    public ResponseEntity<ErrorMessage> handleNotFoundErrors(Exception ex) {
-        logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND, ex),
-                HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = {HashAlreadyExistsException.class})
-    public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
-        logger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(new ErrorMessage(HttpStatus.CONFLICT, ex),
-                HttpStatus.CONFLICT);
+        if (binder.getTarget() != null && collectionValidator.supports(binder.getTarget().getClass()))
+            binder.addValidators(collectionValidator);
     }
 
 }

@@ -24,7 +24,7 @@ public class BasicRestModel {
     @NotNull(message = "Please provide a value")
     private String value;
 
-    BasicRestModel() {
+    public BasicRestModel() {
     }
 
     public BasicRestModel(String value) {
