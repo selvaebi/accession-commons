@@ -15,19 +15,13 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-/**
- * Interface for services that allow to interact with the components to track the history of accessions.
- *
- * @param <ACCESSION>
- */
-public interface IAccessionHistoryTrackingService<ACCESSION> {
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
 
-    void merge(String reason, ACCESSION... accessions);
+import javax.persistence.Entity;
 
-    void update(String reason, ACCESSION... accessions);
-
-    void deprecate(String reason, ACCESSION... accessions);
+@Entity
+public class TestStringOperationEntity extends OperationEntity<String> {
 
 }

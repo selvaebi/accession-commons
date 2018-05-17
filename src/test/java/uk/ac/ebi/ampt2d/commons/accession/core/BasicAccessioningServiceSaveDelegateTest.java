@@ -47,7 +47,7 @@ public class BasicAccessioningServiceSaveDelegateTest {
     private TestRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> databaseService;
+    private BasicSpringDataRepositoryDatabaseService<TestModel, String, TestEntity> databaseService;
 
     @Test
     public void testUnsaveIfExistPreviousWithSameHash() throws AccessionCouldNotBeGeneratedException {
@@ -80,11 +80,11 @@ public class BasicAccessioningServiceSaveDelegateTest {
     private BasicAccessioningService<TestModel, String, String> getAccessioningService() {
         return new BasicAccessioningService<>(
                 SingleAccessionGenerator.ofHashAccessionGenerator(
-                        TestModel::getSomething,
+                        TestModel::getValue,
                         s -> "id-" + s
                 ),
                 databaseService,
-                TestModel::getSomething,
+                TestModel::getValue,
                 new SHA1HashingFunction()
         );
     }

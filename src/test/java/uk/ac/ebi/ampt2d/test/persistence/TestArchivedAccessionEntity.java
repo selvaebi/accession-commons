@@ -17,34 +17,47 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.ArchivedAccessionEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 
 @Entity
-public class TestMonotonicEntity extends AccessionedEntity<Long> implements TestModel {
+public class TestArchivedAccessionEntity extends ArchivedAccessionEntity<String> implements TestModel {
 
     private String something;
 
-    TestMonotonicEntity() {
-        super(null, null, 1);
+    TestArchivedAccessionEntity() {
+        super();
     }
 
-    public TestMonotonicEntity(ModelWrapper<TestModel, String, Long> wrapper) {
-        this(wrapper.getAccession(), wrapper.getHash(), wrapper.getVersion(),
-                wrapper.getData().getValue());
+    public TestArchivedAccessionEntity(TestEntity testEntity) {
+        super(testEntity);
+        this.something = testEntity.getValue();
     }
 
-    public TestMonotonicEntity(Long accession, String hashedMessage, int version, String something) {
-        super(hashedMessage, accession, version);
-        this.something = something;
-    }
-
-    @Override
     public String getValue() {
         return something;
     }
 
+    @Override
+    public String getAccession() {
+        return null;
+    }
+
+    @Override
+    public String getHashedMessage() {
+        return null;
+    }
+
+    @Override
+    public LocalDateTime getCreatedDate() {
+        return null;
+    }
+
+    @Override
+    public int getVersion() {
+        return 0;
+    }
 }

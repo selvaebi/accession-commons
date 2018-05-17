@@ -15,11 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IArchiveOperation;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -37,15 +38,21 @@ import java.time.ZonedDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AccessionHistoryEntity {
+public abstract class OperationEntity<ACCESSION> implements IArchiveOperation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
+    private ACCESSION accessionIdOrigin;
+
+    @Column
+    private ACCESSION accessionIdDestiny;
+
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private AccessionStatus accessionStatus;
+    private OperationType operationType;
 
     @Column(nullable = false, length = 2000)
     private String reason;
@@ -54,8 +61,48 @@ public abstract class AccessionHistoryEntity {
     @Column(updatable = false)
     private ZonedDateTime createdDate;
 
-    public AccessionHistoryEntity(AccessionStatus accessionStatus, String reason) {
-        this.accessionStatus = accessionStatus;
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public ACCESSION getAccessionIdOrigin() {
+        return accessionIdOrigin;
+    }
+
+    @Override
+    public ACCESSION getAccessionIdDestiny() {
+        return accessionIdDestiny;
+    }
+
+    @Override
+    public OperationType getOperationType() {
+        return operationType;
+    }
+
+    @Override
+    public String getReason() {
+        return reason;
+    }
+
+    @Override
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setAccessionIdOrigin(ACCESSION accessionIdOrigin) {
+        this.accessionIdOrigin = accessionIdOrigin;
+    }
+
+    public void setAccessionIdDestiny(ACCESSION accessionIdDestiny) {
+        this.accessionIdDestiny = accessionIdDestiny;
+    }
+
+    public void setOperationType(OperationType operationType) {
+        this.operationType = operationType;
+    }
+
+    public void setReason(String reason) {
         this.reason = reason;
     }
 }

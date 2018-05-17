@@ -15,14 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-public enum AccessionStatus {
+public class AccessionMergedException extends Exception {
 
-    UPDATED,
+    private final Object accessionId;
 
-    MERGED,
+    public AccessionMergedException(Object accessionId){
+        this.accessionId = accessionId;
+    }
 
-    DEPRECATED;
-
+    public Object getAccessionId() {
+        return accessionId;
+    }
 }

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
@@ -374,7 +374,7 @@ public class MonotonicAccessionGeneratorTest {
         objects.put("hash1", "object2");
         objects.put("hash2", "object2");
 
-        List<AccessionWrapper<String, String, Long>> generatedAccessions = generator.generateAccessions(objects);
+        List<ModelWrapper<String, String, Long>> generatedAccessions = generator.generateAccessions(objects);
 
         assertEquals(1, repository.count());
         assertEquals(0L, (long) generatedAccessions.get(0).getAccession());

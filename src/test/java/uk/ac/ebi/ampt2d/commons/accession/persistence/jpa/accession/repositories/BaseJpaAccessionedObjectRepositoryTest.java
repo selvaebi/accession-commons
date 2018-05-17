@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
@@ -31,10 +31,8 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -42,7 +40,7 @@ import static junit.framework.TestCase.assertTrue;
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BaseJpaAccessionedObjectRepositoryTest {
 
-    public static final TestEntity ENTITY = new TestEntity(new AccessionWrapper("a1", "h1",
+    public static final TestEntity ENTITY = new TestEntity(new ModelWrapper("a1", "h1",
             TestModel.of("something1")));
 
     @Autowired
@@ -60,7 +58,7 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         TestEntity savedEntity = repository.save(ENTITY);
         assertEquals("a1", savedEntity.getAccession());
         assertEquals("h1", savedEntity.getHashedMessage());
-        assertEquals("something1", savedEntity.getSomething());
+        assertEquals("something1", savedEntity.getValue());
     }
 
     @Test
@@ -68,7 +66,6 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         TestEntity testEntity1 = new TestEntity("a1", "h1", 1, "something1");
         TestEntity testEntity2 = new TestEntity("a1", "h2", 2, "something2");
         repository.insert(Arrays.asList(testEntity1, testEntity2));
-        assertEquals(2, repository.count());
     }
 
     @Test
@@ -76,7 +73,6 @@ public class BaseJpaAccessionedObjectRepositoryTest {
         TestEntity testEntity1 = new TestEntity("a1", "h1", 1, "something1");
         TestEntity testEntity2 = new TestEntity("a1", "h2", 2, "something2");
         repository.insert(Arrays.asList(testEntity1, testEntity2));
-        assertEquals(2, repository.count());
         assertEquals(2, repository.findByAccession("a1").size());
         assertEquals(2, repository.findByAccessionIn(Arrays.asList("a1")).size());
     }
@@ -85,11 +81,9 @@ public class BaseJpaAccessionedObjectRepositoryTest {
     public void testFindByAccessionAndVersion() {
         TestEntity testEntity1 = new TestEntity("a1", "h1", 1, "something1");
         TestEntity testEntity2 = new TestEntity("a1", "h2", 2, "something2");
-        TestEntity testEntity3 = new TestEntity("a1", "h3", 2, "something2");
-        repository.insert(Arrays.asList(testEntity1, testEntity2, testEntity3));
-        assertEquals(3, repository.count());
-        assertEquals(1, repository.findByAccessionAndVersion("a1", 1).size());
-        assertEquals(2, repository.findByAccessionAndVersion("a1", 2).size());
+        repository.insert(Arrays.asList(testEntity1, testEntity2));
+        assertEquals("something1", repository.findByAccessionAndVersion("a1", 1).getValue());
+        assertEquals("something2", repository.findByAccessionAndVersion("a1", 2).getValue());
     }
 
 }

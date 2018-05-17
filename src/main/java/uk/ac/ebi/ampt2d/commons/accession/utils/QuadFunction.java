@@ -15,19 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities;
+package uk.ac.ebi.ampt2d.commons.accession.utils;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+@FunctionalInterface
+public interface QuadFunction<X, Y, Z, W, R> {
 
-import javax.persistence.Column;
+    R apply(X x, Y y, Z z, W w);
 
-public abstract class AccessionHistoryStringEntity extends AccessionHistoryEntity {
-
-    @Column(nullable = false)
-    private String accession;
-
-    public AccessionHistoryStringEntity(String accession, AccessionStatus accessionStatus, String reason) {
-        super(accessionStatus, reason);
-        this.accession = accession;
-    }
 }

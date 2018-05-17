@@ -15,14 +15,23 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-public interface TestModel {
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.ArchivedAccessionEntity;
 
-    String getValue();
+import javax.persistence.Entity;
 
-    static TestModel of(String value) {
-        return () -> value;
+@Entity
+public class TestMonotonicArchivedAccessionEntity extends ArchivedAccessionEntity<Long> {
+
+    private String something;
+
+    TestMonotonicArchivedAccessionEntity() {
+        super();
     }
 
+    public TestMonotonicArchivedAccessionEntity(TestMonotonicEntity testEntity) {
+        super(testEntity);
+        this.something = testEntity.getValue();
+    }
 }

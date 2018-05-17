@@ -15,13 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
-
-@FunctionalInterface
-public interface IAccessionHistoryBuilder<ENTITY, ACCESSION> {
-
-    ENTITY build(ACCESSION accession, AccessionStatus accessionStatus, String reason);
-
+public class AccessionDeprecatedException extends Exception {
 }

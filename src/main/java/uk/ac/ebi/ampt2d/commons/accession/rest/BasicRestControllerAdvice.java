@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
@@ -88,6 +89,12 @@ public class BasicRestControllerAdvice {
     public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
         return buildResponseEntity(HttpStatus.CONFLICT, ex, ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {AccessionDeprecatedException.class})
+    public ResponseEntity<ErrorMessage> handleDeprecationErrors(Exception ex) {
+        logger.error(ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.GONE, ex, "This accession has been deprecated");
     }
 
     private ResponseEntity<ErrorMessage> buildResponseEntity(HttpStatus status, Exception ex, String message) {

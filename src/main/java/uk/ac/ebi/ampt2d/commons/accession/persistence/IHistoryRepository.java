@@ -15,14 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-public interface TestModel {
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-    String getValue();
+import java.io.Serializable;
 
-    static TestModel of(String value) {
-        return () -> value;
-    }
+@NoRepositoryBean
+public interface IHistoryRepository<ACCESSION, OPERATION_ENTITY, ID extends Serializable>
+        extends CrudRepository<OPERATION_ENTITY, ID> {
+
+    OPERATION_ENTITY findByAccessionIdOriginOrderByCreatedDateDesc(ACCESSION accession);
 
 }

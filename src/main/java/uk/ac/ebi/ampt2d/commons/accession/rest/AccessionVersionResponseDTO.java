@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 
 import java.util.function.Function;
 
@@ -30,32 +30,25 @@ import java.util.function.Function;
  * @param <HASH>
  * @param <ACCESSION>
  */
-public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
+public class AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
-
-    private HASH hash;
 
     private int version;
 
     private DTO data;
 
-    AccessionResponseDTO() {
+    AccessionVersionResponseDTO() {
     }
 
-    public AccessionResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> accessionWrapper, Function<MODEL, DTO> modelToDto) {
-        this.accession = accessionWrapper.getAccession();
-        this.hash = accessionWrapper.getHash();
-        this.version = accessionWrapper.getVersion();
-        this.data = modelToDto.apply(accessionWrapper.getData());
+    public AccessionVersionResponseDTO(ModelWrapper<MODEL, HASH, ACCESSION> modelWrapper, Function<MODEL, DTO> modelToDto) {
+        this.accession = modelWrapper.getAccession();
+        this.version = modelWrapper.getVersion();
+        this.data = modelToDto.apply(modelWrapper.getData());
     }
 
     public ACCESSION getAccession() {
         return accession;
-    }
-
-    public HASH getHash() {
-        return hash;
     }
 
     public int getVersion() {

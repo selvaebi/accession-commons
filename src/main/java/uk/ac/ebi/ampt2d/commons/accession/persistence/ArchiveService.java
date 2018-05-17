@@ -17,21 +17,25 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 
-@NoRepositoryBean
-public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String>, IAccessionedObjectCustomRepository {
+public interface ArchiveService<
+        MODEL,
+        HASH,
+        ACCESSION extends Serializable,
+        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>> {
 
-    List<ENTITY> findByAccession(ACCESSION accession);
+    @Transactional
+    void archiveVersion(ACCESSION_ENTITY entity, String reason);
 
-    List<ENTITY> findByAccessionIn(Collection<ACCESSION> accessions);
+    @Transactional
+    void archiveDeprecation(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
 
-    ENTITY findByAccessionAndVersion(ACCESSION accession, int Version);
+    AccessionWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
+    IArchiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
 }

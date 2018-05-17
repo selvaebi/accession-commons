@@ -15,18 +15,18 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities.AccessionHistoryLongEntity;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-import javax.persistence.Entity;
+import java.io.Serializable;
+import java.util.List;
 
-@Entity
-public class TestAccessionHistoryLongEntity extends AccessionHistoryLongEntity {
+@NoRepositoryBean
+public interface IAccessionArchiveRepository<ACCESSION, ENTITY> extends CrudRepository<ENTITY, Long> {
 
-    public TestAccessionHistoryLongEntity(Long accession, AccessionStatus accessionStatus, String reason) {
-        super(accession, accessionStatus, reason);
-    }
+    List<ENTITY> findAllByHistoryId(Long historyId);
 
+    List<ENTITY> findAllByAccessionAndVersion(ACCESSION accession, int version);
 }

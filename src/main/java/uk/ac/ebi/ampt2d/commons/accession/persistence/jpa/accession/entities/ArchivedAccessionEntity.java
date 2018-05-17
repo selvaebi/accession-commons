@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -26,7 +28,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class DeprecatedEntity<ACCESSION extends Serializable> {
+public abstract class ArchivedAccessionEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION>{
 
     @Id
     @GeneratedValue
@@ -45,5 +47,43 @@ public abstract class DeprecatedEntity<ACCESSION extends Serializable> {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
+
+    @Column(nullable = false, updatable = false)
+    private Long historyId;
+
+    protected ArchivedAccessionEntity() {
+
+    }
+
+    public ArchivedAccessionEntity(IAccessionedObject<ACCESSION> object) {
+        this.hashedMessage = object.getHashedMessage();
+        this.accession = object.getAccession();
+        this.version = object.getVersion();
+        this.createdDate = object.getCreatedDate();
+    }
+
+    public void setHistoryId(Long historyId) {
+        this.historyId = historyId;
+    }
+
+    @Override
+    public String getHashedMessage() {
+        return hashedMessage;
+    }
+
+    @Override
+    public ACCESSION getAccession() {
+        return accession;
+    }
+
+    @Override
+    public int getVersion() {
+        return version;
+    }
+
+    @Override
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
 
 }

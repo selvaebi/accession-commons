@@ -15,14 +15,17 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.commons.accession.core;
 
-public interface TestModel {
+public enum OperationType {
 
-    String getValue();
+    // accession1 object have changed
+    UPDATED,
 
-    static TestModel of(String value) {
-        return () -> value;
-    }
+    // accession1 merged into accession2
+    MERGED_INTO,
+
+    // accession1 is no longer valid
+    DEPRECATED;
 
 }

@@ -25,133 +25,270 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
-import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
-import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
-    public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_1 =
-            new AccessionWrapper("a1", "h1", TestModel.of("something1"));
-    public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_2 =
-            new AccessionWrapper("a2", "h2", TestModel.of("something2"));
-    public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_3 =
-            new AccessionWrapper("a3", "h3", TestModel.of("something3"));
+    public static final ModelWrapper<TestModel, String, String> TEST_MODEL_1 =
+            new ModelWrapper("a1", "h1", TestModel.of("something1"));
+    public static final ModelWrapper<TestModel, String, String> TEST_MODEL_2 =
+            new ModelWrapper("a2", "h2", TestModel.of("something2"));
+    public static final ModelWrapper<TestModel, String, String> TEST_MODEL_3 =
+            new ModelWrapper("a3", "h3", TestModel.of("something3"));
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> service;
+    private DatabaseService<TestModel, String, String> service;
+
+    @Autowired
+    private TestStringHistoryRepository historyRepository;
+
+    @Autowired
+    private TestArchivedAccessionRepository accessionArchive;
 
     @Test
     public void testFindInEmptyRepository() {
-        assertEquals(0, service.findAllAccessionMappingsByAccessions(Arrays.asList("a1", "a2")).size());
-        assertEquals(0, service.findAllAccessionsByHash(Arrays.asList("h1", "h2")).size());
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1", "a2")).size());
+        assertEquals(0, service.findAllModelByHash(Arrays.asList("h1", "h2")).size());
     }
-
-    @Autowired
-    private TestRepository repository;
 
     @Test
-    public void saveUniqueElements() {
+    public void saveUniqueElementsAndFindByAccessionReturnsEachAccession() {
         service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        List<AccessionWrapper<TestModel, String, String>> result = service.findAllAccessionMappingsByAccessions(
-                Arrays.asList("a1", "a2"));
-        assertEquals(2, result.size());
-        assertTrue(result.contains(TEST_MODEL_1));
-        assertTrue(result.contains(TEST_MODEL_2));
-
-        List<AccessionWrapper<TestModel, String, String>> results2 = service.findAllAccessionsByHash(
-                Arrays.asList("h1", "h2"));
-        assertEquals(2, results2.size());
-        assertTrue(result.contains(TEST_MODEL_1));
-        assertTrue(result.contains(TEST_MODEL_2));
-
+        List<ModelWrapper<TestModel, String, String>> result = service.findAllAccessions(
+                Arrays.asList("a1", "a2", "a3"));
+        assertEquals(3, result.size());
+        List<ModelWrapper<TestModel, String, String>> resultAccession1 = service.findAllAccessions(Arrays.asList("a1"));
+        assertEquals(1, resultAccession1.size());
+        assertEquals("something1", resultAccession1.get(0).getData().getValue());
+        List<ModelWrapper<TestModel, String, String>> resultAccession2 = service.findAllAccessions(
+                Arrays.asList("a2"));
+        assertEquals(1, resultAccession2.size());
+        assertEquals("something2", resultAccession2.get(0).getData().getValue());
     }
+
+    @Test
+    public void saveUniqueElementsAndFindByAccessionThatDoesNotExistReturnsNothing() {
+        service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
+
+        List<ModelWrapper<TestModel, String, String>> result = service.findAllAccessions(Arrays.asList("a0"));
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void saveUniqueElementsAndFindByHashReturnsEachAccession() {
+        service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
+
+        List<ModelWrapper<TestModel, String, String>> results = service.findAllModelByHash(
+                Arrays.asList("h1", "h2"));
+        assertEquals(2, results.size());
+    }
+
+    @Test
+    public void saveUniqueElementsAndFindByHashThatDoesNotExistReturnsNothing() {
+        service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
+
+        List<ModelWrapper<TestModel, String, String>> results = service.findAllModelByHash(
+                Arrays.asList("h0"));
+        assertEquals(0, results.size());
+    }
+
 
     @Test(expected = DataIntegrityViolationException.class)
     public void saveNonUniqueElements() {
         service.insert(Arrays.asList(
                 TEST_MODEL_1,
-                new AccessionWrapper("a2", "h1", TestModel.of("something2")),
+                new ModelWrapper("a2", "h1", TestModel.of("something2")),
                 TEST_MODEL_3
         ));
     }
 
     @Test(expected = AccessionDoesNotExistException.class)
     public void updateWithoutExistingAccessionFails() throws AccessionDoesNotExistException,
-            HashAlreadyExistsException {
-        service.update(new AccessionWrapper("a2", "h1", TestModel.of("something2")));
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.update(new ModelWrapper("a2", "h1", TestModel.of("something2")));
     }
 
     @Test(expected = HashAlreadyExistsException.class)
     public void updateWithExistingObjectFails() throws AccessionDoesNotExistException,
-            HashAlreadyExistsException {
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
-        service.update(new AccessionWrapper("a2", "h1", TestModel.of("something2")));
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.update(new ModelWrapper<>("a2", "h1", TestModel.of("something2")));
     }
 
     @Test
-    public void update() throws AccessionDoesNotExistException,
-            HashAlreadyExistsException {
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
-        service.update(new AccessionWrapper("a2", "h2", TestModel.of("something2b")));
-        List<AccessionWrapper<TestModel, String, String>> accessions =
-                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
-        assertEquals(2, accessions.size());
-        assertFalse(accessions.get(0).getVersion() == accessions.get(1).getVersion());
+    public void updateDoesNotCreateNewVersion() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        final AccessionWrapper<TestModel, String, String> update =
+                service.update(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        assertEquals(1, update.getModelWrappers().size());
+        assertEquals(1, update.getModelWrappers().get(0).getVersion());
+    }
+
+    @Test
+    public void patchCreatesNewVersion() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        final AccessionWrapper<TestModel, String, String> patch =
+                service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        assertEquals(2, patch.getModelWrappers().size());
+        assertEquals(1, patch.getModelWrappers().get(0).getVersion());
+        assertEquals(2, patch.getModelWrappers().get(1).getVersion());
+    }
+
+    @Test
+    public void findAllAccessionReturnsOnlyLastPatch() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        assertEquals(2, service.findAllAccessions(Arrays.asList("a2")).get(0).getVersion());
+    }
+
+    @Test
+    public void findAccessionShowsAllPatches() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        assertEquals(2, service.findAccession("a2").getModelWrappers().size());
+    }
+
+    @Test
+    public void findAccessionVersion() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        assertEquals(1, service.findAccessionVersion("a2", 1).getVersion());
+        assertEquals(2, service.findAccessionVersion("a2", 2).getVersion());
     }
 
     @Test
     public void multipleUpdates() throws AccessionDoesNotExistException,
-            HashAlreadyExistsException {
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h1", TestModel.of("something2"))));
-        service.update(new AccessionWrapper("a2", "h2", TestModel.of("something2b")));
-        service.update(new AccessionWrapper("a2", "h3", TestModel.of("something2c")));
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.update(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        service.update(new ModelWrapper<>("a2", "h3", TestModel.of("something2c")));
 
-        List<AccessionWrapper<TestModel, String, String>> accessions =
-                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
-        assertEquals(3, accessions.size());
+        List<ModelWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        assertEquals(1, accessions.size());
+    }
 
-        Set<Integer> versions = accessions.stream().map(AccessionWrapper::getVersion).collect(Collectors.toSet());
-        assertTrue(versions.contains(1));
-        assertTrue(versions.contains(2));
-        assertTrue(versions.contains(3));
+    @Test
+    public void multiplePatches() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        service.patch(new ModelWrapper<>("a2", "h3", TestModel.of("something2c")));
+
+        assertEquals(1, service.findAccessionVersion("a2", 1).getVersion());
+        assertEquals(2, service.findAccessionVersion("a2", 2).getVersion());
+        assertEquals(3, service.findAccessionVersion("a2", 3).getVersion());
+
+        assertEquals(3, service.findAccession("a2").getModelWrappers().size());
+    }
+
+    @Test
+    public void multiplePatchesFindAllReturnsLastVersion() throws AccessionDoesNotExistException,
+            HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper<>("a2", "h1", TestModel.of("something2"))));
+        service.patch(new ModelWrapper<>("a2", "h2", TestModel.of("something2b")));
+        service.patch(new ModelWrapper<>("a2", "h3", TestModel.of("something2c")));
+
+        List<ModelWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        assertEquals(1, accessions.size());
+        assertEquals(3, accessions.get(0).getVersion());
     }
 
     @Test
     public void testFindByAccessionAndVersion() throws AccessionDoesNotExistException,
-            HashAlreadyExistsException {
+            HashAlreadyExistsException, AccessionMergedException, AccessionDeprecatedException {
         service.insert(Arrays.asList(
-                new AccessionWrapper("a2", "h1", TestModel.of("something2"), 1),
-                new AccessionWrapper("a2", "h2", TestModel.of("something2b"), 2),
-                new AccessionWrapper("a2", "h3", TestModel.of("something2c"), 2)));
+                new ModelWrapper("a2", "h1", TestModel.of("something2"), 1),
+                new ModelWrapper("a2", "h2", TestModel.of("something2b"), 2)));
 
-        List<AccessionWrapper<TestModel, String, String>> accessions =
-                service.findAllAccessionMappingsByAccessions(Arrays.asList("a2"));
-        assertEquals(3, accessions.size());
+        List<ModelWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        assertEquals(1, accessions.size());
 
-        List<AccessionWrapper<TestModel, String, String>> accessionOfVersion1 =
-                service.findAllAccessionMappingsByAccessionAndVersion("a2",1);
-        assertEquals(1, accessionOfVersion1.size());
-        List<AccessionWrapper<TestModel, String, String>> accessionsOfVersion2 =
-                service.findAllAccessionMappingsByAccessionAndVersion("a2",2);
-        assertEquals(2, accessionsOfVersion2.size());
+        ModelWrapper<TestModel, String, String> accessionOfVersion1 = service.findAccessionVersion("a2", 1);
+        assertEquals(1, accessionOfVersion1.getVersion());
+        ModelWrapper<TestModel, String, String> accessionsOfVersion2 = service.findAccessionVersion("a2", 2);
+        assertEquals(2, accessionsOfVersion2.getVersion());
+    }
+
+    @Test(expected = AccessionDoesNotExistException.class)
+    public void testDeprecateNotExisting() throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        service.deprecate("a1", "reasons");
+    }
+
+    @Test
+    public void testDeprecateOneVersion() throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper("a1", "h1", TestModel.of("something2"), 1)));
+        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        service.deprecate("a1", "reasons");
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+
+        final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
+        assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
+        assertEquals("a1", historyEntity.getAccessionIdOrigin());
+        assertEquals("reasons", historyEntity.getReason());
+
+        final List<TestArchivedAccessionEntity> deprecated = accessionArchive.findAllByHistoryId(historyEntity.getId());
+        assertEquals(1, deprecated.size());
+        assertEquals("something2", deprecated.get(0).getValue());
+    }
+
+    @Test
+    public void testDeprecateMultipleVersion() throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException, HashAlreadyExistsException {
+        service.insert(Arrays.asList(new ModelWrapper("a1", "h1", TestModel.of("something2"), 1)));
+        service.patch(new ModelWrapper("a1", "h2", TestModel.of("something2b"), 1));
+        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(2, service.findAllAccessions(Arrays.asList("a1")).get(0).getVersion());
+        service.deprecate("a1", "reasons");
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+
+        final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
+        assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
+        assertEquals("a1", historyEntity.getAccessionIdOrigin());
+        assertEquals("reasons", historyEntity.getReason());
+
+        final List<TestArchivedAccessionEntity> deprecated = accessionArchive.findAllByHistoryId(historyEntity.getId());
+        assertEquals(2, deprecated.size());
+    }
+
+    @Test
+    public void testDeprecateAndAccessionSameObjectMultipleTimes() throws AccessionDoesNotExistException,
+            AccessionDeprecatedException, AccessionMergedException {
+        service.insert(Arrays.asList(new ModelWrapper("a1", "h1", TestModel.of("something2"), 1)));
+        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        service.deprecate("a1", "reasons");
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        service.insert(Arrays.asList(new ModelWrapper("a1", "h1", TestModel.of("something2"), 1)));
+        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        service.deprecate("a1", "reasons");
+        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+
+        assertEquals(2, historyRepository.count());
     }
 
 }

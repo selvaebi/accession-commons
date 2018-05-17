@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import javax.validation.Valid;
@@ -53,43 +55,51 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
+    public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
             throws AccessionCouldNotBeGeneratedException {
         return service.getOrCreateAccessions(dtos).stream()
-                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
+                .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
-    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions,
-                                                                       @RequestParam(name = "hideDeprecated", required = false,
-                                                                               defaultValue = "false")
-                                                                               boolean hideDeprecated) {
-        return service.getByAccessionIds(accessions, hideDeprecated).stream()
-                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
+    public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions) {
+        return service.getByAccessionIds(accessions).stream()
+                .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/{accession}", method = RequestMethod.POST, produces = "application/json",
+    @RequestMapping(value = "/{accession}", method = RequestMethod.PATCH, produces = "application/json",
             consumes = "application/json")
-    public AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> update(@PathVariable ACCESSION accession,
-                                                                    @RequestBody @Valid DTO dto)
-            throws AccessionDoesNotExistException, HashAlreadyExistsException {
-        return new AccessionResponseDTO<>(service.update(accession, dto), modelToDTO);
+    public AccessionAllVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> patch(@PathVariable ACCESSION accession,
+                                                                              @RequestBody @Valid DTO dto)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
+            AccessionDeprecatedException {
+        return new AccessionAllVersionsResponseDTO<>(service.patch(accession, dto), modelToDTO);
+    }
+
+    @RequestMapping(value = "/{accession}/{version}", method = RequestMethod.POST, produces = "application/json",
+            consumes = "application/json")
+    public AccessionAllVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> update(@PathVariable ACCESSION accession,
+                                                                               @PathVariable int version,
+                                                                               @RequestBody @Valid DTO dto)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
+            AccessionDeprecatedException {
+        return new AccessionAllVersionsResponseDTO<>(service.update(accession, version, dto), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}/{version}", method = RequestMethod.GET, produces = "application/json")
-    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> getVersion(@PathVariable ACCESSION accession,
-                                                                              @PathVariable int version)
-            throws AccessionDoesNotExistException {
-        final List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> result =
-                service.getByAccessionIdAndVersion(accession, version).stream()
-                        .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
-                        .collect(Collectors.toList());
-        if (!result.isEmpty()) {
-            return result;
-        }
-        throw new AccessionDoesNotExistException(accession, version);
+    public AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION> getVersion(@PathVariable ACCESSION accession,
+                                                                               @PathVariable int version)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        return new AccessionVersionResponseDTO<>(service.getByAccessionIdAndVersion(accession, version), modelToDTO);
+    }
+
+    @RequestMapping(value = "/{accession}", method = RequestMethod.DELETE, produces = "application/json")
+    public void getVersion(@PathVariable ACCESSION accession,
+                           @RequestParam(required = false, defaultValue = "Deprecated") String reason)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        service.deprecate(accession, reason);
     }
 
 }

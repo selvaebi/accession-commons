@@ -18,10 +18,9 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.repositories.AccessionHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionArchiveRepository;
 
 @Repository
-public interface TestAccessionHistoryStringRepository extends
-        AccessionHistoryRepository<TestAccessionHistoryStringEntity, Long> {
-
+public interface TestMonotonicArchivedAccessionRepository
+        extends IAccessionArchiveRepository<Long, TestMonotonicArchivedAccessionEntity> {
 }

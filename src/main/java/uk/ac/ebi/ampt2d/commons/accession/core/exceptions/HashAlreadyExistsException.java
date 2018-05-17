@@ -17,8 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+import java.io.Serializable;
+
 public class HashAlreadyExistsException extends Exception {
-    public HashAlreadyExistsException(String hash, Class<?> clazz) {
-        super("Hash '" + hash + "' already exists for model '" + clazz.getName() + "'");
+
+    public <HASH, ACCESSION extends Serializable> HashAlreadyExistsException(HASH hash, ACCESSION accession) {
+        super("Hash '" + hash + "' is present in accession '" + accession + "' ");
     }
 }

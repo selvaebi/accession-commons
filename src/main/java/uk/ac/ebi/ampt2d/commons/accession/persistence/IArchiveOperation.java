@@ -15,19 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 
-import javax.persistence.Column;
+import java.time.ZonedDateTime;
 
-public abstract class AccessionHistoryLongEntity extends AccessionHistoryEntity {
+public interface IArchiveOperation<ACCESSION> {
+    Object getAccessionIdOrigin();
 
-    @Column(nullable = false)
-    private Long accession;
+    Object getAccessionIdDestiny();
 
-    public AccessionHistoryLongEntity(Long accession, AccessionStatus accessionStatus, String reason) {
-        super(accessionStatus, reason);
-        this.accession = accession;
-    }
+    OperationType getOperationType();
+
+    String getReason();
+
+    ZonedDateTime getCreatedDate();
 }

@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 
@@ -43,10 +43,10 @@ public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGene
     }
 
     @Override
-    public <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
+    public <HASH> List<ModelWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages) {
         return messages.entrySet()
                 .stream()
-                .map(entry -> new AccessionWrapper<>(generateAccessionFunction.apply(entry.getValue()), entry.getKey(),
+                .map(entry -> new ModelWrapper<>(generateAccessionFunction.apply(entry.getValue()), entry.getKey(),
                         entry.getValue()
                 ))
                 .collect(Collectors.toList());
