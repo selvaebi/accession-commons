@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
@@ -63,7 +63,7 @@ public class DecoratedAccessionGeneratorTest {
         DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
                 .buildPrefixSuffixMonotonicAccessionGenerator(getGenerator(), "prefix-", "-suffix");
 
-        List<ModelWrapper<String, String, String>> generated = generator.generateAccessions(objects);
+        List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
         assertEquals("prefix-0-suffix", generated.get(0).getAccession());
         assertEquals("prefix-1-suffix", generated.get(1).getAccession());
@@ -89,7 +89,7 @@ public class DecoratedAccessionGeneratorTest {
         DecoratedAccessionGenerator<String, Long> generator =
                 DecoratedAccessionGenerator.buildPrefixSuffixMonotonicAccessionGenerator(getGenerator(), "prefix-", null);
 
-        List<ModelWrapper<String, String, String>> generated = generator.generateAccessions(objects);
+        List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
         assertEquals("prefix-0", generated.get(0).getAccession());
         assertEquals("prefix-1", generated.get(1).getAccession());
@@ -115,7 +115,7 @@ public class DecoratedAccessionGeneratorTest {
         DecoratedAccessionGenerator<String, Long> generator =
                 DecoratedAccessionGenerator.buildPrefixSuffixMonotonicAccessionGenerator(getGenerator(), null, "-suffix");
 
-        List<ModelWrapper<String, String, String>> generated = generator.generateAccessions(objects);
+        List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
         assertEquals("0-suffix", generated.get(0).getAccession());
         assertEquals("1-suffix", generated.get(1).getAccession());

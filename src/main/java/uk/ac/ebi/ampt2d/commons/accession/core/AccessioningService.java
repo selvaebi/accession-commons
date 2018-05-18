@@ -27,10 +27,10 @@ import java.util.List;
 
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
     /**
      * Finds last version of all valid accessions with their possible data model representations.
@@ -38,9 +38,9 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @param accessions
      * @return
      */
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions);
 
-    ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accessions, int version)
+    AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accessions, int version)
     throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
@@ -55,7 +55,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      */
-    AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 
@@ -70,7 +70,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      */
-    AccessionWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 

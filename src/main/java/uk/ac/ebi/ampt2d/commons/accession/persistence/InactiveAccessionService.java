@@ -18,12 +18,12 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 
 import java.io.Serializable;
 import java.util.Collection;
 
-public interface ArchiveService<
+public interface InactiveAccessionService<
         MODEL,
         HASH,
         ACCESSION extends Serializable,
@@ -35,7 +35,7 @@ public interface ArchiveService<
     @Transactional
     void archiveDeprecation(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
 
-    AccessionWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
     IArchiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
 }

@@ -20,7 +20,6 @@ package uk.ac.ebi.ampt2d.test.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +29,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableBasicRestControllerAdvice;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.ArchiveService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicArchiveService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
@@ -85,8 +84,8 @@ public class BasicRestControllerTestConfiguration {
     }
 
     @Bean
-    public ArchiveService<TestModel, String, String, TestEntity> archiveService() {
-        return new BasicArchiveService<>(
+    public InactiveAccessionService<TestModel, String, String, TestEntity> archiveService() {
+        return new BasicInactiveAccessionService<>(
                 testArchivedAccessionRepository,
                 TestArchivedAccessionEntity::new,
                 historyRepository,

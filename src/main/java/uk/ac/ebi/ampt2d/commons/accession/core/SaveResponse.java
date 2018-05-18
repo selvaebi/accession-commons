@@ -44,22 +44,22 @@ public class SaveResponse<ACCESSION> {
         return saveFailedAccessions;
     }
 
-    public void addSavedAccessions(ModelWrapper<?, ?, ACCESSION> modelWrapper) {
-        savedAccessions.add(modelWrapper.getAccession());
+    public void addSavedAccessions(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        savedAccessions.add(accessionWrapper.getAccession());
     }
 
-    public void addSaveFailedAccession(ModelWrapper<?, ?, ACCESSION> modelWrapper) {
-        saveFailedAccessions.add(modelWrapper.getAccession());
+    public void addSaveFailedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        saveFailedAccessions.add(accessionWrapper.getAccession());
     }
 
-    public boolean isSavedAccession(ModelWrapper<?, ?, ACCESSION> modelWrapper) {
-        if (savedAccessions.contains(modelWrapper.getAccession())) {
+    public boolean isSavedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
+        if (savedAccessions.contains(accessionWrapper.getAccession())) {
             return true;
         } else {
-            if (saveFailedAccessions.contains(modelWrapper.getAccession())) {
+            if (saveFailedAccessions.contains(accessionWrapper.getAccession())) {
                 return false;
             } else {
-                throw new UnsavedAccessionException(modelWrapper.getAccession());
+                throw new UnsavedAccessionException(accessionWrapper.getAccession());
             }
         }
     }

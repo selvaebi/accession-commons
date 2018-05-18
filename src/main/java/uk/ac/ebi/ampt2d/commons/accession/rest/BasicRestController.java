@@ -55,44 +55,44 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
             throws AccessionCouldNotBeGeneratedException {
         return service.getOrCreate(dtos).stream()
-                .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
-    public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions) {
+    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions) {
         return service.getByAccessions(accessions).stream()
-                .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
+                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.PATCH, produces = "application/json",
             consumes = "application/json")
-    public AccessionAllVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> patch(@PathVariable ACCESSION accession,
-                                                                              @RequestBody @Valid DTO dto)
+    public AccessionVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> patch(@PathVariable ACCESSION accession,
+                                                                           @RequestBody @Valid DTO dto)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException {
-        return new AccessionAllVersionsResponseDTO<>(service.patch(accession, dto), modelToDTO);
+        return new AccessionVersionsResponseDTO<>(service.patch(accession, dto), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}/{version}", method = RequestMethod.POST, produces = "application/json",
             consumes = "application/json")
-    public AccessionAllVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> update(@PathVariable ACCESSION accession,
-                                                                               @PathVariable int version,
-                                                                               @RequestBody @Valid DTO dto)
+    public AccessionVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> update(@PathVariable ACCESSION accession,
+                                                                            @PathVariable int version,
+                                                                            @RequestBody @Valid DTO dto)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException {
-        return new AccessionAllVersionsResponseDTO<>(service.update(accession, version, dto), modelToDTO);
+        return new AccessionVersionsResponseDTO<>(service.update(accession, version, dto), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}/{version}", method = RequestMethod.GET, produces = "application/json")
-    public AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION> getVersion(@PathVariable ACCESSION accession,
-                                                                               @PathVariable int version)
+    public AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> getVersion(@PathVariable ACCESSION accession,
+                                                                        @PathVariable int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
-        return new AccessionVersionResponseDTO<>(service.getByAccessionAndVersion(accession, version), modelToDTO);
+        return new AccessionResponseDTO<>(service.getByAccessionAndVersion(accession, version), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.DELETE, produces = "application/json")

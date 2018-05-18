@@ -67,7 +67,7 @@ public class BasicRestControllerTest {
     private JacksonTester<List<BasicRestModel>> jsonModelList;
 
     @Autowired
-    private JacksonTester<List<AccessionVersionResponseDTO<BasicRestModel, BasicRestModel, String, String>>> jsonAccessions;
+    private JacksonTester<List<AccessionResponseDTO<BasicRestModel, BasicRestModel, String, String>>> jsonAccessions;
 
     @Test
     public void testNoContentIfAccessioningDoesNotExist() throws Exception {
@@ -156,7 +156,7 @@ public class BasicRestControllerTest {
     public void testHashCollisionUpdate() throws Exception {
         final MvcResult mvcResult = doAccession("update-test-2", "update-test-3");
 
-        final AccessionVersionResponseDTO<BasicRestModel, BasicRestModel, String, String> response =
+        final AccessionResponseDTO<BasicRestModel, BasicRestModel, String, String> response =
                 jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(1);
 
         doUpdate(response.getAccession(), response.getVersion(), "update-test-2",

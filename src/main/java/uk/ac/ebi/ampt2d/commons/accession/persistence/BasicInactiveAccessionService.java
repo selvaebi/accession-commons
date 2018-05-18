@@ -18,8 +18,8 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.ArchivedAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
@@ -32,13 +32,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class BasicArchiveService<
+public class BasicInactiveAccessionService<
         MODEL,
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends AccessionedEntity<ACCESSION>,
         ACCESSION_ARCHIVE_ENTITY extends ArchivedAccessionEntity<ACCESSION>,
         OPERATION_ENTITY extends OperationEntity<ACCESSION>>
-        implements ArchiveService<MODEL, String, ACCESSION, ACCESSION_ENTITY> {
+        implements InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> {
 
     private final IAccessionArchiveRepository<ACCESSION, ACCESSION_ARCHIVE_ENTITY> accessionArchiveRepository;
 
@@ -50,12 +50,12 @@ public class BasicArchiveService<
 
     private final Function<ACCESSION_ARCHIVE_ENTITY, MODEL> toModelFunction;
 
-    public BasicArchiveService(IAccessionArchiveRepository<ACCESSION, ACCESSION_ARCHIVE_ENTITY>
+    public BasicInactiveAccessionService(IAccessionArchiveRepository<ACCESSION, ACCESSION_ARCHIVE_ENTITY>
                                        accessionArchiveRepository,
-                               Function<ACCESSION_ENTITY, ACCESSION_ARCHIVE_ENTITY> toArchiveEntity,
-                               IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository,
-                               Supplier<OPERATION_ENTITY> historyEntitySupplier,
-                               Function<ACCESSION_ARCHIVE_ENTITY, MODEL> toModelFunction) {
+                                         Function<ACCESSION_ENTITY, ACCESSION_ARCHIVE_ENTITY> toArchiveEntity,
+                                         IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository,
+                                         Supplier<OPERATION_ENTITY> historyEntitySupplier,
+                                         Function<ACCESSION_ARCHIVE_ENTITY, MODEL> toModelFunction) {
         this.accessionArchiveRepository = accessionArchiveRepository;
         this.toArchiveEntity = toArchiveEntity;
         this.historyRepository = historyRepository;
@@ -103,15 +103,15 @@ public class BasicArchiveService<
     }
 
     @Override
-    public AccessionWrapper<MODEL, String, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version) {
-        final List<ModelWrapper<MODEL, String, ACCESSION>> result =
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version) {
+        final List<AccessionWrapper<MODEL, String, ACCESSION>> result =
                 accessionArchiveRepository.findAllByAccessionAndVersion(accession, version).stream()
                         .map(this::toModelWrapper)
                         .collect(Collectors.toList());
         if(result.isEmpty()){
             return null;
         }
-        return new AccessionWrapper<>(result);
+        return new AccessionVersionsWrapper<>(result);
     }
 
     @Override
@@ -119,8 +119,8 @@ public class BasicArchiveService<
         return historyRepository.findByAccessionIdOriginOrderByCreatedDateDesc(accession);
     }
 
-    private ModelWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ARCHIVE_ENTITY entity) {
-        return new ModelWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
+    private AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ARCHIVE_ENTITY entity) {
+        return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
                 entity.getVersion());
     }
 

@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
@@ -32,7 +32,7 @@ public class TestEntity extends AccessionedEntity<String> implements TestModel {
         super(null, null, 1);
     }
 
-    public TestEntity(ModelWrapper<TestModel, String, String> model) {
+    public TestEntity(AccessionWrapper<TestModel, String, String> model) {
         this(model.getAccession(), model.getHash(), model.getVersion(), model.getData().getValue());
     }
 

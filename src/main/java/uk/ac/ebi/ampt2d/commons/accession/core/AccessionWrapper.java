@@ -17,53 +17,75 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import org.springframework.util.Assert;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
+/**
+ * Wrapper containing the object that has been accessioned, as well as additional information like the accession or a
+ * flag indicating whether the accession is active. To be used in the service layer.
+ *
+ * @param <MODEL>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
 public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
-    private List<ModelWrapper<MODEL, HASH, ACCESSION>> data;
+    private HASH hash;
 
-    /**
-     * @param models
-     * @Throws IllegalArgumentException if model list is null, empty or multiple accessions are find on the models
-     */
-    public AccessionWrapper(ModelWrapper<MODEL, HASH, ACCESSION>... models) {
-        this(Arrays.asList(models));
+    private MODEL data;
+
+    private int version;
+
+    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data) {
+        this(accession, hash, data, 1);
     }
 
-    /**
-     * @param models
-     * @Throws IllegalArgumentException if model list is null, empty or multiple accessions are find on the models
-     */
-    public AccessionWrapper(List<ModelWrapper<MODEL, HASH, ACCESSION>> models) {
-        Assert.notEmpty(models, "One or more data objects required.");
-        Set<ACCESSION> accessions = models.stream().map(ModelWrapper::getAccession).collect(Collectors.toSet());
-        Assert.isTrue(accessions.size() == 1, "All model wrappers need to have the same accession value.");
-
-        this.accession = accessions.iterator().next();
-        this.data = models.stream()
-                .sorted(Comparator.comparingInt(ModelWrapper::getVersion))
-                .collect(collectingAndThen(toList(), Collections::unmodifiableList));
+    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version) {
+        this.accession = accession;
+        this.hash = hash;
+        this.data = data;
+        this.version = version;
     }
 
     public ACCESSION getAccession() {
         return accession;
     }
 
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getModelWrappers() {
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public HASH getHash() {
+        return hash;
+    }
+
+    public MODEL getData() {
         return data;
     }
+
+    public int getVersion() {
+        return version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccessionWrapper)) return false;
+
+        AccessionWrapper<?, ?, ?> that = (AccessionWrapper<?, ?, ?>) o;
+
+        if (version != that.version) return false;
+        if (!accession.equals(that.accession)) return false;
+        if (!hash.equals(that.hash)) return false;
+        return data.equals(that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = accession.hashCode();
+        result = 31 * result + hash.hashCode();
+        result = 31 * result + data.hashCode();
+        result = 31 * result + version;
+        return result;
+    }
+
 }

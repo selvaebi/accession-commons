@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
@@ -40,7 +40,7 @@ import static junit.framework.TestCase.assertTrue;
 @ContextConfiguration(classes = {TestJpaDatabaseServiceTestConfiguration.class})
 public class BaseJpaAccessionedObjectRepositoryTest {
 
-    public static final TestEntity ENTITY = new TestEntity(new ModelWrapper("a1", "h1",
+    public static final TestEntity ENTITY = new TestEntity(new AccessionWrapper("a1", "h1",
             TestModel.of("something1")));
 
     @Autowired

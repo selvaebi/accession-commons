@@ -18,8 +18,8 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
@@ -44,7 +44,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param hashes
      * @return
      */
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> findAllModelByHash(Collection<HASH> hashes);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAccessionsByHash(Collection<HASH> hashes);
 
     /**
      * @param accession
@@ -54,7 +54,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      *                                        in the exception.
      * @throws AccessionDeprecatedException   accession is no longer active.
      */
-    AccessionWrapper<MODEL, HASH, ACCESSION> findAccession(ACCESSION accession) throws
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findAccession(ACCESSION accession) throws
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
@@ -63,7 +63,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param accessions valid accession id
      * @return All valid accessions. No deprecated or merged ids will be returned.
      */
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> findAllAccessions(List<ACCESSION> accessions);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessions(List<ACCESSION> accessions);
 
     /**
      * Finds a specific version of accession and their data model representations.
@@ -76,21 +76,21 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      *                                        in the exception.
      * @throws AccessionDeprecatedException   accession is no longer active.
      */
-    ModelWrapper<MODEL, HASH, ACCESSION> findAccessionVersion(ACCESSION accession, int version)
+    AccessionWrapper<MODEL, HASH, ACCESSION> findAccessionVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException;
 
     @Transactional
-    void insert(List<ModelWrapper<MODEL, HASH, ACCESSION>> objects);
+    void insert(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDoesNotExistException.class, AccessionMergedException.class})
-    AccessionWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, HASH hash, MODEL model)
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, HASH hash, MODEL model)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDoesNotExistException.class, AccessionMergedException.class})
-    AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, HASH hash, MODEL model, int version)
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, HASH hash, MODEL model, int version)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException;
 

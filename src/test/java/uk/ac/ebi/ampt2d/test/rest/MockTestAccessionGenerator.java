@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
@@ -39,16 +39,16 @@ public class MockTestAccessionGenerator implements AccessionGenerator<TestModel,
     }
 
     @Override
-    public <HASH> List<ModelWrapper<TestModel, HASH, String>> generateAccessions(Map<HASH, TestModel> messages)
+    public <HASH> List<AccessionWrapper<TestModel, HASH, String>> generateAccessions(Map<HASH, TestModel> messages)
             throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, HASH, String>> accessions = new ArrayList<>();
+        List<AccessionWrapper<TestModel, HASH, String>> accessions = new ArrayList<>();
         for (Map.Entry<HASH, TestModel> entry : messages.entrySet()) {
             accessions.add(generateAccession(entry));
         }
         return accessions;
     }
 
-    private <HASH> ModelWrapper<TestModel, HASH, String> generateAccession(Map.Entry<HASH, TestModel> entry)
+    private <HASH> AccessionWrapper<TestModel, HASH, String> generateAccession(Map.Entry<HASH, TestModel> entry)
             throws AccessionCouldNotBeGeneratedException {
         String something = entry.getValue().getValue();
         if (something.contains("MissingUnsavedAccessionsException")) {
@@ -64,7 +64,7 @@ public class MockTestAccessionGenerator implements AccessionGenerator<TestModel,
         if (!map.containsKey(entry.getKey())) {
             map.put(entry.getKey(), "id-" + map.size());
         }
-        return new ModelWrapper<>(map.get(entry.getKey()), entry.getKey(), entry.getValue());
+        return new AccessionWrapper<>(map.get(entry.getKey()), entry.getKey(), entry.getValue());
     }
 
     @Override

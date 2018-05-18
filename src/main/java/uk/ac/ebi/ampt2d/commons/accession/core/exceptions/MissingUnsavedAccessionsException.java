@@ -17,24 +17,24 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.ModelWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MissingUnsavedAccessionsException extends RuntimeException {
 
-    public <MODEL, HASH, ACCESSION> MissingUnsavedAccessionsException(List<ModelWrapper<MODEL, HASH, ACCESSION>>
+    public <MODEL, HASH, ACCESSION> MissingUnsavedAccessionsException(List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                      unsavedAccessions,
-                                                                      List<ModelWrapper<MODEL, HASH, ACCESSION>>
+                                                                      List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                      retrievedUnsavedAccessions) {
         super("Unsaved objects could not be found: " +
                 generateMessage(unsavedAccessions, retrievedUnsavedAccessions));
     }
 
-    private static <MODEL, HASH, ACCESSION> String generateMessage(List<ModelWrapper<MODEL, HASH, ACCESSION>>
+    private static <MODEL, HASH, ACCESSION> String generateMessage(List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                            dbAccessions,
-                                                                   List<ModelWrapper<MODEL, HASH, ACCESSION>>
+                                                                   List<AccessionWrapper<MODEL, HASH, ACCESSION>>
                                                                            unsavedObjects) {
         return dbAccessions.stream().filter(mha -> !unsavedObjects.contains(mha))
                 .collect(Collectors.toList()).toString();

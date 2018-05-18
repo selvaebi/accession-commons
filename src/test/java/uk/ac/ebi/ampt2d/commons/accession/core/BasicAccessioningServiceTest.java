@@ -51,7 +51,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void accessionNotRepeatedElements() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -62,7 +62,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void accessionWithRepeatedElementsReturnsUnique() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -74,7 +74,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void getNonGeneratedAccessionsReturnsNothing() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.get(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.get(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -90,7 +90,7 @@ public class BasicAccessioningServiceTest {
                         TestModel.of("service-test-3")
                 ));
 
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.get(Arrays.asList(
+        List<AccessionWrapper<TestModel, String, String>> accessions = accessioningService.get(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -101,12 +101,12 @@ public class BasicAccessioningServiceTest {
     @Test
     public void accessioningMultipleTimesTheSameObjectReturnsTheSameAccession()
             throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accession1 = accessioningService.getOrCreate(
+        List<AccessionWrapper<TestModel, String, String>> accession1 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
 
-        List<ModelWrapper<TestModel, String, String>> accession2 = accessioningService.getOrCreate(
+        List<AccessionWrapper<TestModel, String, String>> accession2 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
@@ -131,7 +131,7 @@ public class BasicAccessioningServiceTest {
     public void testUpdate() throws AccessionDoesNotExistException,
             HashAlreadyExistsException, AccessionCouldNotBeGeneratedException, AccessionMergedException, AccessionDeprecatedException {
         accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-3")));
-        final AccessionWrapper<TestModel, String, String> updatedAccession =
+        final AccessionVersionsWrapper<TestModel, String, String> updatedAccession =
                 accessioningService.update("id-service-test-3", 1, TestModel.of("test-3b"));
 
         assertEquals(1, updatedAccession.getModelWrappers().size());
@@ -139,7 +139,7 @@ public class BasicAccessioningServiceTest {
         assertEquals("test-3b", updatedAccession.getModelWrappers().get(0).getData().getValue());
 
 
-        final List<ModelWrapper<TestModel, String, String>> wrappedAccesions =
+        final List<AccessionWrapper<TestModel, String, String>> wrappedAccesions =
                 accessioningService.getByAccessions(Arrays.asList("id-service-test-3"));
         assertEquals(1, wrappedAccesions.size());
 
@@ -152,14 +152,14 @@ public class BasicAccessioningServiceTest {
     public void testPatch() throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
             AccessionDoesNotExistException, AccessionMergedException, HashAlreadyExistsException {
         accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-3")));
-        final AccessionWrapper<TestModel, String, String> accession =
+        final AccessionVersionsWrapper<TestModel, String, String> accession =
                 accessioningService.patch("id-service-test-3", TestModel.of("test-3b"));
         assertEquals(2, accession.getModelWrappers().size());
 
         //We only find the new object information, not the old one
-        final List<ModelWrapper<TestModel, String, String>> firstVersion =
+        final List<AccessionWrapper<TestModel, String, String>> firstVersion =
                 accessioningService.get(Arrays.asList(TestModel.of("test-3")));
-        final List<ModelWrapper<TestModel, String, String>> secondVersion =
+        final List<AccessionWrapper<TestModel, String, String>> secondVersion =
                 accessioningService.get(Arrays.asList(TestModel.of("test-3b")));
         assertEquals(1, firstVersion.size());
         assertEquals(1, secondVersion.size());
@@ -173,9 +173,9 @@ public class BasicAccessioningServiceTest {
         accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-accession-version")));
         accessioningService.patch("id-service-test-accession-version", TestModel.of("test-accession-version-b"));
 
-        final ModelWrapper<TestModel, String, String> version1 = accessioningService
+        final AccessionWrapper<TestModel, String, String> version1 = accessioningService
                 .getByAccessionAndVersion("id-service-test-accession-version", 1);
-        final ModelWrapper<TestModel, String, String> version2 = accessioningService
+        final AccessionWrapper<TestModel, String, String> version2 = accessioningService
                 .getByAccessionAndVersion("id-service-test-accession-version", 2);
         assertEquals("test-accession-version", version1.getData().getValue());
         assertEquals("test-accession-version-b", version2.getData().getValue());

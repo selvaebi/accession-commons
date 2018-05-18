@@ -70,7 +70,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @return
      */
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         return saveAccessions(accessionGenerator.generateAccessions(mapHashOfMessages(messages)));
     }
@@ -95,12 +95,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @param accessions
      * @return
      */
-    private List<ModelWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<ModelWrapper<MODEL, HASH, ACCESSION>> accessions) {
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
         SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
         accessionGenerator.postSave(response);
 
-        final List<ModelWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
-        final List<ModelWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
+        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = new ArrayList<>();
         accessions.stream().forEach(accessionModel -> {
             if (response.isSavedAccession(accessionModel)) {
                 savedAccessions.add(accessionModel);
@@ -110,7 +110,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         });
 
         if (!unsavedAccessions.isEmpty()) {
-            List<ModelWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
                     getPreexistingAccessions(unsavedAccessions);
             savedAccessions.addAll(preexistingAccessions);
         }
@@ -126,12 +126,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @param saveFailedAccessions
      * @return
      */
-    private List<ModelWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
-            List<ModelWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
+    private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
+            List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {
 
-        Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(ModelWrapper::getHash)
+        Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet());
-        List<ModelWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllModelByHash(unsavedHashes);
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAccessionsByHash(unsavedHashes);
         if (dbAccessions.size() != unsavedHashes.size()) {
             throw new MissingUnsavedAccessionsException(dbAccessions, saveFailedAccessions);
         }
@@ -139,8 +139,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects) {
-        return dbService.findAllModelByHash(getHashes(accessionedObjects));
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects) {
+        return dbService.findAccessionsByHash(getHashes(accessionedObjects));
     }
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
@@ -148,26 +148,26 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
         return dbService.findAllAccessions(accessions);
     }
 
     @Override
-    public AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
+    public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
         return dbService.update(accession, hashingFunction.apply(message), message, version);
     }
 
     @Override
-    public AccessionWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
+    public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
         return dbService.patch(accession, hashingFunction.apply(message), message);
     }
 
     @Override
-    public ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
+    public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         return dbService.findAccessionVersion(accession, version);
     }

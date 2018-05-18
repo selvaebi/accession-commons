@@ -19,33 +19,43 @@ package uk.ac.ebi.ampt2d.commons.accession.rest;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class AccessionAllVersionsResponseDTO<DTO, MODEL, HASH, ACCESSION> {
+/**
+ * Response containing the object that has been accessioned, as well as additional information like the accession or a
+ * flag indicating whether the accession is active. To be used at the REST API layer.
+ *
+ * @param <DTO>
+ * @param <MODEL>
+ * @param <HASH>
+ * @param <ACCESSION>
+ */
+public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
-    private Map<Integer, DTO> versions;
+    private int version;
 
-    AccessionAllVersionsResponseDTO() {
+    private DTO data;
+
+    AccessionResponseDTO() {
     }
 
-    public AccessionAllVersionsResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> wrapper,
-                                           Function<MODEL, DTO> modelToDto) {
-        this.accession = wrapper.getAccession();
-        this.versions = wrapper.getModelWrappers().stream()
-                .collect(Collectors.toMap(o -> o.getVersion(), o -> modelToDto.apply(o.getData())));
+    public AccessionResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> accessionWrapper, Function<MODEL, DTO> modelToDto) {
+        this.accession = accessionWrapper.getAccession();
+        this.version = accessionWrapper.getVersion();
+        this.data = modelToDto.apply(accessionWrapper.getData());
     }
 
     public ACCESSION getAccession() {
         return accession;
     }
 
-    public Map<Integer, DTO> getVersions() {
-        return versions;
+    public int getVersion() {
+        return version;
     }
 
+    public DTO getData() {
+        return data;
+    }
 }

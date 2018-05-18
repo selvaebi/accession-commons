@@ -22,15 +22,14 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.ArchiveService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicArchiveService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
@@ -73,8 +72,8 @@ public class TestJpaDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public ArchiveService<TestModel, String, String, TestEntity> archiveService() {
-        return new BasicArchiveService<>(
+    public InactiveAccessionService<TestModel, String, String, TestEntity> archiveService() {
+        return new BasicInactiveAccessionService<>(
                 testArchivedAccessionRepository,
                 TestArchivedAccessionEntity::new,
                 historyRepository,
