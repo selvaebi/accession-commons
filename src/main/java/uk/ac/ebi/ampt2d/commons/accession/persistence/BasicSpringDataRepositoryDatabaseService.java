@@ -174,6 +174,7 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
         List<ACCESSION_ENTITY> entities = getAccession(accession.getAccession());
+        assertHashDoesNotExist(accession);
         int maxVersion = 1;
         for (ACCESSION_ENTITY entity : entities) {
             if (entity.getVersion() >= maxVersion) {
@@ -181,8 +182,21 @@ public class BasicSpringDataRepositoryDatabaseService<
             }
         }
         accession.setVersion(maxVersion + 1);
-        repository.insert(Arrays.asList(toEntityFunction.apply(accession)));
+        try {
+            repository.insert(Arrays.asList(toEntityFunction.apply(accession)));
+        } catch (RuntimeException e) {
+            assertHashDoesNotExist(accession);
+            throw e;
+        }
         return findAccession(accession.getAccession());
+    }
+
+    private void assertHashDoesNotExist(ModelWrapper<MODEL, String, ACCESSION> accession)
+            throws HashAlreadyExistsException {
+        final ACCESSION_ENTITY dbAccession = repository.findOne(accession.getHash());
+        if (dbAccession != null) {
+            throw new HashAlreadyExistsException(dbAccession.getHashedMessage(), dbAccession.getAccession());
+        }
     }
 
     /**
@@ -207,16 +221,13 @@ public class BasicSpringDataRepositoryDatabaseService<
 
         archiveService.archiveVersion(oldVersion, "Version update");
         repository.delete(oldVersion);
-        insert(Arrays.asList(accession));
-        return findAccession(accession.getAccession());
-    }
-
-    private void assertHashDoesNotExist(ModelWrapper<MODEL, String, ACCESSION> accession)
-            throws HashAlreadyExistsException {
-        final ACCESSION_ENTITY dbAccession = repository.findOne(accession.getHash());
-        if (dbAccession != null) {
-            throw new HashAlreadyExistsException(dbAccession.getHashedMessage(), dbAccession.getAccession());
+        try {
+            insert(Arrays.asList(accession));
+        }catch (RuntimeException e){
+            assertHashDoesNotExist(accession);
+            throw e;
         }
+        return findAccession(accession.getAccession());
     }
 
     @Override

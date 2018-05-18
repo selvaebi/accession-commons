@@ -82,17 +82,20 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     @Transactional
     void insert(List<ModelWrapper<MODEL, HASH, ACCESSION>> objects);
 
-    @Transactional
+    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
+            AccessionDoesNotExistException.class, AccessionMergedException.class})
     AccessionWrapper<MODEL, HASH, ACCESSION> patch(ModelWrapper<MODEL, HASH, ACCESSION> accession)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 
-    @Transactional
+    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
+            AccessionDoesNotExistException.class, AccessionMergedException.class})
     AccessionWrapper<MODEL, HASH, ACCESSION> update(ModelWrapper<MODEL, HASH, ACCESSION> accession)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException;
 
-    @Transactional
+    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDoesNotExistException.class,
+            AccessionMergedException.class})
     void deprecate(ACCESSION accession, String reason) throws AccessionDoesNotExistException, AccessionMergedException,
             AccessionDeprecatedException;
 
