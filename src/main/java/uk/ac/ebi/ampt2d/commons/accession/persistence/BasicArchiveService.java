@@ -64,9 +64,9 @@ public class BasicArchiveService<
     }
 
     @Override
-    public void archiveVersion(ACCESSION_ENTITY entitiy, String reason) {
-        OPERATION_ENTITY operation = generateUpdateOperation(entitiy.getAccession(), reason);
-        doArchive(Arrays.asList(entitiy), operation);
+    public void archiveVersion(ACCESSION_ENTITY entity, String reason) {
+        OPERATION_ENTITY operation = generateUpdateOperation(entity.getAccession(), reason);
+        doArchive(Arrays.asList(entity), operation);
     }
 
     private OPERATION_ENTITY generateUpdateOperation(ACCESSION accession, String reason) {
