@@ -109,7 +109,7 @@ public class BasicSpringDataRepositoryDatabaseService<
                 case MERGED_INTO:
                     throw new AccessionMergedException(operation.getAccessionIdDestiny());
                 case DEPRECATED:
-                    throw new AccessionDeprecatedException();
+                    throw new AccessionDeprecatedException(accession.toString());
             }
         }
     }
