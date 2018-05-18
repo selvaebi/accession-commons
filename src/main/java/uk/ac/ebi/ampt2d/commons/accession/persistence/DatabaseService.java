@@ -44,7 +44,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param hashes
      * @return
      */
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAccessionsByHash(Collection<HASH> hashes);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);
 
     /**
      * @param accession
@@ -54,7 +54,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      *                                        in the exception.
      * @throws AccessionDeprecatedException   accession is no longer active.
      */
-    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findAccession(ACCESSION accession) throws
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccession(ACCESSION accession) throws
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
@@ -63,7 +63,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param accessions valid accession id
      * @return All valid accessions. No deprecated or merged ids will be returned.
      */
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllAccessions(List<ACCESSION> accessions);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByAccession(List<ACCESSION> accessions);
 
     /**
      * Finds a specific version of accession and their data model representations.
@@ -76,7 +76,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      *                                        in the exception.
      * @throws AccessionDeprecatedException   accession is no longer active.
      */
-    AccessionWrapper<MODEL, HASH, ACCESSION> findAccessionVersion(ACCESSION accession, int version)
+    AccessionWrapper<MODEL, HASH, ACCESSION> findByAccessionVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException;
 
     @Transactional

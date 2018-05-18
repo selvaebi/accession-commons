@@ -73,7 +73,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAccessionsByHash(Collection<String> hashes) {
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByHash(Collection<String> hashes) {
         List<AccessionWrapper<MODEL, String, ACCESSION>> wrappedAccessions = new ArrayList<>();
         repository.findAll(hashes).iterator().forEachRemaining(
                 entity -> wrappedAccessions.add(toModelWrapper(entity)));
@@ -86,7 +86,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public AccessionVersionsWrapper<MODEL, String, ACCESSION> findAccession(ACCESSION accession)
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> findByAccession(ACCESSION accession)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         List<ACCESSION_ENTITY> entities = repository.findByAccession(accession);
         checkAccessionIsActive(entities, accession);
@@ -121,7 +121,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessions(List<ACCESSION> accessions) {
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByAccession(List<ACCESSION> accessions) {
         HashMap<ACCESSION, List<ACCESSION_ENTITY>> modelsByAccession = new HashMap<>();
         repository.findByAccessionIn(accessions).iterator().forEachRemaining(
                 entity -> {
@@ -147,7 +147,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public AccessionWrapper<MODEL, String, ACCESSION> findAccessionVersion(ACCESSION accession, int version)
+    public AccessionWrapper<MODEL, String, ACCESSION> findByAccessionVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
         ACCESSION_ENTITY result = doFindAccessionVersion(accession, version);
         return toModelWrapper(result);
@@ -183,7 +183,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         }
         maxVersion = maxVersion + 1;
         checkedInsert(accession, hash, model, maxVersion);
-        return findAccession(accession);
+        return findByAccession(accession);
     }
 
     private void checkedInsert(ACCESSION accession, String hash, MODEL model, int maxVersion)
@@ -227,7 +227,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         inactiveAccessionService.archiveVersion(oldVersion, "Version update");
         repository.delete(oldVersion);
         checkedInsert(accession, hash, model, version);
-        return findAccession(accession);
+        return findByAccession(accession);
     }
 
     @Override

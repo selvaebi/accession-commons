@@ -131,7 +131,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
         Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet());
-        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAccessionsByHash(unsavedHashes);
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllByHash(unsavedHashes);
         if (dbAccessions.size() != unsavedHashes.size()) {
             throw new MissingUnsavedAccessionsException(dbAccessions, saveFailedAccessions);
         }
@@ -140,7 +140,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects) {
-        return dbService.findAccessionsByHash(getHashes(accessionedObjects));
+        return dbService.findAllByHash(getHashes(accessionedObjects));
     }
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
@@ -149,7 +149,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
-        return dbService.findAllAccessions(accessions);
+        return dbService.findAllByAccession(accessions);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
-        return dbService.findAccessionVersion(accession, version);
+        return dbService.findByAccessionVersion(accession, version);
     }
 
     @Override

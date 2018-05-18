@@ -67,21 +67,21 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
     @Test
     public void testFindInEmptyRepository() {
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1", "a2")).size());
-        assertEquals(0, service.findAccessionsByHash(Arrays.asList("h1", "h2")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1", "a2")).size());
+        assertEquals(0, service.findAllByHash(Arrays.asList("h1", "h2")).size());
     }
 
     @Test
     public void saveUniqueElementsAndFindByAccessionReturnsEachAccession() {
         service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        List<AccessionWrapper<TestModel, String, String>> result = service.findAllAccessions(
+        List<AccessionWrapper<TestModel, String, String>> result = service.findAllByAccession(
                 Arrays.asList("a1", "a2", "a3"));
         assertEquals(3, result.size());
-        List<AccessionWrapper<TestModel, String, String>> resultAccession1 = service.findAllAccessions(Arrays.asList("a1"));
+        List<AccessionWrapper<TestModel, String, String>> resultAccession1 = service.findAllByAccession(Arrays.asList("a1"));
         assertEquals(1, resultAccession1.size());
         assertEquals("something1", resultAccession1.get(0).getData().getValue());
-        List<AccessionWrapper<TestModel, String, String>> resultAccession2 = service.findAllAccessions(
+        List<AccessionWrapper<TestModel, String, String>> resultAccession2 = service.findAllByAccession(
                 Arrays.asList("a2"));
         assertEquals(1, resultAccession2.size());
         assertEquals("something2", resultAccession2.get(0).getData().getValue());
@@ -91,7 +91,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void saveUniqueElementsAndFindByAccessionThatDoesNotExistReturnsNothing() {
         service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        List<AccessionWrapper<TestModel, String, String>> result = service.findAllAccessions(Arrays.asList("a0"));
+        List<AccessionWrapper<TestModel, String, String>> result = service.findAllByAccession(Arrays.asList("a0"));
         assertEquals(0, result.size());
     }
 
@@ -99,7 +99,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void saveUniqueElementsAndFindByHashReturnsEachAccession() {
         service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        List<AccessionWrapper<TestModel, String, String>> results = service.findAccessionsByHash(
+        List<AccessionWrapper<TestModel, String, String>> results = service.findAllByHash(
                 Arrays.asList("h1", "h2"));
         assertEquals(2, results.size());
     }
@@ -108,7 +108,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void saveUniqueElementsAndFindByHashThatDoesNotExistReturnsNothing() {
         service.insert(Arrays.asList(TEST_MODEL_1, TEST_MODEL_2, TEST_MODEL_3));
 
-        List<AccessionWrapper<TestModel, String, String>> results = service.findAccessionsByHash(
+        List<AccessionWrapper<TestModel, String, String>> results = service.findAllByHash(
                 Arrays.asList("h0"));
         assertEquals(0, results.size());
     }
@@ -162,7 +162,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
             HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
         service.insert(Arrays.asList(new AccessionWrapper<>("a2", "h1", TestModel.of("something2"))));
         service.patch("a2", "h2", TestModel.of("something2b"));
-        assertEquals(2, service.findAllAccessions(Arrays.asList("a2")).get(0).getVersion());
+        assertEquals(2, service.findAllByAccession(Arrays.asList("a2")).get(0).getVersion());
     }
 
     @Test
@@ -170,7 +170,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
             HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
         service.insert(Arrays.asList(new AccessionWrapper<>("a2", "h1", TestModel.of("something2"))));
         service.patch("a2", "h2", TestModel.of("something2b"));
-        assertEquals(2, service.findAccession("a2").getModelWrappers().size());
+        assertEquals(2, service.findByAccession("a2").getModelWrappers().size());
     }
 
     @Test
@@ -178,8 +178,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
             HashAlreadyExistsException, AccessionDeprecatedException, AccessionMergedException {
         service.insert(Arrays.asList(new AccessionWrapper<>("a2", "h1", TestModel.of("something2"))));
         service.patch("a2", "h2", TestModel.of("something2b"));
-        assertEquals(1, service.findAccessionVersion("a2", 1).getVersion());
-        assertEquals(2, service.findAccessionVersion("a2", 2).getVersion());
+        assertEquals(1, service.findByAccessionVersion("a2", 1).getVersion());
+        assertEquals(2, service.findByAccessionVersion("a2", 2).getVersion());
     }
 
     @Test
@@ -189,7 +189,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.update("a2", "h2", TestModel.of("something2b"), 1);
         service.update("a2", "h3", TestModel.of("something2c"), 1);
 
-        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllByAccession(Arrays.asList("a2"));
         assertEquals(1, accessions.size());
     }
 
@@ -200,11 +200,11 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.patch("a2", "h2", TestModel.of("something2b"));
         service.patch("a2", "h3", TestModel.of("something2c"));
 
-        assertEquals(1, service.findAccessionVersion("a2", 1).getVersion());
-        assertEquals(2, service.findAccessionVersion("a2", 2).getVersion());
-        assertEquals(3, service.findAccessionVersion("a2", 3).getVersion());
+        assertEquals(1, service.findByAccessionVersion("a2", 1).getVersion());
+        assertEquals(2, service.findByAccessionVersion("a2", 2).getVersion());
+        assertEquals(3, service.findByAccessionVersion("a2", 3).getVersion());
 
-        assertEquals(3, service.findAccession("a2").getModelWrappers().size());
+        assertEquals(3, service.findByAccession("a2").getModelWrappers().size());
     }
 
     @Test
@@ -214,7 +214,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.patch("a2", "h2", TestModel.of("something2b"));
         service.patch("a2", "h3", TestModel.of("something2c"));
 
-        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllByAccession(Arrays.asList("a2"));
         assertEquals(1, accessions.size());
         assertEquals(3, accessions.get(0).getVersion());
     }
@@ -226,27 +226,27 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
                 new AccessionWrapper("a2", "h1", TestModel.of("something2"), 1),
                 new AccessionWrapper("a2", "h2", TestModel.of("something2b"), 2)));
 
-        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllAccessions(Arrays.asList("a2"));
+        List<AccessionWrapper<TestModel, String, String>> accessions = service.findAllByAccession(Arrays.asList("a2"));
         assertEquals(1, accessions.size());
 
-        AccessionWrapper<TestModel, String, String> accessionOfVersion1 = service.findAccessionVersion("a2", 1);
+        AccessionWrapper<TestModel, String, String> accessionOfVersion1 = service.findByAccessionVersion("a2", 1);
         assertEquals(1, accessionOfVersion1.getVersion());
-        AccessionWrapper<TestModel, String, String> accessionsOfVersion2 = service.findAccessionVersion("a2", 2);
+        AccessionWrapper<TestModel, String, String> accessionsOfVersion2 = service.findByAccessionVersion("a2", 2);
         assertEquals(2, accessionsOfVersion2.getVersion());
     }
 
     @Test(expected = AccessionDoesNotExistException.class)
     public void testDeprecateNotExisting() throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
         service.deprecate("a1", "reasons");
     }
 
     @Test
     public void testDeprecateOneVersion() throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
         service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something2"), 1)));
-        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         service.deprecate("a1", "reasons");
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
 
         final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
         assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
@@ -262,10 +262,10 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void testDeprecateMultipleVersion() throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException, HashAlreadyExistsException {
         service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something2"), 1)));
         service.patch("a1", "h2", TestModel.of("something2b"));
-        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
-        assertEquals(2, service.findAllAccessions(Arrays.asList("a1")).get(0).getVersion());
+        assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
+        assertEquals(2, service.findAllByAccession(Arrays.asList("a1")).get(0).getVersion());
         service.deprecate("a1", "reasons");
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
 
         final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
         assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
@@ -280,13 +280,13 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     public void testDeprecateAndAccessionSameObjectMultipleTimes() throws AccessionDoesNotExistException,
             AccessionDeprecatedException, AccessionMergedException {
         service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something2"), 1)));
-        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         service.deprecate("a1", "reasons");
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
         service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something2"), 1)));
-        assertEquals(1, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         service.deprecate("a1", "reasons");
-        assertEquals(0, service.findAllAccessions(Arrays.asList("a1")).size());
+        assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
 
         assertEquals(2, historyRepository.count());
     }
