@@ -40,6 +40,9 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      */
     List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions);
 
+    ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionIdAndVersion(ACCESSION accessions, int version)
+    throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
+
     /**
      * Updates a specific patch version of an accessioned object. It does not create a new version / patch
      *
@@ -70,9 +73,6 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     AccessionWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
-
-    ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionIdAndVersion(ACCESSION accessions, int version)
-            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
      * Deprecates an accession
