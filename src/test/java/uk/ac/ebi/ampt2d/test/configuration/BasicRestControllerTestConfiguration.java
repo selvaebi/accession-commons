@@ -36,8 +36,8 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.test.TestModel;
-import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionEntity;
-import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
@@ -66,7 +66,7 @@ public class BasicRestControllerTestConfiguration {
     private TestStringHistoryRepository historyRepository;
 
     @Autowired
-    private TestArchivedAccessionRepository testArchivedAccessionRepository;
+    private TestInactiveAccessionRepository testInactiveAccessionRepository;
 
     @Bean
     public TestController testController() {
@@ -79,15 +79,15 @@ public class BasicRestControllerTestConfiguration {
                 repository,
                 TestEntity::new,
                 TestModel.class::cast,
-                archiveService()
+                inactiveService()
         );
     }
 
     @Bean
-    public InactiveAccessionService<TestModel, String, String, TestEntity> archiveService() {
+    public InactiveAccessionService<TestModel, String, String, TestEntity> inactiveService() {
         return new BasicInactiveAccessionService<>(
-                testArchivedAccessionRepository,
-                TestArchivedAccessionEntity::new,
+                testInactiveAccessionRepository,
+                TestInactiveAccessionEntity::new,
                 historyRepository,
                 TestStringOperationEntity::new,
                 TestModel.class::cast

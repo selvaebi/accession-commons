@@ -17,21 +17,10 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.ArchivedAccessionEntity;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionRepository;
 
-import javax.persistence.Entity;
-
-@Entity
-public class TestMonotonicArchivedAccessionEntity extends ArchivedAccessionEntity<Long> {
-
-    private String something;
-
-    TestMonotonicArchivedAccessionEntity() {
-        super();
-    }
-
-    public TestMonotonicArchivedAccessionEntity(TestMonotonicEntity testEntity) {
-        super(testEntity);
-        this.something = testEntity.getValue();
-    }
+@Repository
+public interface TestInactiveAccessionRepository extends InactiveAccessionRepository<String,
+        TestInactiveAccessionEntity> {
 }

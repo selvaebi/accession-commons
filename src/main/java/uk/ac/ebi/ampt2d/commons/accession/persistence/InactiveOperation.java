@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
  * An entry of operations performed over accessioned objects that are considered no longer active.
  * @param <ACCESSION>
  */
-public interface IArchiveOperation<ACCESSION> {
+public interface InactiveOperation<ACCESSION> {
     Object getAccessionIdOrigin();
 
     Object getAccessionIdDestiny();

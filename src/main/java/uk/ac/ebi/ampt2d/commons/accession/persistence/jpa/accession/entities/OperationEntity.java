@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IArchiveOperation;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveOperation;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -38,7 +38,7 @@ import java.time.ZonedDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class OperationEntity<ACCESSION> implements IArchiveOperation {
+public abstract class OperationEntity<ACCESSION> implements InactiveOperation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

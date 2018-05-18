@@ -34,8 +34,8 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsExcep
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
-import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionEntity;
-import uk.ac.ebi.ampt2d.test.persistence.TestArchivedAccessionRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 
@@ -63,7 +63,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     private TestStringHistoryRepository historyRepository;
 
     @Autowired
-    private TestArchivedAccessionRepository accessionArchive;
+    private TestInactiveAccessionRepository inactiveRepository;
 
     @Test
     public void testFindInEmptyRepository() {
@@ -248,12 +248,12 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.deprecate("a1", "reasons");
         assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
 
-        final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
-        assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
-        assertEquals("a1", historyEntity.getAccessionIdOrigin());
-        assertEquals("reasons", historyEntity.getReason());
+        final TestStringOperationEntity entity = historyRepository.findAll().iterator().next();
+        assertEquals(OperationType.DEPRECATED, entity.getOperationType());
+        assertEquals("a1", entity.getAccessionIdOrigin());
+        assertEquals("reasons", entity.getReason());
 
-        final List<TestArchivedAccessionEntity> deprecated = accessionArchive.findAllByHistoryId(historyEntity.getId());
+        final List<TestInactiveAccessionEntity> deprecated = inactiveRepository.findAllByHistoryId(entity.getId());
         assertEquals(1, deprecated.size());
         assertEquals("something2", deprecated.get(0).getValue());
     }
@@ -267,12 +267,12 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.deprecate("a1", "reasons");
         assertEquals(0, service.findAllByAccession(Arrays.asList("a1")).size());
 
-        final TestStringOperationEntity historyEntity = historyRepository.findAll().iterator().next();
-        assertEquals(OperationType.DEPRECATED, historyEntity.getOperationType());
-        assertEquals("a1", historyEntity.getAccessionIdOrigin());
-        assertEquals("reasons", historyEntity.getReason());
+        final TestStringOperationEntity entity = historyRepository.findAll().iterator().next();
+        assertEquals(OperationType.DEPRECATED, entity.getOperationType());
+        assertEquals("a1", entity.getAccessionIdOrigin());
+        assertEquals("reasons", entity.getReason());
 
-        final List<TestArchivedAccessionEntity> deprecated = accessionArchive.findAllByHistoryId(historyEntity.getId());
+        final List<TestInactiveAccessionEntity> deprecated = inactiveRepository.findAllByHistoryId(entity.getId());
         assertEquals(2, deprecated.size());
     }
 

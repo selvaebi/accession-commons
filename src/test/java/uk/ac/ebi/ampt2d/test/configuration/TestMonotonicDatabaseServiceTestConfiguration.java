@@ -30,8 +30,8 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.Cont
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongOperationEntity;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicArchivedAccessionEntity;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicArchivedAccessionRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
@@ -53,7 +53,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     private ContiguousIdBlockService contiguousIdBlockService;
 
     @Autowired
-    private TestMonotonicArchivedAccessionRepository archivedRepository;
+    private TestMonotonicInactiveAccessionRepository inactiveRepository;
 
     @Autowired
     private TestLongHistoryRepository historyRepository;
@@ -64,7 +64,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
                 repository,
                 TestMonotonicEntity::new,
                 TestModel.class::cast,
-                archiveService()
+                inactiveService()
         );
     }
 
@@ -78,10 +78,10 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> archiveService() {
+    public InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> inactiveService() {
         return new BasicInactiveAccessionService<>(
-                archivedRepository,
-                TestMonotonicArchivedAccessionEntity::new,
+                inactiveRepository,
+                TestMonotonicInactiveAccessionEntity::new,
                 historyRepository,
                 TestLongOperationEntity::new,
                 TestModel.class::cast

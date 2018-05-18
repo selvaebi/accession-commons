@@ -17,22 +17,22 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.ArchivedAccessionEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
 @Entity
-public class TestArchivedAccessionEntity extends ArchivedAccessionEntity<String> implements TestModel {
+public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String> implements TestModel {
 
     private String something;
 
-    TestArchivedAccessionEntity() {
+    TestInactiveAccessionEntity() {
         super();
     }
 
-    public TestArchivedAccessionEntity(TestEntity testEntity) {
+    public TestInactiveAccessionEntity(TestEntity testEntity) {
         super(testEntity);
         this.something = testEntity.getValue();
     }

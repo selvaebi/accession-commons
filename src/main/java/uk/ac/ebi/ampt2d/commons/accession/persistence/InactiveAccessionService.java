@@ -30,12 +30,12 @@ public interface InactiveAccessionService<
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>> {
 
     @Transactional
-    void archiveVersion(ACCESSION_ENTITY entity, String reason);
+    void update(ACCESSION_ENTITY entity, String reason);
 
     @Transactional
-    void archiveDeprecation(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
+    void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
 
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
-    IArchiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
+    InactiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
 }

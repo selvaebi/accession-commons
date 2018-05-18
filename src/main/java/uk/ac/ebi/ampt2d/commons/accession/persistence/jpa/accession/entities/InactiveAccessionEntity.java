@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class ArchivedAccessionEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION>{
+public abstract class InactiveAccessionEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION>{
 
     @Id
     @GeneratedValue
@@ -51,11 +51,11 @@ public abstract class ArchivedAccessionEntity<ACCESSION extends Serializable> im
     @Column(nullable = false, updatable = false)
     private Long historyId;
 
-    protected ArchivedAccessionEntity() {
+    protected InactiveAccessionEntity() {
 
     }
 
-    public ArchivedAccessionEntity(IAccessionedObject<ACCESSION> object) {
+    public InactiveAccessionEntity(IAccessionedObject<ACCESSION> object) {
         this.hashedMessage = object.getHashedMessage();
         this.accession = object.getAccession();
         this.version = object.getVersion();

@@ -103,7 +103,7 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
-        IArchiveOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
+        InactiveOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
         if (operation != null) {
             switch (operation.getOperationType()) {
                 case MERGED_INTO:
@@ -224,7 +224,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         ACCESSION_ENTITY oldVersion = doFindAccessionVersion(accession, version);
         checkHashDoesNotExist(hash);
 
-        inactiveAccessionService.archiveVersion(oldVersion, "Version update");
+        inactiveAccessionService.update(oldVersion, "Version update");
         repository.delete(oldVersion);
         checkedInsert(accession, hash, model, version);
         return findByAccession(accession);
@@ -234,7 +234,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     public void deprecate(ACCESSION accession, String reason) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
         List<ACCESSION_ENTITY> accessionedElements = getAccession(accession);
-        inactiveAccessionService.archiveDeprecation(accession, accessionedElements, reason);
+        inactiveAccessionService.deprecate(accession, accessionedElements, reason);
         repository.delete(accessionedElements);
     }
 
