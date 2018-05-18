@@ -24,12 +24,23 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 
 @Configuration
 @ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
@@ -44,13 +55,43 @@ public class TestJpaDatabaseServiceTestConfiguration {
     @Autowired
     private TestRepository repository;
 
+    @Autowired
+    private TestStringHistoryRepository historyRepository;
+
+    @Autowired
+    private TestInactiveAccessionRepository testInactiveAccessionRepository;
+
     @Bean
-    public BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> getService() {
+    public DatabaseService<TestModel, String, String> databaseService() {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
-                repository,
                 TestEntity::new,
+                TestModel.class::cast,
+                inactiveService()
+        );
+    }
+
+    @Bean
+    public InactiveAccessionService<TestModel, String, String, TestEntity> inactiveService() {
+        return new BasicInactiveAccessionService<>(
+                testInactiveAccessionRepository,
+                TestInactiveAccessionEntity::new,
+                historyRepository,
+                TestStringOperationEntity::new,
                 TestModel.class::cast
+        );
+    }
+
+    @Bean
+    public AccessioningService<TestModel, String, String> accessioningService() {
+        return new BasicAccessioningService<>(
+                SingleAccessionGenerator.ofHashAccessionGenerator(
+                        TestModel::getValue,
+                        s -> "id-service-" + s
+                ),
+                databaseService(),
+                TestModel::getValue,
+                new SHA1HashingFunction()
         );
     }
 

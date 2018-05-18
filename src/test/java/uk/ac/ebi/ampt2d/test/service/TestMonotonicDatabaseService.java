@@ -21,7 +21,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
@@ -30,15 +30,15 @@ import java.util.Collection;
 import java.util.function.Function;
 
 public class TestMonotonicDatabaseService
-        extends BasicSpringDataRepositoryDatabaseService<TestModel, TestMonotonicEntity, Long>
+        extends BasicSpringDataRepositoryDatabaseService<TestModel, Long, TestMonotonicEntity>
         implements MonotonicDatabaseService<TestModel, String> {
 
-    public TestMonotonicDatabaseService(IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
-                                        IAccessionedObjectCustomRepository customMethodsRepository,
-                                        Function<AccessionWrapper<TestModel, String, Long>, TestMonotonicEntity>
-                                                toEntityFunction,
-                                        Function<TestMonotonicEntity, TestModel> toModelFunction) {
-        super(repository, customMethodsRepository, toEntityFunction, toModelFunction);
+    public TestMonotonicDatabaseService(
+            IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
+            Function<AccessionWrapper<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction,
+            Function<TestMonotonicEntity, TestModel> toModelFunction,
+            InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> inactiveAccessionService) {
+        super(repository, toEntityFunction, toModelFunction, inactiveAccessionService);
     }
 
     @Override

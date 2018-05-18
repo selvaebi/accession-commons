@@ -15,18 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-import java.time.LocalDateTime;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionRepository;
 
-public interface IAccessionedObject<ACCESSION> {
-
-    ACCESSION getAccession();
-
-    String getHashedMessage();
-
-    LocalDateTime getCreatedDate();
-
-    int getVersion();
-
+@Repository
+public interface TestMonotonicInactiveAccessionRepository
+        extends InactiveAccessionRepository<Long, TestMonotonicInactiveAccessionEntity> {
 }

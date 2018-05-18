@@ -17,8 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +24,10 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRe
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.Collection;
-import java.util.Set;
 
 public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY extends AccessionedEntity<?>>
         implements IAccessionedObjectCustomRepository {
-
-    private final static Logger logger = LoggerFactory.getLogger(BasicJpaAccessionedObjectCustomRepositoryImpl.class);
 
     private JpaEntityInformation<ENTITY, ?> entityInformation;
 
@@ -42,17 +36,6 @@ public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY exten
     public BasicJpaAccessionedObjectCustomRepositoryImpl(Class<ENTITY> entityClass, EntityManager entityManager) {
         entityInformation = JpaEntityInformationSupport.getEntityInformation(entityClass, entityManager);
         this.entityManager = entityManager;
-    }
-
-    @Transactional
-    @Override
-    public void enableByHashedMessageIn(Set<String> hashes) {
-        String entity = entityInformation.getEntityName();
-        Query query = entityManager.createQuery(
-                "UPDATE " + entity + " SET active=true WHERE hashedMessage in :hashes ");
-        query.setParameter("hashes", hashes);
-        logger.info(Integer.toString(query.executeUpdate()));
-        entityManager.clear();
     }
 
     @Override

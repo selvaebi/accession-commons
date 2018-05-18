@@ -17,11 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.repositories.AccessionHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
 
-@Repository
-public interface TestAccessionHistoryLongRepository extends
-        AccessionHistoryRepository<TestAccessionHistoryLongEntity, Long> {
+import javax.persistence.Entity;
+
+@Entity
+public class TestLongOperationEntity extends OperationEntity<Long> {
 
 }

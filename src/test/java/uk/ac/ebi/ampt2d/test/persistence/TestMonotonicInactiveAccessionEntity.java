@@ -17,16 +17,21 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities.AccessionHistoryLongEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
 
 import javax.persistence.Entity;
 
 @Entity
-public class TestAccessionHistoryLongEntity extends AccessionHistoryLongEntity {
+public class TestMonotonicInactiveAccessionEntity extends InactiveAccessionEntity<Long> {
 
-    public TestAccessionHistoryLongEntity(Long accession, AccessionStatus accessionStatus, String reason) {
-        super(accession, accessionStatus, reason);
+    private String something;
+
+    TestMonotonicInactiveAccessionEntity() {
+        super();
     }
 
+    public TestMonotonicInactiveAccessionEntity(TestMonotonicEntity testEntity) {
+        super(testEntity);
+        this.something = testEntity.getValue();
+    }
 }

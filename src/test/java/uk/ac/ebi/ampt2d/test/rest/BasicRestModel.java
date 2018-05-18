@@ -17,9 +17,12 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
+
+import uk.ac.ebi.ampt2d.test.TestModel;
+
 import javax.validation.constraints.NotNull;
 
-public class BasicRestModel {
+public class BasicRestModel implements TestModel {
 
     @NotNull(message = "Please provide a value")
     private String value;
@@ -31,6 +34,7 @@ public class BasicRestModel {
         this.value = value;
     }
 
+    @Override
     public String getValue() {
         return value;
     }

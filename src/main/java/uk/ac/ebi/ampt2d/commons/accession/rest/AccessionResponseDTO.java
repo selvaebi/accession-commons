@@ -34,10 +34,6 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
-    private HASH hash;
-
-    private boolean active;
-
     private int version;
 
     private DTO data;
@@ -47,22 +43,12 @@ public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 
     public AccessionResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> accessionWrapper, Function<MODEL, DTO> modelToDto) {
         this.accession = accessionWrapper.getAccession();
-        this.hash = accessionWrapper.getHash();
-        this.active = accessionWrapper.isActive();
         this.version = accessionWrapper.getVersion();
         this.data = modelToDto.apply(accessionWrapper.getData());
     }
 
     public ACCESSION getAccession() {
         return accession;
-    }
-
-    public HASH getHash() {
-        return hash;
-    }
-
-    public boolean isActive() {
-        return active;
     }
 
     public int getVersion() {

@@ -47,12 +47,12 @@ public class BasicAccessioningServiceSaveDelegateTest {
     private TestRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryDatabaseService<TestModel, TestEntity, String> databaseService;
+    private BasicSpringDataRepositoryDatabaseService<TestModel, String, TestEntity> databaseService;
 
     @Test
     public void testUnsaveIfExistPreviousWithSameHash() throws AccessionCouldNotBeGeneratedException {
         TestTransaction.flagForCommit();
-        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", 1, true, "test-3"));
+        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", 1, "test-3"));
         TestTransaction.end();
 
         Map<String, TestModel> accessions = new HashMap<>();
@@ -80,11 +80,11 @@ public class BasicAccessioningServiceSaveDelegateTest {
     private BasicAccessioningService<TestModel, String, String> getAccessioningService() {
         return new BasicAccessioningService<>(
                 SingleAccessionGenerator.ofHashAccessionGenerator(
-                        TestModel::getSomething,
+                        TestModel::getValue,
                         s -> "id-" + s
                 ),
                 databaseService,
-                TestModel::getSomething,
+                TestModel::getValue,
                 new SHA1HashingFunction()
         );
     }
@@ -92,7 +92,7 @@ public class BasicAccessioningServiceSaveDelegateTest {
     @Test
     public void testCompleteSaveIfSameAccessionDifferentHash() throws AccessionCouldNotBeGeneratedException {
         TestTransaction.flagForCommit();
-        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", 1, true, "test-3"));
+        repository.save(new TestEntity("id-test-3", "3323D8A8F66A0602CC59372E866DD8E116DCCDB2", 1, "test-3"));
         TestTransaction.end();
 
         Map<String, TestModel> accessions = new HashMap<>();

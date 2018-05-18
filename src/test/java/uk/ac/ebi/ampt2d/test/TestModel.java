@@ -19,10 +19,10 @@ package uk.ac.ebi.ampt2d.test;
 
 public interface TestModel {
 
-    String getSomething();
+    String getValue();
 
-    static TestModel of(String something) {
-        return () -> something;
+    static TestModel of(String value) {
+        return () -> value;
     }
 
 }

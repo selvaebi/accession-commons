@@ -31,38 +31,31 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
     private HASH hash;
 
-    private boolean active;
-
     private MODEL data;
 
     private int version;
 
     public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data) {
-        this(accession, hash, data, 1, true);
+        this(accession, hash, data, 1);
     }
 
     public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version) {
-        this(accession, hash, data, version, true);
-    }
-
-    public AccessionWrapper(ACCESSION accession, HASH hash, MODEL data, int version, boolean active) {
         this.accession = accession;
         this.hash = hash;
         this.data = data;
         this.version = version;
-        this.active = active;
     }
 
     public ACCESSION getAccession() {
         return accession;
     }
 
-    public HASH getHash() {
-        return hash;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
-    public boolean isActive() {
-        return active;
+    public HASH getHash() {
+        return hash;
     }
 
     public MODEL getData() {
@@ -80,16 +73,19 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 
         AccessionWrapper<?, ?, ?> that = (AccessionWrapper<?, ?, ?>) o;
 
-        if (active != that.active) return false;
+        if (version != that.version) return false;
         if (!accession.equals(that.accession)) return false;
-        return hash.equals(that.hash);
+        if (!hash.equals(that.hash)) return false;
+        return data.equals(that.data);
     }
 
     @Override
     public int hashCode() {
         int result = accession.hashCode();
         result = 31 * result + hash.hashCode();
-        result = 31 * result + (active ? 1 : 0);
+        result = 31 * result + data.hashCode();
+        result = 31 * result + version;
         return result;
     }
+
 }

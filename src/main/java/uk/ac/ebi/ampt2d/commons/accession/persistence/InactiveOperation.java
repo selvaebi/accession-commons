@@ -15,19 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities;
+package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 
-import javax.persistence.Column;
+import java.time.ZonedDateTime;
 
-public abstract class AccessionHistoryStringEntity extends AccessionHistoryEntity {
+/**
+ * An entry of operations performed over accessioned objects that are considered no longer active.
+ * @param <ACCESSION>
+ */
+public interface InactiveOperation<ACCESSION> {
+    Object getAccessionIdOrigin();
 
-    @Column(nullable = false)
-    private String accession;
+    Object getAccessionIdDestiny();
 
-    public AccessionHistoryStringEntity(String accession, AccessionStatus accessionStatus, String reason) {
-        super(accessionStatus, reason);
-        this.accession = accession;
-    }
+    OperationType getOperationType();
+
+    String getReason();
+
+    ZonedDateTime getCreatedDate();
 }

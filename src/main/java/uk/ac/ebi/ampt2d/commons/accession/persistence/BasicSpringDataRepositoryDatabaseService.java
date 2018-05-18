@@ -17,15 +17,20 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -37,105 +42,200 @@ import java.util.stream.Collectors;
  * to get the accession from the entity and a function to get the hashed representation of the message from the entity.
  *
  * @param <MODEL>
- * @param <ENTITY>
+ * @param <ACCESSION_ENTITY>
  * @param <ACCESSION>
  */
-public class BasicSpringDataRepositoryDatabaseService<MODEL, ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> implements DatabaseService<MODEL, String, ACCESSION> {
+public class BasicSpringDataRepositoryDatabaseService<
+        MODEL,
+        ACCESSION extends Serializable,
+        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>>
+        implements DatabaseService<MODEL, String, ACCESSION> {
 
-    private IAccessionedObjectRepository<ENTITY, ACCESSION> repository;
+    private final static Logger logger = LoggerFactory.getLogger(BasicSpringDataRepositoryDatabaseService.class);
 
-    private IAccessionedObjectCustomRepository customMethodsRepository;
+    private final IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository;
 
-    private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction;
+    private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction;
 
-    private final Function<ENTITY, MODEL> toModelFunction;
+    private final Function<ACCESSION_ENTITY, MODEL> toModelFunction;
 
-    public BasicSpringDataRepositoryDatabaseService(IAccessionedObjectRepository<ENTITY, ACCESSION> repository,
-                                                    IAccessionedObjectCustomRepository customMethodsRepository,
-                                                    Function<AccessionWrapper<MODEL, String, ACCESSION>, ENTITY> toEntityFunction,
-                                                    Function<ENTITY, MODEL> toModelFunction) {
+    private final InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+
+    public BasicSpringDataRepositoryDatabaseService(
+            IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository,
+            Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction,
+            Function<ACCESSION_ENTITY, MODEL> toModelFunction,
+            InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
         this.repository = repository;
-        this.customMethodsRepository = customMethodsRepository;
         this.toEntityFunction = toEntityFunction;
         this.toModelFunction = toModelFunction;
+        this.inactiveAccessionService = inactiveAccessionService;
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionsByHash(Collection<String> hashes) {
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByHash(Collection<String> hashes) {
         List<AccessionWrapper<MODEL, String, ACCESSION>> wrappedAccessions = new ArrayList<>();
         repository.findAll(hashes).iterator().forEachRemaining(
-                entity -> wrappedAccessions.add(createAccessionWrapperFromEntity(entity)));
+                entity -> wrappedAccessions.add(toModelWrapper(entity)));
         return wrappedAccessions;
     }
 
-    private AccessionWrapper<MODEL, String, ACCESSION> createAccessionWrapperFromEntity(ENTITY entity) {
+    private AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ENTITY entity) {
         return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
-                entity.getVersion(), entity.isActive());
+                entity.getVersion());
     }
 
     @Override
-    @Transactional
-    public void insert(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
-        Set<ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
-        customMethodsRepository.insert(entitySet);
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> findByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        List<ACCESSION_ENTITY> entities = repository.findByAccession(accession);
+        checkAccessionIsActive(entities, accession);
+        return toAccessionWrapper(entities);
+    }
+
+    private void checkAccessionIsActive(List<ACCESSION_ENTITY> entities, ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        if (entities == null || entities.isEmpty()) {
+            checkAccessionMergedOrDeprecated(accession);
+            throw new AccessionDoesNotExistException(accession.toString());
+        }
+    }
+
+    private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
+            AccessionMergedException, AccessionDeprecatedException {
+        InactiveOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
+        if (operation != null) {
+            switch (operation.getOperationType()) {
+                case MERGED_INTO:
+                    throw new AccessionMergedException(operation.getAccessionIdDestiny());
+                case DEPRECATED:
+                    throw new AccessionDeprecatedException(accession.toString());
+            }
+        }
+    }
+
+    private AccessionVersionsWrapper<MODEL, String, ACCESSION> toAccessionWrapper(List<ACCESSION_ENTITY> entities) {
+        final List<AccessionWrapper<MODEL, String, ACCESSION>> models = entities.stream().map(this::toModelWrapper)
+                .collect(Collectors.toList());
+        return new AccessionVersionsWrapper<>(models);
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessions(
-            List<ACCESSION> accessions) {
-        List<AccessionWrapper<MODEL, String, ACCESSION>> result = new ArrayList<>();
+    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByAccession(List<ACCESSION> accessions) {
+        HashMap<ACCESSION, List<ACCESSION_ENTITY>> modelsByAccession = new HashMap<>();
         repository.findByAccessionIn(accessions).iterator().forEachRemaining(
-                entity -> result.add(createAccessionWrapperFromEntity(entity)));
+                entity -> {
+                    modelsByAccession.putIfAbsent(entity.getAccession(), new ArrayList<>());
+                    modelsByAccession.get(entity.getAccession()).add(entity);
+                });
+
+        return modelsByAccession.values().stream().map(this::filterOldVersions).map(this::toModelWrapper)
+                .collect(Collectors.toList());
+    }
+
+    private ACCESSION_ENTITY filterOldVersions(List<ACCESSION_ENTITY> accessionedElements) {
+        int maxVersion = 1;
+        ACCESSION_ENTITY lastVersionEntity = null;
+        for (ACCESSION_ENTITY element : accessionedElements) {
+            if (element.getVersion() >= maxVersion) {
+                maxVersion = element.getVersion();
+                lastVersionEntity = element;
+            }
+        }
+
+        return lastVersionEntity;
+    }
+
+    @Override
+    public AccessionWrapper<MODEL, String, ACCESSION> findByAccessionVersion(ACCESSION accession, int version)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        ACCESSION_ENTITY result = doFindAccessionVersion(accession, version);
+        return toModelWrapper(result);
+    }
+
+    private ACCESSION_ENTITY doFindAccessionVersion(ACCESSION accession, int version) throws
+            AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
+        if (result == null) {
+            checkAccessionMergedOrDeprecated(accession);
+            throw new AccessionDoesNotExistException(accession.toString(), version);
+        }
         return result;
     }
 
     @Override
-    public void enableAccessions(List<AccessionWrapper<MODEL, String, ACCESSION>> accessionedObjects) {
-        customMethodsRepository.enableByHashedMessageIn(accessionedObjects.stream().map(AccessionWrapper::getHash)
-                .collect(Collectors.toSet()));
+    public void insert(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
+        Set<ACCESSION_ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
+        repository.insert(entitySet);
     }
 
     @Override
-    public AccessionWrapper<MODEL, String, ACCESSION> update(AccessionWrapper<MODEL, String, ACCESSION> accession)
-            throws AccessionDoesNotExistException, HashAlreadyExistsException {
-        Collection<ENTITY> accessionedElements = repository.findByAccession(accession.getAccession());
-        assertAccessionExists(accession, accessionedElements);
-        assertHashDoesNotExist(accession);
-
-        int version = 1;
-        for (ENTITY accessionedElement : accessionedElements) {
-            if (version <= accessionedElement.getVersion()) {
-                version = accessionedElement.getVersion() + 1;
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> patch(ACCESSION accession, String hash, MODEL model)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
+            AccessionMergedException {
+        List<ACCESSION_ENTITY> entities = getAccession(accession);
+        checkHashDoesNotExist(hash);
+        int maxVersion = 1;
+        for (ACCESSION_ENTITY entity : entities) {
+            if (entity.getVersion() >= maxVersion) {
+                maxVersion = entity.getVersion();
             }
         }
+        maxVersion = maxVersion + 1;
+        checkedInsert(accession, hash, model, maxVersion);
+        return findByAccession(accession);
+    }
 
-        AccessionWrapper<MODEL, String, ACCESSION> newAccessionVersion =
-                new AccessionWrapper<>(accession.getAccession(), accession.getHash(), accession.getData(), version);
-        insert(Arrays.asList(newAccessionVersion));
-        return newAccessionVersion;
+    private void checkedInsert(ACCESSION accession, String hash, MODEL model, int maxVersion)
+            throws HashAlreadyExistsException {
+        try {
+            insert(Arrays.asList(new AccessionWrapper<>(accession, hash, model, maxVersion)));
+        } catch (RuntimeException e) {
+            checkHashDoesNotExist(hash);
+            throw e;
+        }
+    }
+
+    private void checkHashDoesNotExist(String hash)
+            throws HashAlreadyExistsException {
+        final ACCESSION_ENTITY dbAccession = repository.findOne(hash);
+        if (dbAccession != null) {
+            throw new HashAlreadyExistsException(dbAccession.getHashedMessage(), dbAccession.getAccession());
+        }
+    }
+
+    /**
+     * @param accessionId
+     * @return All entries of an accession. It is never empty
+     * @throws AccessionDoesNotExistException If no accession with accessionId found
+     */
+    private List<ACCESSION_ENTITY> getAccession(ACCESSION accessionId)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        List<ACCESSION_ENTITY> accessionedElements = repository.findByAccession(accessionId);
+        checkAccessionIsActive(accessionedElements, accessionId);
+
+        return accessionedElements;
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllAccessionMappingsByAccessionAndVersion(ACCESSION accession, int version) {
-        return repository.findByAccessionAndVersion(accession, version).stream()
-                .map(this::createAccessionWrapperFromEntity)
-                .collect(Collectors.toList());
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> update(ACCESSION accession, String hash, MODEL model, int version)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
+            AccessionDeprecatedException {
+        ACCESSION_ENTITY oldVersion = doFindAccessionVersion(accession, version);
+        checkHashDoesNotExist(hash);
 
+        inactiveAccessionService.update(oldVersion, "Version update");
+        repository.delete(oldVersion);
+        checkedInsert(accession, hash, model, version);
+        return findByAccession(accession);
     }
 
-    private void assertHashDoesNotExist(AccessionWrapper<MODEL, String, ACCESSION> accession)
-            throws HashAlreadyExistsException {
-        if (repository.findOne(accession.getHash()) != null) {
-            throw new HashAlreadyExistsException(accession.getHash(), accession.getData().getClass());
-        }
-    }
-
-    private void assertAccessionExists(AccessionWrapper<MODEL, String, ACCESSION> accession,
-                                       Collection<ENTITY> accessionedElements) throws AccessionDoesNotExistException {
-        if (accessionedElements.isEmpty()) {
-            throw new AccessionDoesNotExistException(accession.toString());
-        }
+    @Override
+    public void deprecate(ACCESSION accession, String reason) throws AccessionDoesNotExistException,
+            AccessionMergedException, AccessionDeprecatedException {
+        List<ACCESSION_ENTITY> accessionedElements = getAccession(accession);
+        inactiveAccessionService.deprecate(accession, accessionedElements, reason);
+        repository.delete(accessionedElements);
     }
 
 }

@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
+package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
 
-@FunctionalInterface
-public interface IAccessionHistoryBuilder<ENTITY, ACCESSION> {
-
-    ENTITY build(ACCESSION accession, AccessionStatus accessionStatus, String reason);
-
+@Repository
+public interface TestStringHistoryRepository extends IHistoryRepository<String, TestStringOperationEntity, Long> {
 }

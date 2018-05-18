@@ -17,16 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionStatus;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.history.entities.AccessionHistoryStringEntity;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
 
-import javax.persistence.Entity;
-
-@Entity
-public class TestAccessionHistoryStringEntity extends AccessionHistoryStringEntity {
-
-    public TestAccessionHistoryStringEntity(String accession, AccessionStatus accessionStatus, String reason) {
-        super(accession, accessionStatus, reason);
-    }
-
+@Repository
+public interface TestLongHistoryRepository extends IHistoryRepository<Long, TestLongOperationEntity, Long> {
 }

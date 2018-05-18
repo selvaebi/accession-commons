@@ -18,23 +18,74 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 
 import java.util.List;
 
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions,
-                                                                     boolean hideDeprecated);
+    /**
+     * Finds last version of all valid accessions with their possible data model representations.
+     *
+     * @param accessions
+     * @return
+     */
+    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions);
 
-    AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message) throws AccessionDoesNotExistException, HashAlreadyExistsException;
+    AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accessions, int version)
+    throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIdAndVersion(ACCESSION accessions, int version);
+    /**
+     * Updates a specific patch version of an accessioned object. It does not create a new version / patch
+     *
+     * @param accession
+     * @param version
+     * @param message
+     * @return Accession with complete patch information
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     */
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
+            AccessionMergedException;
+
+    /**
+     * Creates a new patch version of an accession.
+     *
+     * @param accession
+     * @param message
+     * @return Accession with complete patch information
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     */
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
+            AccessionMergedException;
+
+    /**
+     * Deprecates an accession
+     *
+     * @param accession
+     * @param reason
+     * @return Accession with complete patch information
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     */
+    void deprecate(ACCESSION accession, String reason) throws AccessionMergedException, AccessionDoesNotExistException,
+            AccessionDeprecatedException;
 
 }

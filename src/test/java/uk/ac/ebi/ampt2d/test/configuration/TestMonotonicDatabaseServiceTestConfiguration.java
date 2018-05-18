@@ -24,8 +24,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.persistence.TestLongHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestLongOperationEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
@@ -46,13 +52,19 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     @Autowired
     private ContiguousIdBlockService contiguousIdBlockService;
 
+    @Autowired
+    private TestMonotonicInactiveAccessionRepository inactiveRepository;
+
+    @Autowired
+    private TestLongHistoryRepository historyRepository;
+
     @Bean
     public TestMonotonicDatabaseService getService() {
         return new TestMonotonicDatabaseService(
                 repository,
-                repository,
                 TestMonotonicEntity::new,
-                TestModel.class::cast
+                TestModel.class::cast,
+                inactiveService()
         );
     }
 
@@ -63,6 +75,17 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
                 CATEGORY_ID,
                 INSTANCE_ID,
                 contiguousIdBlockService);
+    }
+
+    @Bean
+    public InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> inactiveService() {
+        return new BasicInactiveAccessionService<>(
+                inactiveRepository,
+                TestMonotonicInactiveAccessionEntity::new,
+                historyRepository,
+                TestLongOperationEntity::new,
+                TestModel.class::cast
+        );
     }
 
 }

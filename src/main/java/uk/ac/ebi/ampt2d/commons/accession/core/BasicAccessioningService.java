@@ -18,7 +18,9 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
@@ -26,7 +28,6 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @return
      */
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         return saveAccessions(accessionGenerator.generateAccessions(mapHashOfMessages(messages)));
     }
@@ -112,7 +113,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
                     getPreexistingAccessions(unsavedAccessions);
             savedAccessions.addAll(preexistingAccessions);
-            dbService.enableAccessions(preexistingAccessions);
         }
 
         return savedAccessions;
@@ -131,7 +131,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
         Set<HASH> unsavedHashes = saveFailedAccessions.stream().map(AccessionWrapper::getHash)
                 .collect(Collectors.toSet());
-        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllAccessionsByHash(unsavedHashes);
+        List<AccessionWrapper<MODEL, HASH, ACCESSION>> dbAccessions = dbService.findAllByHash(unsavedHashes);
         if (dbAccessions.size() != unsavedHashes.size()) {
             throw new MissingUnsavedAccessionsException(dbAccessions, saveFailedAccessions);
         }
@@ -139,8 +139,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects) {
-        return dbService.findAllAccessionsByHash(getHashes(accessionedObjects));
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects) {
+        return dbService.findAllByHash(getHashes(accessionedObjects));
     }
 
     private List<HASH> getHashes(List<? extends MODEL> accessionObjects) {
@@ -148,39 +148,34 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions,
-                                                                            boolean hideDeprecated) {
-        final List<AccessionWrapper<MODEL, HASH, ACCESSION>> allAccessionMappingsByAccessions
-                = dbService.findAllAccessionMappingsByAccessions(accessions);
-        Map<ACCESSION, Integer> accessionToMaxVersion = generateAccessionToMaxVersion(allAccessionMappingsByAccessions);
-        return allAccessionMappingsByAccessions.stream()
-                .filter(wrapper -> accessionToMaxVersion.get(wrapper.getAccession()) == wrapper.getVersion())
-                .collect(Collectors.toList());
-    }
-
-    private Map<ACCESSION, Integer> generateAccessionToMaxVersion(
-            List<AccessionWrapper<MODEL, HASH, ACCESSION>> allAccessionMappingsByAccessions) {
-        Map<ACCESSION, Integer> accessionToMaxVersion = new HashMap<>();
-        allAccessionMappingsByAccessions.stream().forEach(
-                wrapper -> {
-                    if (!accessionToMaxVersion.containsKey(wrapper.getAccession()) ||
-                            accessionToMaxVersion.get(wrapper.getAccession()) < wrapper.getVersion()) {
-                        accessionToMaxVersion.put(wrapper.getAccession(), wrapper.getVersion());
-                    }
-                }
-        );
-        return accessionToMaxVersion;
+    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
+        return dbService.findAllByAccession(accessions);
     }
 
     @Override
-    public AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, MODEL message)
-            throws AccessionDoesNotExistException, HashAlreadyExistsException {
-        return dbService.update(new AccessionWrapper<>(accession, hashingFunction.apply(message), message));
+    public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
+            AccessionMergedException {
+        return dbService.update(accession, hashingFunction.apply(message), message, version);
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessionIdAndVersion(ACCESSION accession, int version) {
-        return dbService.findAllAccessionMappingsByAccessionAndVersion(accession, version);
+    public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
+            throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
+            AccessionMergedException {
+        return dbService.patch(accession, hashingFunction.apply(message), message);
+    }
+
+    @Override
+    public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        return dbService.findByAccessionVersion(accession, version);
+    }
+
+    @Override
+    public void deprecate(ACCESSION accession, String reason) throws AccessionMergedException,
+            AccessionDoesNotExistException, AccessionDeprecatedException {
+        dbService.deprecate(accession, reason);
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

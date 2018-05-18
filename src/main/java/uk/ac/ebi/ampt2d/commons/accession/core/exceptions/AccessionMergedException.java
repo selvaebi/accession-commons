@@ -15,19 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.history.service;
+package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 /**
- * Interface for services that allow to interact with the components to track the history of accessions.
- *
- * @param <ACCESSION>
+ * Exception thrown when the system tried to modify an accession that has already been merged into another one.
  */
-public interface IAccessionHistoryTrackingService<ACCESSION> {
+public class AccessionMergedException extends Exception {
 
-    void merge(String reason, ACCESSION... accessions);
+    private final Object accessionId;
 
-    void update(String reason, ACCESSION... accessions);
+    public AccessionMergedException(Object accessionId){
+        this.accessionId = accessionId;
+    }
 
-    void deprecate(String reason, ACCESSION... accessions);
-
+    public Object getAccessionId() {
+        return accessionId;
+    }
 }

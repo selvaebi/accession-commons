@@ -17,16 +17,16 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import java.time.LocalDateTime;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-public interface IAccessionedObject<ACCESSION> {
+import java.io.Serializable;
+import java.util.List;
 
-    ACCESSION getAccession();
+@NoRepositoryBean
+public interface InactiveAccessionRepository<ACCESSION, ENTITY> extends CrudRepository<ENTITY, Long> {
 
-    String getHashedMessage();
+    List<ENTITY> findAllByHistoryId(Long historyId);
 
-    LocalDateTime getCreatedDate();
-
-    int getVersion();
-
+    List<ENTITY> findAllByAccessionAndVersion(ACCESSION accession, int version);
 }

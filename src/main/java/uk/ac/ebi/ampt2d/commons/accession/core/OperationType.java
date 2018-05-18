@@ -17,12 +17,15 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-public enum AccessionStatus {
+public enum OperationType {
 
+    // accession object has changed
     UPDATED,
 
-    MERGED,
+    // accession1 merged into accession2
+    MERGED_INTO,
 
+    // accession is no longer valid
     DEPRECATED;
 
 }

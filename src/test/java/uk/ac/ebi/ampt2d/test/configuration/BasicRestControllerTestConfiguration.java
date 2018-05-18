@@ -17,20 +17,81 @@
  */
 package uk.ac.ebi.ampt2d.test.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableBasicRestControllerAdvice;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
+import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 import uk.ac.ebi.ampt2d.test.rest.TestController;
 
 @Configuration
 @EnableWebMvc
 @EnableBasicRestControllerAdvice
+@ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
+@EnableJpaAuditing
+@ComponentScan(basePackageClasses = BasicJpaAccessionedObjectCustomRepositoryImpl.class)
+@EntityScan("uk.ac.ebi.ampt2d.test.persistence")
+@EnableJpaRepositories(basePackages = {"uk.ac.ebi.ampt2d.test.persistence",
+        "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories"
+})
+@AutoConfigureCache
+@AutoConfigureDataJpa
+@AutoConfigureTestEntityManager
 public class BasicRestControllerTestConfiguration {
+
+    @Autowired
+    private TestRepository repository;
+
+    @Autowired
+    private TestStringHistoryRepository historyRepository;
+
+    @Autowired
+    private TestInactiveAccessionRepository testInactiveAccessionRepository;
 
     @Bean
     public TestController testController() {
-        return new TestController();
+        return new TestController(databaseService());
+    }
+
+    @Bean
+    public DatabaseService<TestModel, String, String> databaseService() {
+        return new BasicSpringDataRepositoryDatabaseService<>(
+                repository,
+                TestEntity::new,
+                TestModel.class::cast,
+                inactiveService()
+        );
+    }
+
+    @Bean
+    public InactiveAccessionService<TestModel, String, String, TestEntity> inactiveService() {
+        return new BasicInactiveAccessionService<>(
+                testInactiveAccessionRepository,
+                TestInactiveAccessionEntity::new,
+                historyRepository,
+                TestStringOperationEntity::new,
+                TestModel.class::cast
+        );
     }
 
 }

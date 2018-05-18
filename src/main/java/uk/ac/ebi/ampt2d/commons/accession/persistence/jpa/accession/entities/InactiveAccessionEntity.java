@@ -17,12 +17,10 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import javax.persistence.Column;
-import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
@@ -30,31 +28,42 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public abstract class AccessionedEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION> {
+public abstract class InactiveAccessionEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION>{
+
+    @Id
+    @GeneratedValue
+    private Long id;
 
     @NotNull
-    @Id
+    @Column(nullable = false, updatable = false)
     private String hashedMessage;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private ACCESSION accession;
 
+    @Column(nullable = false, updatable = false)
     private int version;
 
-    @CreatedDate
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    public AccessionedEntity(String hashedMessage, ACCESSION accession) {
-        this(hashedMessage, accession, 1);
+    @Column(nullable = false, updatable = false)
+    private Long historyId;
+
+    protected InactiveAccessionEntity() {
+
     }
 
-    public AccessionedEntity(String hashedMessage, ACCESSION accession, int version) {
-        this.hashedMessage = hashedMessage;
-        this.accession = accession;
-        this.version = version;
+    public InactiveAccessionEntity(IAccessionedObject<ACCESSION> object) {
+        this.hashedMessage = object.getHashedMessage();
+        this.accession = object.getAccession();
+        this.version = object.getVersion();
+        this.createdDate = object.getCreatedDate();
+    }
+
+    public void setHistoryId(Long historyId) {
+        this.historyId = historyId;
     }
 
     @Override
@@ -76,4 +85,5 @@ public abstract class AccessionedEntity<ACCESSION extends Serializable> implemen
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
+
 }
