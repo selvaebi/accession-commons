@@ -59,11 +59,6 @@ public class AccessionWrapper<MODEL, HASH, ACCESSION> {
                 .collect(collectingAndThen(toList(), Collections::unmodifiableList));
     }
 
-    private Map<HASH, MODEL> generateMapOfHashModel(List<ModelWrapper<MODEL, HASH, ACCESSION>> models) {
-        return models.stream()
-                .collect(Collectors.toMap(ModelWrapper::getHash, ModelWrapper::getData));
-    }
-
     public ACCESSION getAccession() {
         return accession;
     }
