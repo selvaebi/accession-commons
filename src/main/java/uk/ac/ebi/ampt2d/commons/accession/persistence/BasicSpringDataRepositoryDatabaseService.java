@@ -170,30 +170,35 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public AccessionWrapper<MODEL, String, ACCESSION> patch(ModelWrapper<MODEL, String, ACCESSION> accession)
+    public AccessionWrapper<MODEL, String, ACCESSION> patch(ACCESSION accession, String hash, MODEL model)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        List<ACCESSION_ENTITY> entities = getAccession(accession.getAccession());
-        checkHashDoesNotExist(accession);
+        List<ACCESSION_ENTITY> entities = getAccession(accession);
+        checkHashDoesNotExist(hash);
         int maxVersion = 1;
         for (ACCESSION_ENTITY entity : entities) {
             if (entity.getVersion() >= maxVersion) {
                 maxVersion = entity.getVersion();
             }
         }
-        accession.setVersion(maxVersion + 1);
-        try {
-            repository.insert(Arrays.asList(toEntityFunction.apply(accession)));
-        } catch (RuntimeException e) {
-            checkHashDoesNotExist(accession);
-            throw e;
-        }
-        return findAccession(accession.getAccession());
+        maxVersion = maxVersion + 1;
+        checkedInsert(accession, hash, model, maxVersion);
+        return findAccession(accession);
     }
 
-    private void checkHashDoesNotExist(ModelWrapper<MODEL, String, ACCESSION> accession)
+    private void checkedInsert(ACCESSION accession, String hash, MODEL model, int maxVersion)
             throws HashAlreadyExistsException {
-        final ACCESSION_ENTITY dbAccession = repository.findOne(accession.getHash());
+        try {
+            insert(Arrays.asList(new ModelWrapper<>(accession, hash, model, maxVersion)));
+        } catch (RuntimeException e) {
+            checkHashDoesNotExist(hash);
+            throw e;
+        }
+    }
+
+    private void checkHashDoesNotExist(String hash)
+            throws HashAlreadyExistsException {
+        final ACCESSION_ENTITY dbAccession = repository.findOne(hash);
         if (dbAccession != null) {
             throw new HashAlreadyExistsException(dbAccession.getHashedMessage(), dbAccession.getAccession());
         }
@@ -213,21 +218,16 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public AccessionWrapper<MODEL, String, ACCESSION> update(ModelWrapper<MODEL, String, ACCESSION> accession)
+    public AccessionWrapper<MODEL, String, ACCESSION> update(ACCESSION accession, String hash, MODEL model, int version)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException {
-        ACCESSION_ENTITY oldVersion = doFindAccessionVersion(accession.getAccession(), accession.getVersion());
-        checkHashDoesNotExist(accession);
+        ACCESSION_ENTITY oldVersion = doFindAccessionVersion(accession, version);
+        checkHashDoesNotExist(hash);
 
         archiveService.archiveVersion(oldVersion, "Version update");
         repository.delete(oldVersion);
-        try {
-            insert(Arrays.asList(accession));
-        }catch (RuntimeException e){
-            checkHashDoesNotExist(accession);
-            throw e;
-        }
-        return findAccession(accession.getAccession());
+        checkedInsert(accession, hash, model, version);
+        return findAccession(accession);
     }
 
     @Override

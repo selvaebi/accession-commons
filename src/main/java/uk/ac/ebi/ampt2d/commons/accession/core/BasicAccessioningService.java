@@ -156,14 +156,14 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     public AccessionWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        return dbService.update(new ModelWrapper<>(accession, hashingFunction.apply(message), message, version));
+        return dbService.update(accession, hashingFunction.apply(message), message, version);
     }
 
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        return dbService.patch(new ModelWrapper<>(accession, hashingFunction.apply(message), message));
+        return dbService.patch(accession, hashingFunction.apply(message), message);
     }
 
     @Override
