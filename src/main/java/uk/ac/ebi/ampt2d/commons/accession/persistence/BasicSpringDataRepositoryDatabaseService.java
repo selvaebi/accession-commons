@@ -187,7 +187,7 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     /**
      * @param accessionId
-     * @return All entries of the last version of an accession. It is never empty
+     * @return All entries of an accession. It is never empty
      * @throws AccessionDoesNotExistException If no accession with accessionId found
      */
     private List<ACCESSION_ENTITY> getAccession(ACCESSION accessionId)
