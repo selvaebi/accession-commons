@@ -57,14 +57,14 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
             consumes = "application/json")
     public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> generateAccessions(@RequestBody @Valid List<DTO> dtos)
             throws AccessionCouldNotBeGeneratedException {
-        return service.getOrCreateAccessions(dtos).stream()
+        return service.getOrCreate(dtos).stream()
                 .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
     public List<AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions) {
-        return service.getByAccessionIds(accessions).stream()
+        return service.getByAccessions(accessions).stream()
                 .map(accessionModel -> new AccessionVersionResponseDTO<>(accessionModel, modelToDTO))
                 .collect(Collectors.toList());
     }
@@ -92,7 +92,7 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
     public AccessionVersionResponseDTO<DTO, MODEL, HASH, ACCESSION> getVersion(@PathVariable ACCESSION accession,
                                                                                @PathVariable int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
-        return new AccessionVersionResponseDTO<>(service.getByAccessionIdAndVersion(accession, version), modelToDTO);
+        return new AccessionVersionResponseDTO<>(service.getByAccessionAndVersion(accession, version), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.DELETE, produces = "application/json")

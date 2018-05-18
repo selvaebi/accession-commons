@@ -27,10 +27,10 @@ import java.util.List;
 
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects);
+    List<ModelWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
     /**
      * Finds last version of all valid accessions with their possible data model representations.
@@ -38,9 +38,9 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @param accessions
      * @return
      */
-    List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions);
+    List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions);
 
-    ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionIdAndVersion(ACCESSION accessions, int version)
+    ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accessions, int version)
     throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**

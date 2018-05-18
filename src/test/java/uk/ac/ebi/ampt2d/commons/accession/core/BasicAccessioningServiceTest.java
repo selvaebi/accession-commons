@@ -51,7 +51,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void accessionNotRepeatedElements() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -62,7 +62,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void accessionWithRepeatedElementsReturnsUnique() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreateAccessions(
+        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -74,7 +74,7 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void getNonGeneratedAccessionsReturnsNothing() throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getAccessions(
+        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.get(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
                         TestModel.of("service-test-2"),
@@ -85,12 +85,12 @@ public class BasicAccessioningServiceTest {
 
     @Test
     public void getAlreadyGeneratedAccessionsReturnsGeneratedOnly() throws AccessionCouldNotBeGeneratedException {
-        accessioningService.getOrCreateAccessions(
+        accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
 
-        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.getAccessions(Arrays.asList(
+        List<ModelWrapper<TestModel, String, String>> accessions = accessioningService.get(Arrays.asList(
                 TestModel.of("service-test-1"),
                 TestModel.of("service-test-2"),
                 TestModel.of("service-test-3")
@@ -101,12 +101,12 @@ public class BasicAccessioningServiceTest {
     @Test
     public void accessioningMultipleTimesTheSameObjectReturnsTheSameAccession()
             throws AccessionCouldNotBeGeneratedException {
-        List<ModelWrapper<TestModel, String, String>> accession1 = accessioningService.getOrCreateAccessions(
+        List<ModelWrapper<TestModel, String, String>> accession1 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
 
-        List<ModelWrapper<TestModel, String, String>> accession2 = accessioningService.getOrCreateAccessions(
+        List<ModelWrapper<TestModel, String, String>> accession2 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
@@ -123,14 +123,14 @@ public class BasicAccessioningServiceTest {
     @Test(expected = HashAlreadyExistsException.class)
     public void updateFailsWhenAccessionAlreadyExists() throws AccessionDoesNotExistException,
             HashAlreadyExistsException, AccessionCouldNotBeGeneratedException, AccessionMergedException, AccessionDeprecatedException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-3"), TestModel.of("test-4")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-3"), TestModel.of("test-4")));
         accessioningService.update("id-service-test-3", 1, TestModel.of("test-4"));
     }
 
     @Test
     public void testUpdate() throws AccessionDoesNotExistException,
             HashAlreadyExistsException, AccessionCouldNotBeGeneratedException, AccessionMergedException, AccessionDeprecatedException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-3")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-3")));
         final AccessionWrapper<TestModel, String, String> updatedAccession =
                 accessioningService.update("id-service-test-3", 1, TestModel.of("test-3b"));
 
@@ -140,27 +140,27 @@ public class BasicAccessioningServiceTest {
 
 
         final List<ModelWrapper<TestModel, String, String>> wrappedAccesions =
-                accessioningService.getByAccessionIds(Arrays.asList("id-service-test-3"));
+                accessioningService.getByAccessions(Arrays.asList("id-service-test-3"));
         assertEquals(1, wrappedAccesions.size());
 
         //We only find the new object information, not the old one
-        assertEquals(0, accessioningService.getAccessions(Arrays.asList(TestModel.of("test-3"))).size());
-        assertEquals(1, accessioningService.getAccessions(Arrays.asList(TestModel.of("test-3b"))).size());
+        assertEquals(0, accessioningService.get(Arrays.asList(TestModel.of("test-3"))).size());
+        assertEquals(1, accessioningService.get(Arrays.asList(TestModel.of("test-3b"))).size());
     }
 
     @Test
     public void testPatch() throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
             AccessionDoesNotExistException, AccessionMergedException, HashAlreadyExistsException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-3")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-3")));
         final AccessionWrapper<TestModel, String, String> accession =
                 accessioningService.patch("id-service-test-3", TestModel.of("test-3b"));
         assertEquals(2, accession.getModelWrappers().size());
 
         //We only find the new object information, not the old one
         final List<ModelWrapper<TestModel, String, String>> firstVersion =
-                accessioningService.getAccessions(Arrays.asList(TestModel.of("test-3")));
+                accessioningService.get(Arrays.asList(TestModel.of("test-3")));
         final List<ModelWrapper<TestModel, String, String>> secondVersion =
-                accessioningService.getAccessions(Arrays.asList(TestModel.of("test-3b")));
+                accessioningService.get(Arrays.asList(TestModel.of("test-3b")));
         assertEquals(1, firstVersion.size());
         assertEquals(1, secondVersion.size());
         assertEquals(1, firstVersion.get(0).getVersion());
@@ -170,13 +170,13 @@ public class BasicAccessioningServiceTest {
     @Test
     public void testGetAccessionVersion() throws AccessionCouldNotBeGeneratedException, AccessionDoesNotExistException,
             HashAlreadyExistsException, AccessionMergedException, AccessionDeprecatedException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-accession-version")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-accession-version")));
         accessioningService.patch("id-service-test-accession-version", TestModel.of("test-accession-version-b"));
 
         final ModelWrapper<TestModel, String, String> version1 = accessioningService
-                .getByAccessionIdAndVersion("id-service-test-accession-version", 1);
+                .getByAccessionAndVersion("id-service-test-accession-version", 1);
         final ModelWrapper<TestModel, String, String> version2 = accessioningService
-                .getByAccessionIdAndVersion("id-service-test-accession-version", 2);
+                .getByAccessionAndVersion("id-service-test-accession-version", 2);
         assertEquals("test-accession-version", version1.getData().getValue());
         assertEquals("test-accession-version-b", version2.getData().getValue());
     }
@@ -184,14 +184,14 @@ public class BasicAccessioningServiceTest {
     @Test
     public void testDeprecate() throws AccessionCouldNotBeGeneratedException, AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-deprecate-version")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-deprecate-version")));
         doDeprecateAndAssert("id-service-test-deprecate-version");
     }
 
     private void doDeprecateAndAssert(String accession) throws AccessionMergedException, AccessionDoesNotExistException,
             AccessionDeprecatedException {
         accessioningService.deprecate(accession, "Reasons");
-        assertTrue(accessioningService.getByAccessionIds(Arrays.asList(accession)).isEmpty());
+        assertTrue(accessioningService.getByAccessions(Arrays.asList(accession)).isEmpty());
     }
 
     @Test(expected = AccessionDoesNotExistException.class)
@@ -203,7 +203,7 @@ public class BasicAccessioningServiceTest {
     @Test(expected = AccessionDeprecatedException.class)
     public void testDeprecateTwice() throws AccessionCouldNotBeGeneratedException, AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-deprecate-version-2")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-deprecate-version-2")));
         accessioningService.deprecate("id-service-test-deprecate-version-2", "Reasons");
         accessioningService.deprecate("id-service-test-deprecate-version-2", "Reasons");
     }
@@ -211,7 +211,7 @@ public class BasicAccessioningServiceTest {
     @Test
     public void testDeprecateUpdated() throws AccessionCouldNotBeGeneratedException, AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException, HashAlreadyExistsException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-deprecate-update-version")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-deprecate-update-version")));
         accessioningService.update("id-service-test-deprecate-update-version", 1,
                 TestModel.of("test-deprecate-update-version-updated!"));
         doDeprecateAndAssert("id-service-test-deprecate-update-version");
@@ -220,7 +220,7 @@ public class BasicAccessioningServiceTest {
     @Test
     public void testDeprecatePatched() throws AccessionCouldNotBeGeneratedException, AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException, HashAlreadyExistsException {
-        accessioningService.getOrCreateAccessions(Arrays.asList(TestModel.of("test-deprecate-patch-version")));
+        accessioningService.getOrCreate(Arrays.asList(TestModel.of("test-deprecate-patch-version")));
         accessioningService.patch("id-service-test-deprecate-patch-version",
                 TestModel.of("test-deprecate-update-version-patched!"));
         doDeprecateAndAssert("id-service-test-deprecate-patch-version");

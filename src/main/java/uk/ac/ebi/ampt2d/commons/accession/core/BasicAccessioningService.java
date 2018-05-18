@@ -70,7 +70,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * @return
      */
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreateAccessions(List<? extends MODEL> messages)
+    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
         return saveAccessions(accessionGenerator.generateAccessions(mapHashOfMessages(messages)));
     }
@@ -139,7 +139,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getAccessions(List<? extends MODEL> accessionedObjects) {
+    public List<ModelWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects) {
         return dbService.findAllModelByHash(getHashes(accessionedObjects));
     }
 
@@ -148,7 +148,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessionIds(List<ACCESSION> accessions) {
+    public List<ModelWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
         return dbService.findAllAccessions(accessions);
     }
 
@@ -167,7 +167,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionIdAndVersion(ACCESSION accession, int version)
+    public ModelWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         return dbService.findAccessionVersion(accession, version);
     }
