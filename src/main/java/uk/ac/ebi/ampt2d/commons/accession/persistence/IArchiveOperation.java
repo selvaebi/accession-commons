@@ -21,6 +21,10 @@ import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 
 import java.time.ZonedDateTime;
 
+/**
+ * An entry of operations performed over accessioned objects that are considered no longer active.
+ * @param <ACCESSION>
+ */
 public interface IArchiveOperation<ACCESSION> {
     Object getAccessionIdOrigin();
 

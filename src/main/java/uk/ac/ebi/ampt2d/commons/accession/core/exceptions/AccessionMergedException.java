@@ -17,6 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+/**
+ * Exception thrown when the system tried to modify an accession that has already been merged into another one.
+ */
 public class AccessionMergedException extends Exception {
 
     private final Object accessionId;

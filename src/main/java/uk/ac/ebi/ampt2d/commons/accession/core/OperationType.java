@@ -19,13 +19,13 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 
 public enum OperationType {
 
-    // accession1 object have changed
+    // accession object has changed
     UPDATED,
 
     // accession1 merged into accession2
     MERGED_INTO,
 
-    // accession1 is no longer valid
+    // accession is no longer valid
     DEPRECATED;
 
 }

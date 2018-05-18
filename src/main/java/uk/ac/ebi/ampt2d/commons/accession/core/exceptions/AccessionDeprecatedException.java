@@ -17,5 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+/**
+ * Exception thrown when the system tried to modify an accession that has already been deprecated.
+ */
 public class AccessionDeprecatedException extends Exception {
 }
