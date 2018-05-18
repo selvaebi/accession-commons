@@ -102,4 +102,12 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
         service.deprecate(accession, reason);
     }
 
+    @RequestMapping(value = "/{accession}/merge", method = RequestMethod.POST, produces = "application/json")
+    public void getVersion(@PathVariable ACCESSION accessionOrigin,
+                           @RequestParam ACCESSION accessionDestiny,
+                           @RequestParam(required = false, defaultValue = "Merge") String reason)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+        service.merge(accessionOrigin, accessionDestiny, reason);
+    }
+
 }

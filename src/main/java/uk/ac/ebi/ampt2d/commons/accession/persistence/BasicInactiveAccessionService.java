@@ -17,9 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
@@ -51,7 +51,7 @@ public class BasicInactiveAccessionService<
     private final Function<ACCESSION_INACTIVE_ENTITY, MODEL> toModelFunction;
 
     public BasicInactiveAccessionService(InactiveAccessionRepository<ACCESSION, ACCESSION_INACTIVE_ENTITY>
-                                       inactiveAccessionRepository,
+                                                 inactiveAccessionRepository,
                                          Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity,
                                          IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository,
                                          Supplier<OPERATION_ENTITY> historyEntitySupplier,
@@ -103,12 +103,24 @@ public class BasicInactiveAccessionService<
     }
 
     @Override
+    public void archiveMerge(ACCESSION accessionOrigin, ACCESSION accessionDestiny,
+                             List<ACCESSION_ENTITY> entities, String reason) {
+        OPERATION_ENTITY operation = generateMergeOperation(accessionOrigin, accessionDestiny, reason);
+        doStoreInInactive(entities, operation);
+    }
+
+    private OPERATION_ENTITY generateMergeOperation(ACCESSION accessionOrigin, ACCESSION accessionDestiny,
+                                                    String reason) {
+        return generateOperation(OperationType.MERGED_INTO, accessionOrigin, accessionDestiny, reason);
+    }
+
+    @Override
     public AccessionVersionsWrapper<MODEL, String, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version) {
         final List<AccessionWrapper<MODEL, String, ACCESSION>> result =
                 inactiveAccessionRepository.findAllByAccessionAndVersion(accession, version).stream()
                         .map(this::toModelWrapper)
                         .collect(Collectors.toList());
-        if(result.isEmpty()){
+        if (result.isEmpty()) {
             return null;
         }
         return new AccessionVersionsWrapper<>(result);

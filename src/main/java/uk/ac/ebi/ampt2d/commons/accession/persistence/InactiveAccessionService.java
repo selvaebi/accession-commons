@@ -22,6 +22,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 public interface InactiveAccessionService<
         MODEL,
@@ -38,4 +39,9 @@ public interface InactiveAccessionService<
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
     InactiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
+
+    @Transactional
+    void archiveMerge(ACCESSION accessionOrigin, ACCESSION accessionDestiny, List<ACCESSION_ENTITY> entities,
+                      HASH reason);
+
 }

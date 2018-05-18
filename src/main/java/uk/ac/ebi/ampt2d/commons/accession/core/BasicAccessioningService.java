@@ -171,6 +171,12 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         dbService.deprecate(accession, reason);
     }
 
+    @Override
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestiny, String reason)
+            throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
+        dbService.merge(accessionOrigin, accessionDestiny, reason);
+    }
+
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {
         return accessionGenerator;
     }

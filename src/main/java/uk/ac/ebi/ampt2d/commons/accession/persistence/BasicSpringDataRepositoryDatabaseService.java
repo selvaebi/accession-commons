@@ -278,4 +278,13 @@ public class BasicSpringDataRepositoryDatabaseService<
         repository.delete(accessionedElements);
     }
 
+    @Override
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestiny, String reason)
+            throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
+        List<ACCESSION_ENTITY> accessionedElements = getAccession(accessionOrigin);
+        getAccession(accessionDestiny);
+        inactiveAccessionService.archiveMerge(accessionOrigin, accessionDestiny, accessionedElements, reason);
+        repository.delete(accessionedElements);
+    }
+
 }
