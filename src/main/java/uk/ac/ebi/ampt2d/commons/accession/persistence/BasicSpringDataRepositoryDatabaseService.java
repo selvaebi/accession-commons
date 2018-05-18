@@ -89,19 +89,19 @@ public class BasicSpringDataRepositoryDatabaseService<
     public AccessionWrapper<MODEL, String, ACCESSION> findAccession(ACCESSION accession)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         List<ACCESSION_ENTITY> entities = repository.findByAccession(accession);
-        assertAccessionIsActive(entities, accession);
+        checkAccessionIsActive(entities, accession);
         return toAccessionWrapper(entities);
     }
 
-    private void assertAccessionIsActive(List<ACCESSION_ENTITY> entities, ACCESSION accession)
+    private void checkAccessionIsActive(List<ACCESSION_ENTITY> entities, ACCESSION accession)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         if (entities == null || entities.isEmpty()) {
-            assertAccessionMergedOrDeprecated(accession);
+            checkAccessionMergedOrDeprecated(accession);
             throw new AccessionDoesNotExistException(accession.toString());
         }
     }
 
-    private void assertAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
+    private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
         IArchiveOperation<ACCESSION> operation = archiveService.getLastOperation(accession);
         if (operation != null) {
@@ -157,7 +157,7 @@ public class BasicSpringDataRepositoryDatabaseService<
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
         if (result == null) {
-            assertAccessionMergedOrDeprecated(accession);
+            checkAccessionMergedOrDeprecated(accession);
             throw new AccessionDoesNotExistException(accession.toString(), version);
         }
         return result;
@@ -174,7 +174,7 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
         List<ACCESSION_ENTITY> entities = getAccession(accession.getAccession());
-        assertHashDoesNotExist(accession);
+        checkHashDoesNotExist(accession);
         int maxVersion = 1;
         for (ACCESSION_ENTITY entity : entities) {
             if (entity.getVersion() >= maxVersion) {
@@ -185,13 +185,13 @@ public class BasicSpringDataRepositoryDatabaseService<
         try {
             repository.insert(Arrays.asList(toEntityFunction.apply(accession)));
         } catch (RuntimeException e) {
-            assertHashDoesNotExist(accession);
+            checkHashDoesNotExist(accession);
             throw e;
         }
         return findAccession(accession.getAccession());
     }
 
-    private void assertHashDoesNotExist(ModelWrapper<MODEL, String, ACCESSION> accession)
+    private void checkHashDoesNotExist(ModelWrapper<MODEL, String, ACCESSION> accession)
             throws HashAlreadyExistsException {
         final ACCESSION_ENTITY dbAccession = repository.findOne(accession.getHash());
         if (dbAccession != null) {
@@ -207,7 +207,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     private List<ACCESSION_ENTITY> getAccession(ACCESSION accessionId)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
         List<ACCESSION_ENTITY> accessionedElements = repository.findByAccession(accessionId);
-        assertAccessionIsActive(accessionedElements, accessionId);
+        checkAccessionIsActive(accessionedElements, accessionId);
 
         return accessionedElements;
     }
@@ -217,14 +217,14 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException {
         ACCESSION_ENTITY oldVersion = doFindAccessionVersion(accession.getAccession(), accession.getVersion());
-        assertHashDoesNotExist(accession);
+        checkHashDoesNotExist(accession);
 
         archiveService.archiveVersion(oldVersion, "Version update");
         repository.delete(oldVersion);
         try {
             insert(Arrays.asList(accession));
         }catch (RuntimeException e){
-            assertHashDoesNotExist(accession);
+            checkHashDoesNotExist(accession);
             throw e;
         }
         return findAccession(accession.getAccession());
