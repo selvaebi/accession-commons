@@ -134,7 +134,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     private ACCESSION_ENTITY filterOldVersions(List<ACCESSION_ENTITY> accessionedElements) {
-        int maxVersion = 0;
+        int maxVersion = 1;
         ACCESSION_ENTITY lastVersionEntity = null;
         for (ACCESSION_ENTITY element : accessionedElements) {
             if (element.getVersion() >= maxVersion) {
