@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest;
 
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,10 +104,11 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
     }
 
     @RequestMapping(value = "/{accession}/merge", method = RequestMethod.POST, produces = "application/json")
-    public void getVersion(@PathVariable ACCESSION accessionOrigin,
-                           @RequestParam ACCESSION accessionDestiny,
-                           @RequestParam(required = false, defaultValue = "Merge") String reason)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
+    public void merge(@PathVariable("accession") ACCESSION accessionOrigin,
+                           @RequestParam("accessionDestiny") ACCESSION accessionDestiny,
+                           @RequestParam(name = "reason",required = false, defaultValue = "Merge") String reason)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException,IllegalArgumentException {
+        Assert.isTrue(!accessionOrigin.toString().equals(accessionDestiny), "Accessions cannot be self merged");
         service.merge(accessionOrigin, accessionDestiny, reason);
     }
 

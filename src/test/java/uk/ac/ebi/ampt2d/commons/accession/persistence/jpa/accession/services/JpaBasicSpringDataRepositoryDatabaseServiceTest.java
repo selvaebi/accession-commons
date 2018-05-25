@@ -31,7 +31,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergeWithSelfException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
@@ -382,15 +381,6 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.deprecate("a2", "blah");
 
         service.merge("a1", "a2", "reasons");
-    }
-
-    @Test(expected = AccessionMergeWithSelfException.class)
-    public void testMergeWithSelf() throws AccessionDoesNotExistException,
-            AccessionDeprecatedException, AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
-        assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
-
-        service.merge("a1", "a1", "reasons");
     }
 
 }

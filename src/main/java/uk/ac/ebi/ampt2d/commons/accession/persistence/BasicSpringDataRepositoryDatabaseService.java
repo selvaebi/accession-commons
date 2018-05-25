@@ -120,7 +120,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         if (operation != null) {
             switch (operation.getOperationType()) {
                 case MERGED_INTO:
-                    throw new AccessionMergedException(operation.getAccessionIdDestiny());
+                    throw new AccessionMergedException(operation.getAccessionIdOrigin());
                 case DEPRECATED:
                     throw new AccessionDeprecatedException(accession.toString());
             }
