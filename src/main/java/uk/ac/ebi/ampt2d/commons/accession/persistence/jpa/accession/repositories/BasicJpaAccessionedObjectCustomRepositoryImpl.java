@@ -27,7 +27,7 @@ import javax.persistence.EntityManager;
 import java.util.Collection;
 
 public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY extends AccessionedEntity<?>>
-        implements IAccessionedObjectCustomRepository {
+        implements IAccessionedObjectCustomRepository<ENTITY> {
 
     private JpaEntityInformation<ENTITY, ?> entityInformation;
 
@@ -40,7 +40,7 @@ public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY exten
 
     @Override
     @Transactional
-    public <ENTITY> void insert(Collection<ENTITY> entities) {
+    public void insert(Collection<ENTITY> entities) {
         for (ENTITY entity : entities) {
             entityManager.persist(entity);
         }

@@ -19,8 +19,10 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
@@ -32,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,17 @@ public class BasicSpringDataRepositoryDatabaseService<
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>>
         implements DatabaseService<MODEL, String, ACCESSION> {
+
+    private class Partition {
+
+        private int start;
+        private int end;
+
+        public Partition(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(BasicSpringDataRepositoryDatabaseService.class);
 
@@ -153,6 +166,38 @@ public class BasicSpringDataRepositoryDatabaseService<
         return toModelWrapper(result);
     }
 
+    @Override
+    public SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
+        Stack<Partition> partitions = new Stack<>();
+        partitions.add(new Partition(0, objects.size()));
+        SaveResponse<ACCESSION> saveResponse = new SaveResponse<>();
+
+        while (!partitions.isEmpty()) {
+            Partition partition = partitions.pop();
+            final List<AccessionWrapper<MODEL, String, ACCESSION>> partitionToSave =
+                    objects.subList(partition.start, partition.end);
+            try {
+                repository.insert(toEntities(partitionToSave));
+                partitionToSave.stream().forEach(saveResponse::addSavedAccessions);
+            } catch (DataIntegrityViolationException e) {
+                if (partitionToSave.size() != 1) {
+                    int start = partition.start;
+                    int middle = (partition.end + partition.start) / 2;
+                    int end = partition.end;
+                    partitions.add(new Partition(start, middle));
+                    partitions.add(new Partition(middle, end));
+                } else {
+                    saveResponse.addSaveFailedAccession(partitionToSave.get(0));
+                }
+            }
+        }
+        return saveResponse;
+    }
+
+    private Collection<ACCESSION_ENTITY> toEntities(List<AccessionWrapper<MODEL, String, ACCESSION>> partitionToSave) {
+        return partitionToSave.stream().map(toEntityFunction).collect(Collectors.toList());
+    }
+
     private ACCESSION_ENTITY doFindAccessionVersion(ACCESSION accession, int version) throws
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
@@ -161,12 +206,6 @@ public class BasicSpringDataRepositoryDatabaseService<
             throw new AccessionDoesNotExistException(accession.toString(), version);
         }
         return result;
-    }
-
-    @Override
-    public void insert(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
-        Set<ACCESSION_ENTITY> entitySet = objects.stream().map(toEntityFunction).collect(Collectors.toSet());
-        repository.insert(entitySet);
     }
 
     @Override
@@ -189,7 +228,8 @@ public class BasicSpringDataRepositoryDatabaseService<
     private void checkedInsert(ACCESSION accession, String hash, MODEL model, int maxVersion)
             throws HashAlreadyExistsException {
         try {
-            insert(Arrays.asList(new AccessionWrapper<>(accession, hash, model, maxVersion)));
+            repository.insert(Arrays.asList(toEntityFunction.apply(
+                    new AccessionWrapper<>(accession, hash, model, maxVersion))));
         } catch (RuntimeException e) {
             checkHashDoesNotExist(hash);
             throw e;
