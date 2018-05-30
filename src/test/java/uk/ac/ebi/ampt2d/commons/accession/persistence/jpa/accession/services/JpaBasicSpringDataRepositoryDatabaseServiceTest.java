@@ -330,8 +330,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     @Test
     public void testMerge() throws AccessionDoesNotExistException, AccessionDeprecatedException,
             AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
         assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         assertEquals(1, service.findAllByAccession(Arrays.asList("a2")).size());
 
@@ -344,7 +344,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     @Test(expected = AccessionDoesNotExistException.class)
     public void testMergeAccessionDoesNotExistOrigin() throws AccessionDoesNotExistException,
             AccessionDeprecatedException, AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
         assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
 
         service.merge("doesnotexist", "a1", "reasons");
@@ -353,7 +353,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     @Test(expected = AccessionDoesNotExistException.class)
     public void testMergeAccessionDoesNotExistDestination() throws AccessionDoesNotExistException,
             AccessionDeprecatedException, AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
         assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
 
         service.merge("a1", "doesnotexist", "reasons");
@@ -362,8 +362,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     @Test(expected = AccessionDeprecatedException.class)
     public void testMergeAccessionDeprecatedOrigin() throws AccessionDoesNotExistException,
             AccessionDeprecatedException, AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
         assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         assertEquals(1, service.findAllByAccession(Arrays.asList("a2")).size());
         service.deprecate("a1", "blah");
@@ -374,8 +374,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
     @Test(expected = AccessionDeprecatedException.class)
     public void testMergeAccessionDeprecatedDestination() throws AccessionDoesNotExistException,
             AccessionDeprecatedException, AccessionMergedException {
-        service.insert(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
-        service.insert(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
         assertEquals(1, service.findAllByAccession(Arrays.asList("a1")).size());
         assertEquals(1, service.findAllByAccession(Arrays.asList("a2")).size());
         service.deprecate("a2", "blah");
