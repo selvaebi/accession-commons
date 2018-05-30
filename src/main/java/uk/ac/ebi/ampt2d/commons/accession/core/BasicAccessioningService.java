@@ -44,8 +44,6 @@ import java.util.stream.Collectors;
 public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializable>
         implements AccessioningService<MODEL, HASH, ACCESSION> {
 
-    private final BasicAccessioningServiceSaveDelegate<MODEL, HASH, ACCESSION> basicAccessioningServiceSaveDelegate;
-
     private AccessionGenerator<MODEL, ACCESSION> accessionGenerator;
 
     private DatabaseService<MODEL, HASH, ACCESSION> dbService;
@@ -59,7 +57,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         this.accessionGenerator = accessionGenerator;
         this.dbService = dbService;
         this.hashingFunction = summaryFunction.andThen(hashingFunction);
-        this.basicAccessioningServiceSaveDelegate = new BasicAccessioningServiceSaveDelegate<>(dbService);
     }
 
     /**
@@ -86,17 +83,17 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     /**
-     * Execute {@link BasicAccessioningServiceSaveDelegate#doSaveAccessions(List)} This operation will generate two
-     * lists on {@link SaveResponse} saved elements and not saved elements. Not saved elements are elements that
-     * could not be stored on database due to constraint exceptions. This should only happen when elements have been
-     * already stored by another application instance / thread with a different id.
+     * Execute {@link DatabaseService#save(List)}  This operation will generate two lists on {@link SaveResponse}
+     * saved elements and not saved elements. Not saved elements are elements that could not be stored on database
+     * due to constraint exceptions. This should only happen when elements have been already stored by another
+     * application instance / thread with a different id.
      * See {@link #getPreexistingAccessions(List)} } for more details.
      *
      * @param accessions
      * @return
      */
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
-        SaveResponse<ACCESSION> response = basicAccessioningServiceSaveDelegate.doSaveAccessions(accessions);
+        SaveResponse<ACCESSION> response = dbService.save(accessions);
         accessionGenerator.postSave(response);
 
         final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
@@ -108,13 +105,9 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
                 unsavedAccessions.add(accessionModel);
             }
         });
-
         if (!unsavedAccessions.isEmpty()) {
-            List<AccessionWrapper<MODEL, HASH, ACCESSION>> preexistingAccessions =
-                    getPreexistingAccessions(unsavedAccessions);
-            savedAccessions.addAll(preexistingAccessions);
+            savedAccessions.addAll(getPreexistingAccessions(unsavedAccessions));
         }
-
         return savedAccessions;
     }
 

@@ -26,7 +26,8 @@ import java.util.List;
 
 @NoRepositoryBean
 public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String>, IAccessionedObjectCustomRepository {
+        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String>,
+        IAccessionedObjectCustomRepository<ENTITY> {
 
     List<ENTITY> findByAccession(ACCESSION accession);
 

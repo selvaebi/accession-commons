@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
@@ -79,8 +80,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     AccessionWrapper<MODEL, HASH, ACCESSION> findByAccessionVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException;
 
-    @Transactional
-    void insert(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
+    SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDoesNotExistException.class, AccessionMergedException.class})

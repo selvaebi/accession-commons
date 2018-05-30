@@ -17,11 +17,13 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collection;
-import java.util.Set;
 
-public interface IAccessionedObjectCustomRepository {
+public interface IAccessionedObjectCustomRepository<ENTITY> {
 
-    <ENTITY> void insert(Collection<ENTITY> entities);
+    @Transactional
+    void insert(Collection<ENTITY> entities);
 
 }
