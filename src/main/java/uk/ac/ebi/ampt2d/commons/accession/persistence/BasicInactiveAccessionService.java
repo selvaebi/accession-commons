@@ -66,7 +66,7 @@ public class BasicInactiveAccessionService<
     @Override
     public void update(ACCESSION_ENTITY entity, String reason) {
         OPERATION_ENTITY operation = generateUpdateOperation(entity.getAccession(), reason);
-        doStoreInInactive(Arrays.asList(entity), operation);
+        storeInactive(Arrays.asList(entity), operation);
     }
 
     private OPERATION_ENTITY generateUpdateOperation(ACCESSION accession, String reason) {
@@ -84,7 +84,7 @@ public class BasicInactiveAccessionService<
     }
 
 
-    private void doStoreInInactive(Collection<ACCESSION_ENTITY> accessionedElements, OPERATION_ENTITY operation) {
+    private void storeInactive(Collection<ACCESSION_ENTITY> accessionedElements, OPERATION_ENTITY operation) {
         historyRepository.save(operation);
         final List<ACCESSION_INACTIVE_ENTITY> inactiveEntities = accessionedElements.stream().map(toInactiveEntity)
                 .collect(Collectors.toList());
@@ -95,7 +95,7 @@ public class BasicInactiveAccessionService<
     @Override
     public void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason) {
         OPERATION_ENTITY operation = generateDeprecationOperation(accession, reason);
-        doStoreInInactive(entities, operation);
+        storeInactive(entities, operation);
     }
 
     private OPERATION_ENTITY generateDeprecationOperation(ACCESSION accession, String reason) {
@@ -103,15 +103,15 @@ public class BasicInactiveAccessionService<
     }
 
     @Override
-    public void archiveMerge(ACCESSION accessionOrigin, ACCESSION accessionDestiny,
-                             List<ACCESSION_ENTITY> entities, String reason) {
-        OPERATION_ENTITY operation = generateMergeOperation(accessionOrigin, accessionDestiny, reason);
-        doStoreInInactive(entities, operation);
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
+                      List<ACCESSION_ENTITY> entities, String reason) {
+        OPERATION_ENTITY operation = generateMergeOperation(accessionOrigin, accessionDestination, reason);
+        storeInactive(entities, operation);
     }
 
-    private OPERATION_ENTITY generateMergeOperation(ACCESSION accessionOrigin, ACCESSION accessionDestiny,
+    private OPERATION_ENTITY generateMergeOperation(ACCESSION accessionOrigin, ACCESSION accessionDestination,
                                                     String reason) {
-        return generateOperation(OperationType.MERGED_INTO, accessionOrigin, accessionDestiny, reason);
+        return generateOperation(OperationType.MERGED_INTO, accessionOrigin, accessionDestination, reason);
     }
 
     @Override

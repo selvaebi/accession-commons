@@ -41,7 +41,7 @@ public interface InactiveAccessionService<
     InactiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
 
     @Transactional
-    void archiveMerge(ACCESSION accessionOrigin, ACCESSION accessionDestiny, List<ACCESSION_ENTITY> entities,
-                      HASH reason);
+    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, List<ACCESSION_ENTITY> entities,
+               HASH reason);
 
 }

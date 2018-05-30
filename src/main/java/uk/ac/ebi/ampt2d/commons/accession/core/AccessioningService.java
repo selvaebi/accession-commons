@@ -91,13 +91,13 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * Merges an accession into another
      *
      * @param accessionOrigin
-     * @param accessionDestiny
+     * @param accessionDestination
      * @param reason
      * @throws AccessionDoesNotExistException when either accession has never existed.
      * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
      * @throws AccessionMergedException       when either accession exists but has been merged into another accession
      */
-    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestiny, String reason) throws AccessionMergedException,
+    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException;
 
 }
