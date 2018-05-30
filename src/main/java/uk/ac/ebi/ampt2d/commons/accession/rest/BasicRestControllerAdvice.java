@@ -33,6 +33,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGen
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
 
@@ -85,6 +86,12 @@ public class BasicRestControllerAdvice {
         return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
     }
 
+    @ExceptionHandler(value = AccessionMergedException.class)
+    public ResponseEntity<ErrorMessage> handleMergeExceptions(AccessionMergedException ex) {
+        logger.error(ex.getMessage(), ex);
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getAccessionId() + " has been merged already");
+    }
+
     @ExceptionHandler(value = {HashAlreadyExistsException.class})
     public ResponseEntity<ErrorMessage> handleConflictErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
@@ -95,6 +102,11 @@ public class BasicRestControllerAdvice {
     public ResponseEntity<ErrorMessage> handleDeprecationErrors(Exception ex) {
         logger.error(ex.getMessage(), ex);
         return buildResponseEntity(HttpStatus.GONE, ex, "This accession has been deprecated");
+    }
+
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ResponseEntity<ErrorMessage> handleIllegalArgumentErrors(Exception ex) {
+        return buildResponseEntity(HttpStatus.BAD_REQUEST, ex, ex.getMessage());
     }
 
     private ResponseEntity<ErrorMessage> buildResponseEntity(HttpStatus status, Exception ex, String message) {

@@ -17,9 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
@@ -51,7 +51,7 @@ public class BasicInactiveAccessionService<
     private final Function<ACCESSION_INACTIVE_ENTITY, MODEL> toModelFunction;
 
     public BasicInactiveAccessionService(InactiveAccessionRepository<ACCESSION, ACCESSION_INACTIVE_ENTITY>
-                                       inactiveAccessionRepository,
+                                                 inactiveAccessionRepository,
                                          Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity,
                                          IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository,
                                          Supplier<OPERATION_ENTITY> historyEntitySupplier,
@@ -66,7 +66,7 @@ public class BasicInactiveAccessionService<
     @Override
     public void update(ACCESSION_ENTITY entity, String reason) {
         OPERATION_ENTITY operation = generateUpdateOperation(entity.getAccession(), reason);
-        doStoreInInactive(Arrays.asList(entity), operation);
+        storeInactive(Arrays.asList(entity), operation);
     }
 
     private OPERATION_ENTITY generateUpdateOperation(ACCESSION accession, String reason) {
@@ -84,7 +84,7 @@ public class BasicInactiveAccessionService<
     }
 
 
-    private void doStoreInInactive(Collection<ACCESSION_ENTITY> accessionedElements, OPERATION_ENTITY operation) {
+    private void storeInactive(Collection<ACCESSION_ENTITY> accessionedElements, OPERATION_ENTITY operation) {
         historyRepository.save(operation);
         final List<ACCESSION_INACTIVE_ENTITY> inactiveEntities = accessionedElements.stream().map(toInactiveEntity)
                 .collect(Collectors.toList());
@@ -95,11 +95,23 @@ public class BasicInactiveAccessionService<
     @Override
     public void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason) {
         OPERATION_ENTITY operation = generateDeprecationOperation(accession, reason);
-        doStoreInInactive(entities, operation);
+        storeInactive(entities, operation);
     }
 
     private OPERATION_ENTITY generateDeprecationOperation(ACCESSION accession, String reason) {
         return generateOperation(OperationType.DEPRECATED, accession, null, reason);
+    }
+
+    @Override
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
+                      List<ACCESSION_ENTITY> entities, String reason) {
+        OPERATION_ENTITY operation = generateMergeOperation(accessionOrigin, accessionDestination, reason);
+        storeInactive(entities, operation);
+    }
+
+    private OPERATION_ENTITY generateMergeOperation(ACCESSION accessionOrigin, ACCESSION accessionDestination,
+                                                    String reason) {
+        return generateOperation(OperationType.MERGED_INTO, accessionOrigin, accessionDestination, reason);
     }
 
     @Override
@@ -108,7 +120,7 @@ public class BasicInactiveAccessionService<
                 inactiveAccessionRepository.findAllByAccessionAndVersion(accession, version).stream()
                         .map(this::toModelWrapper)
                         .collect(Collectors.toList());
-        if(result.isEmpty()){
+        if (result.isEmpty()) {
             return null;
         }
         return new AccessionVersionsWrapper<>(result);

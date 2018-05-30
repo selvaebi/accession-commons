@@ -81,11 +81,23 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @param reason
      * @return Accession with complete patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
-     * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      */
     void deprecate(ACCESSION accession, String reason) throws AccessionMergedException, AccessionDoesNotExistException,
             AccessionDeprecatedException;
+
+    /**
+     * Merges an accession into another
+     *
+     * @param accessionOrigin
+     * @param accessionDestination
+     * @param reason
+     * @throws AccessionDoesNotExistException when either accession has never existed.
+     * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
+     * @throws AccessionMergedException       when either accession exists but has been merged into another accession
+     */
+    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason) throws AccessionMergedException,
+            AccessionDoesNotExistException, AccessionDeprecatedException;
 
 }

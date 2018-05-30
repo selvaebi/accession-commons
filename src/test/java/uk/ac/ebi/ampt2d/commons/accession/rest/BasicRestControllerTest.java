@@ -83,7 +83,6 @@ public class BasicRestControllerTest {
                 .andExpect(resultMatcher);
     }
 
-
     @Test
     public void testAccessionOk() throws Exception {
         doAccession("simpleTest");
@@ -273,6 +272,32 @@ public class BasicRestControllerTest {
     private void doDeprecate(String accession) throws Exception {
         mockMvc.perform(delete("/v1/test/" + accession).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testMergeWithSelf() throws Exception {
+        mockMvc.perform(post("/v1/test/{accession}/merge", "accession").param("accessionDestination", "accession"))
+                .andExpect(status().is4xxClientError()).andExpect(jsonPath("$.message").value("Accessions cannot be" +
+                " self merged"));
+    }
+
+    @Test
+    public void testMerge() throws Exception {
+        String accession1 = extractAccession(doAccession("merge-test-1"));
+        String accession2 = extractAccession(doAccession("merge-test-2"));
+        doMerge(accession1, accession2).andExpect(status().isOk());
+        doGet(accession1)
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(0)));
+        doMerge(accession1, accession2).andExpect(status().isNotFound()).
+                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
+        doMerge(accession2, accession1).andExpect(status().isNotFound()).
+                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
+    }
+
+    private ResultActions doMerge(String accessionOrigin, String accessionDestination) throws Exception {
+        return mockMvc.perform(post("/v1/test/{accession}/merge", accessionOrigin).param("accessionDestination",
+                accessionDestination));
     }
 
 }

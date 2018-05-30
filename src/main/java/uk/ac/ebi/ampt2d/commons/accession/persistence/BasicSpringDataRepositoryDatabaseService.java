@@ -120,7 +120,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         if (operation != null) {
             switch (operation.getOperationType()) {
                 case MERGED_INTO:
-                    throw new AccessionMergedException(operation.getAccessionIdDestiny());
+                    throw new AccessionMergedException(operation.getAccessionIdOrigin());
                 case DEPRECATED:
                     throw new AccessionDeprecatedException(accession.toString());
             }
@@ -275,6 +275,15 @@ public class BasicSpringDataRepositoryDatabaseService<
             AccessionMergedException, AccessionDeprecatedException {
         List<ACCESSION_ENTITY> accessionedElements = getAccession(accession);
         inactiveAccessionService.deprecate(accession, accessionedElements, reason);
+        repository.delete(accessionedElements);
+    }
+
+    @Override
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason)
+            throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
+        List<ACCESSION_ENTITY> accessionedElements = getAccession(accessionOrigin);
+        getAccession(accessionDestination);
+        inactiveAccessionService.merge(accessionOrigin, accessionDestination, accessionedElements, reason);
         repository.delete(accessionedElements);
     }
 

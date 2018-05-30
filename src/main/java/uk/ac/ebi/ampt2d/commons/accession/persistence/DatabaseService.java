@@ -83,20 +83,24 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
-            AccessionDoesNotExistException.class, AccessionMergedException.class})
+            AccessionDeprecatedException.class, AccessionMergedException.class})
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, HASH hash, MODEL model)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
-            AccessionDoesNotExistException.class, AccessionMergedException.class})
+            AccessionDeprecatedException.class, AccessionMergedException.class})
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, HASH hash, MODEL model, int version)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionMergedException,
             AccessionDeprecatedException;
 
-    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDoesNotExistException.class,
+    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
             AccessionMergedException.class})
     void deprecate(ACCESSION accession, String reason) throws AccessionDoesNotExistException, AccessionMergedException,
             AccessionDeprecatedException;
 
+    @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
+            AccessionMergedException.class})
+    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason) throws AccessionMergedException,
+            AccessionDoesNotExistException, AccessionDeprecatedException;
 }
