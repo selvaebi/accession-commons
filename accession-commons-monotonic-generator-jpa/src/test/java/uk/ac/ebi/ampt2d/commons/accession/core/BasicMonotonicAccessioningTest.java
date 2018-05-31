@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +115,7 @@ public class BasicMonotonicAccessioningTest {
                         TestModel.of("service-test-3")
                 ));
         assertEquals(1, accessions2.size());
-        Assert.assertEquals("service-test-3", accessions2.get(0).getData().getValue());
+        assertEquals("service-test-3", accessions2.get(0).getData().getValue());
     }
 
     @Test
