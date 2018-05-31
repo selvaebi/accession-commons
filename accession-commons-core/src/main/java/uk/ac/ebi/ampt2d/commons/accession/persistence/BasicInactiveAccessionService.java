@@ -20,7 +20,6 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
 
 import java.io.Serializable;
 import java.util.Arrays;
