@@ -20,7 +20,6 @@ package uk.ac.ebi.ampt2d.commons.accession.generators;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
-import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 
 import java.util.List;
 import java.util.Map;
@@ -61,12 +60,6 @@ public class DecoratedAccessionGenerator<MODEL, ACCESSION> implements AccessionG
         Set<ACCESSION> saveFailedAccessions = response.getSaveFailedAccessions().stream().map(undecorateAccession)
                 .collect(Collectors.toSet());
         generator.postSave(new SaveResponse<>(savedAccessions, saveFailedAccessions));
-    }
-
-    public static <MODEL> DecoratedAccessionGenerator<MODEL, Long> buildPrefixSuffixMonotonicAccessionGenerator(
-            MonotonicAccessionGenerator<MODEL> generator,
-            String prefix, String suffix) {
-        return buildPrefixSuffixAccessionGenerator(generator, prefix, suffix, Long::parseLong);
     }
 
     public static <MODEL, ACCESSION> DecoratedAccessionGenerator<MODEL, ACCESSION> buildPrefixSuffixAccessionGenerator(

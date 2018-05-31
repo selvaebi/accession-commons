@@ -15,9 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.service;
 
 import org.springframework.beans.factory.InitializingBean;
+import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
