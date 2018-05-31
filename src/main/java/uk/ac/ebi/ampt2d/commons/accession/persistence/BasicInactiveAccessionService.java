@@ -20,8 +20,6 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
 
 import java.io.Serializable;
@@ -35,9 +33,9 @@ import java.util.stream.Collectors;
 public class BasicInactiveAccessionService<
         MODEL,
         ACCESSION extends Serializable,
-        ACCESSION_ENTITY extends AccessionedEntity<ACCESSION>,
-        ACCESSION_INACTIVE_ENTITY extends InactiveAccessionEntity<ACCESSION>,
-        OPERATION_ENTITY extends OperationEntity<ACCESSION>>
+        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>,
+        ACCESSION_INACTIVE_ENTITY extends IInactiveAccessionedObject<ACCESSION>,
+        OPERATION_ENTITY extends IOperation<ACCESSION>>
         implements InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> {
 
     private final InactiveAccessionRepository<ACCESSION, ACCESSION_INACTIVE_ENTITY> inactiveAccessionRepository;
@@ -127,7 +125,7 @@ public class BasicInactiveAccessionService<
     }
 
     @Override
-    public InactiveOperation<ACCESSION> getLastOperation(ACCESSION accession) {
+    public IOperation<ACCESSION> getLastOperation(ACCESSION accession) {
         return historyRepository.findByAccessionIdOriginOrderByCreatedDateDesc(accession);
     }
 

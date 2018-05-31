@@ -38,7 +38,7 @@ public interface InactiveAccessionService<
 
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
-    InactiveOperation<ACCESSION> getLastOperation(ACCESSION accession);
+    IOperation<ACCESSION> getLastOperation(ACCESSION accession);
 
     @Transactional
     void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, List<ACCESSION_ENTITY> entities,

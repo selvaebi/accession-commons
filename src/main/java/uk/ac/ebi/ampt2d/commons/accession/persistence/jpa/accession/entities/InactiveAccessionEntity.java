@@ -18,6 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IInactiveAccessionedObject;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -28,7 +29,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class InactiveAccessionEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION>{
+public abstract class InactiveAccessionEntity<ACCESSION extends Serializable>
+        implements IInactiveAccessionedObject<ACCESSION> {
 
     @Id
     @GeneratedValue
@@ -62,6 +64,7 @@ public abstract class InactiveAccessionEntity<ACCESSION extends Serializable> im
         this.createdDate = object.getCreatedDate();
     }
 
+    @Override
     public void setHistoryId(Long historyId) {
         this.historyId = historyId;
     }

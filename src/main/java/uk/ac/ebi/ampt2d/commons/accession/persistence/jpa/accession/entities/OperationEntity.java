@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveOperation;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -38,7 +38,7 @@ import java.time.ZonedDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class OperationEntity<ACCESSION> implements InactiveOperation {
+public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -90,18 +90,22 @@ public abstract class OperationEntity<ACCESSION> implements InactiveOperation {
         return createdDate;
     }
 
+    @Override
     public void setAccessionIdOrigin(ACCESSION accessionIdOrigin) {
         this.accessionIdOrigin = accessionIdOrigin;
     }
 
+    @Override
     public void setAccessionIdDestiny(ACCESSION accessionIdDestiny) {
         this.accessionIdDestiny = accessionIdDestiny;
     }
 
+    @Override
     public void setOperationType(OperationType operationType) {
         this.operationType = operationType;
     }
 
+    @Override
     public void setReason(String reason) {
         this.reason = reason;
     }

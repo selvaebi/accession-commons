@@ -116,7 +116,7 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
-        InactiveOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
+        IOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
         if (operation != null) {
             switch (operation.getOperationType()) {
                 case MERGED_INTO:
