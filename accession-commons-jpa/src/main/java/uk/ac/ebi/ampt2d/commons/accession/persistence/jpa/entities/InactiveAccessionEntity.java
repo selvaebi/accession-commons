@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IInactiveAccessionedObject;

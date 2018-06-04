@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
 import javax.persistence.EntityManager;
 

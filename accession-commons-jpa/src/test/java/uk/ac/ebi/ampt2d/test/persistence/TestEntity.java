@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.AccessionedEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Entity;

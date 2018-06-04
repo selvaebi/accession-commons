@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.InactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.InactiveAccessionEntity;
 
 import javax.persistence.Entity;
 

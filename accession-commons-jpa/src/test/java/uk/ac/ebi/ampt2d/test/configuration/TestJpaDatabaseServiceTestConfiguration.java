@@ -33,7 +33,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionServ
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
@@ -48,7 +48,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 @ComponentScan(basePackageClasses = BasicJpaAccessionedObjectCustomRepositoryImpl.class)
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
 @EnableJpaRepositories(basePackages = {"uk.ac.ebi.ampt2d.test.persistence",
-        "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.repositories"
+        "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories"
 })
 public class TestJpaDatabaseServiceTestConfiguration {
 

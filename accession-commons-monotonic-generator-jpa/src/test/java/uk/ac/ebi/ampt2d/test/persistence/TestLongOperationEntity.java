@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.entities.OperationEntity;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.OperationEntity;
 
 import javax.persistence.Entity;
 

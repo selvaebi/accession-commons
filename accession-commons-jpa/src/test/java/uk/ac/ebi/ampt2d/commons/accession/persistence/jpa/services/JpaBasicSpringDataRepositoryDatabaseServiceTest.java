@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.accession.services;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.services;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
