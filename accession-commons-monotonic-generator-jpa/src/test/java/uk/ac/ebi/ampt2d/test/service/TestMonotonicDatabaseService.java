@@ -37,7 +37,7 @@ public class TestMonotonicDatabaseService
             IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
             Function<AccessionWrapper<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction,
             Function<TestMonotonicEntity, TestModel> toModelFunction,
-            InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> inactiveAccessionService) {
+            InactiveAccessionService<String, Long, TestMonotonicEntity> inactiveAccessionService) {
         super(repository, toEntityFunction, toModelFunction, inactiveAccessionService);
     }
 

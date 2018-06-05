@@ -90,23 +90,10 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
         return createdDate;
     }
 
-    @Override
-    public void setAccessionIdOrigin(ACCESSION accessionIdOrigin) {
-        this.accessionIdOrigin = accessionIdOrigin;
-    }
-
-    @Override
-    public void setAccessionIdDestiny(ACCESSION accessionIdDestiny) {
-        this.accessionIdDestiny = accessionIdDestiny;
-    }
-
-    @Override
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
-    }
-
-    @Override
-    public void setReason(String reason) {
+    public void fill(OperationType type, ACCESSION origin, ACCESSION destination, String reason) {
+        this.operationType = type;
+        this.accessionIdOrigin = origin;
+        this.accessionIdDestiny = destination;
         this.reason = reason;
     }
 }

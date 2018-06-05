@@ -24,15 +24,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongOperationEntity;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionRepository;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
@@ -78,13 +78,12 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public InactiveAccessionService<TestModel, String, Long, TestMonotonicEntity> inactiveService() {
-        return new BasicInactiveAccessionService<>(
-                inactiveRepository,
-                TestMonotonicInactiveAccessionEntity::new,
+    public InactiveAccessionService<String, Long, TestMonotonicEntity> inactiveService() {
+        return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
-                TestLongOperationEntity::new,
-                TestModel.class::cast
+                TestMonotonicInactiveAccessionEntity::new,
+                inactiveRepository,
+                TestLongOperationEntity::new
         );
     }
 

@@ -18,14 +18,17 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 
+import org.springframework.transaction.PlatformTransactionManager;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 
 import javax.persistence.EntityManager;
 
-public class TestMonotonicRepositoryImpl extends BasicJpaAccessionedObjectCustomRepositoryImpl<TestMonotonicEntity> {
+public class TestMonotonicRepositoryImpl extends
+        BasicJpaAccessionedObjectCustomRepositoryImpl<Long, TestMonotonicEntity> {
 
-    public TestMonotonicRepositoryImpl(EntityManager entityManager) {
-        super(TestMonotonicEntity.class, entityManager);
+    public TestMonotonicRepositoryImpl(PlatformTransactionManager platformTransactionManager,
+                                       EntityManager entityManager) {
+        super(TestMonotonicEntity.class, platformTransactionManager, entityManager);
     }
 
 }

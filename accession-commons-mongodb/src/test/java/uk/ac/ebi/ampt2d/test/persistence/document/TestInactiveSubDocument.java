@@ -15,26 +15,27 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.test.persistence.document;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import org.springframework.data.mongodb.core.mapping.Document;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
 
-import java.time.ZonedDateTime;
+@Document
+public class TestInactiveSubDocument extends InactiveSubDocument<String> {
 
-/**
- * An entry of operations performed over accessioned objects that are considered no longer active.
- * @param <ACCESSION>
- */
-public interface IOperation<ACCESSION> {
+    private String value;
 
-    ACCESSION getAccessionIdOrigin();
+    TestInactiveSubDocument(){
+        super();
+    }
 
-    ACCESSION getAccessionIdDestiny();
+    public TestInactiveSubDocument(TestInactiveSubDocument inactiveSubDocument) {
+        super(inactiveSubDocument);
+        this.value = inactiveSubDocument.getValue();
+    }
 
-    OperationType getOperationType();
-
-    String getReason();
-
-    ZonedDateTime getCreatedDate();
+    public String getValue() {
+        return value;
+    }
 
 }

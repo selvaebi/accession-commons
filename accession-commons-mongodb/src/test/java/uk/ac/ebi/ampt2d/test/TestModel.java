@@ -15,26 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.test;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+public interface TestModel {
 
-import java.time.ZonedDateTime;
+    String getValue();
 
-/**
- * An entry of operations performed over accessioned objects that are considered no longer active.
- * @param <ACCESSION>
- */
-public interface IOperation<ACCESSION> {
-
-    ACCESSION getAccessionIdOrigin();
-
-    ACCESSION getAccessionIdDestiny();
-
-    OperationType getOperationType();
-
-    String getReason();
-
-    ZonedDateTime getCreatedDate();
+    static TestModel of(String value) {
+        return () -> value;
+    }
 
 }

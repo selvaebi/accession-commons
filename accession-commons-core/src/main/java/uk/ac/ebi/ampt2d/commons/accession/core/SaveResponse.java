@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.UnsavedAccessionException;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,13 +45,6 @@ public class SaveResponse<ACCESSION> {
         return saveFailedAccessions;
     }
 
-    public void addSavedAccessions(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
-        savedAccessions.add(accessionWrapper.getAccession());
-    }
-
-    public void addSaveFailedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
-        saveFailedAccessions.add(accessionWrapper.getAccession());
-    }
 
     public boolean isSavedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
         if (savedAccessions.contains(accessionWrapper.getAccession())) {
@@ -62,5 +56,13 @@ public class SaveResponse<ACCESSION> {
                 throw new UnsavedAccessionException(accessionWrapper.getAccession());
             }
         }
+    }
+
+    public void addSavedAccession(ACCESSION accession) {
+        savedAccessions.add(accession);
+    }
+
+    public void addSaveFailedAccession(ACCESSION accession) {
+        saveFailedAccessions.add(accession);
     }
 }

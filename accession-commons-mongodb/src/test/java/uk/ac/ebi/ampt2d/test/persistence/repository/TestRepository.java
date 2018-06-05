@@ -15,26 +15,13 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.test.persistence.repository;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 
-import java.time.ZonedDateTime;
-
-/**
- * An entry of operations performed over accessioned objects that are considered no longer active.
- * @param <ACCESSION>
- */
-public interface IOperation<ACCESSION> {
-
-    ACCESSION getAccessionIdOrigin();
-
-    ACCESSION getAccessionIdDestiny();
-
-    OperationType getOperationType();
-
-    String getReason();
-
-    ZonedDateTime getCreatedDate();
+@Repository
+public interface TestRepository extends IAccessionedObjectRepository<TestDocument, String> {
 
 }

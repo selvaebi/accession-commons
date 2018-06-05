@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
@@ -101,10 +102,12 @@ public class BasicAccessioningServiceTest {
     @Test
     public void accessioningMultipleTimesTheSameObjectReturnsTheSameAccession()
             throws AccessionCouldNotBeGeneratedException {
+        TestTransaction.flagForCommit();
         List<AccessionWrapper<TestModel, String, String>> accession1 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
+        TestTransaction.end();
 
         List<AccessionWrapper<TestModel, String, String>> accession2 = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -112,6 +115,11 @@ public class BasicAccessioningServiceTest {
                 ));
         assertEquals(1, accession2.size());
         assertEquals(accession1.get(0).getAccession(), accession2.get(0).getAccession());
+
+        TestTransaction.start();
+        TestTransaction.flagForCommit();
+        repository.delete(accession1.get(0).getHash());
+        TestTransaction.end();
     }
 
     @Test(expected = AccessionDoesNotExistException.class)

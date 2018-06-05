@@ -23,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.service.BasicMonotonicAccessioningService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
@@ -40,6 +42,9 @@ import static org.junit.Assert.assertEquals;
 @DataJpaTest
 @ContextConfiguration(classes = {TestMonotonicDatabaseServiceTestConfiguration.class})
 public class BasicMonotonicAccessioningTest {
+
+    @Autowired
+    private TestMonotonicRepository repository;
 
     @Autowired
     private TestMonotonicDatabaseService databaseService;
@@ -61,7 +66,7 @@ public class BasicMonotonicAccessioningTest {
     }
 
     private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService() {
-        return new BasicMonotonicAccessioningService<TestModel, String>(
+        return new BasicMonotonicAccessioningService<>(
                 monotonicAccessionGenerator,
                 databaseService,
                 TestModel::getValue,
@@ -137,12 +142,13 @@ public class BasicMonotonicAccessioningTest {
     @Test
     public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
-
+        TestTransaction.flagForCommit();
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
                 Arrays.asList(
                         TestModel.of("service-test-3")
                 ));
         assertEquals(1, accessions1.size());
+        TestTransaction.end();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -151,6 +157,13 @@ public class BasicMonotonicAccessioningTest {
                         TestModel.of("service-test-3")
                 ));
         assertEquals(3, accessions2.size());
+
+        TestTransaction.start();
+        for(AccessionWrapper<TestModel, String, Long> accession: accessions2){
+            repository.delete(accession.getHash());
+        }
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
     }
 
 }

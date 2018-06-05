@@ -19,7 +19,6 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
@@ -34,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,17 +51,6 @@ public class BasicSpringDataRepositoryDatabaseService<
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>>
         implements DatabaseService<MODEL, String, ACCESSION> {
 
-    private class Partition {
-
-        private int start;
-        private int end;
-
-        public Partition(int start, int end) {
-            this.start = start;
-            this.end = end;
-        }
-    }
-
     private final static Logger logger = LoggerFactory.getLogger(BasicSpringDataRepositoryDatabaseService.class);
 
     private final IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository;
@@ -72,13 +59,13 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     private final Function<ACCESSION_ENTITY, MODEL> toModelFunction;
 
-    private final InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+    private final InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
 
     public BasicSpringDataRepositoryDatabaseService(
             IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository,
             Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction,
             Function<ACCESSION_ENTITY, MODEL> toModelFunction,
-            InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
+            InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
         this.repository = repository;
         this.toEntityFunction = toEntityFunction;
         this.toModelFunction = toModelFunction;
@@ -168,33 +155,10 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     @Override
     public SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, String, ACCESSION>> objects) {
-        Stack<Partition> partitions = new Stack<>();
-        partitions.add(new Partition(0, objects.size()));
-        SaveResponse<ACCESSION> saveResponse = new SaveResponse<>();
-
-        while (!partitions.isEmpty()) {
-            Partition partition = partitions.pop();
-            final List<AccessionWrapper<MODEL, String, ACCESSION>> partitionToSave =
-                    objects.subList(partition.start, partition.end);
-            try {
-                repository.insert(toEntities(partitionToSave));
-                partitionToSave.stream().forEach(saveResponse::addSavedAccessions);
-            } catch (DataIntegrityViolationException e) {
-                if (partitionToSave.size() != 1) {
-                    int start = partition.start;
-                    int middle = (partition.end + partition.start) / 2;
-                    int end = partition.end;
-                    partitions.add(new Partition(start, middle));
-                    partitions.add(new Partition(middle, end));
-                } else {
-                    saveResponse.addSaveFailedAccession(partitionToSave.get(0));
-                }
-            }
-        }
-        return saveResponse;
+        return repository.insert(toEntities(objects));
     }
 
-    private Collection<ACCESSION_ENTITY> toEntities(List<AccessionWrapper<MODEL, String, ACCESSION>> partitionToSave) {
+    private List<ACCESSION_ENTITY> toEntities(List<AccessionWrapper<MODEL, String, ACCESSION>> partitionToSave) {
         return partitionToSave.stream().map(toEntityFunction).collect(Collectors.toList());
     }
 
