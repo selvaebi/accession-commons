@@ -33,8 +33,10 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 /**
- * Base entity that represents an entry in an accession history table.
- * Must be extended to include the attribute that will represent the type of actual accession.
+ * Base class for operations with accessions to be serialized as relational entities. The derived classes must be
+ * annotated as Entity.
+ * 
+ * @param <ACCESSION>
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

@@ -22,6 +22,12 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import java.time.LocalDateTime;
 
+/**
+ * Base class for accessioned objects to be serialized as a MongoDB sub document when an operation of update, merge or
+ * deprecate has been done.
+ *
+ * @param <ACCESSION>
+ */
 public abstract class InactiveSubDocument<ACCESSION> implements IAccessionedObject<ACCESSION> {
 
     private String hashedMessage;

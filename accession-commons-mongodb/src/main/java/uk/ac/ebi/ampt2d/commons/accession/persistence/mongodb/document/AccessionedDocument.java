@@ -26,6 +26,12 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Base class for accessioned objects to be serialized as MongoDB documents.
+ * The derived classes must be annotated as Document.
+ *
+ * @param <ACCESSION>
+ */
 public abstract class AccessionedDocument<ACCESSION extends Serializable>
         implements IAccessionedObject<ACCESSION>, Persistable<String> {
 

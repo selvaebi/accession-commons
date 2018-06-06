@@ -28,6 +28,12 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Base class for inactive accessioned objects to be serialized as relational entities.
+ * The derived classes must be annotated as Entity.
+ *
+ * @param <ACCESSION>
+ */
 @MappedSuperclass
 public abstract class InactiveAccessionEntity<ACCESSION extends Serializable>
         implements IInactiveAccessionedObject<ACCESSION> {

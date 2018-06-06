@@ -29,6 +29,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base class for operations with accessions to be serialized as MongoDB documents. The derived classes must be
+ * annotated as Document.
+ *
+ * @param <ACCESSION>
+ * @param <INACTIVE_DOCUMENT>
+ */
 public abstract class OperationDocument<
         ACCESSION extends Serializable,
         INACTIVE_DOCUMENT extends InactiveSubDocument<ACCESSION>>
