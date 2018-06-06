@@ -15,9 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -26,25 +27,23 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.DEPRECATED;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.MERGED_INTO;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.UPDATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.DEPRECATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.MERGED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.PATCHED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.UPDATED;
 
 public abstract class BasicInactiveAccessionService<
+        MODEL,
         ACCESSION extends Serializable,
-        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION_INACTIVE_ENTITY extends IAccessionedObject<ACCESSION>,
-        OPERATION_ENTITY extends IOperation<ACCESSION>
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, ?, ACCESSION>,
+        ACCESSION_INACTIVE_ENTITY extends IAccessionedObject<MODEL, ?, ACCESSION>
         >
-        implements InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> {
+        implements InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> {
 
-    protected IHistoryRepository<ACCESSION, OPERATION_ENTITY, ?> historyRepository;
     private Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity;
 
     public BasicInactiveAccessionService(
-            IHistoryRepository<ACCESSION, OPERATION_ENTITY, ?> historyRepository,
             Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity) {
-        this.historyRepository = historyRepository;
         this.toInactiveEntity = toInactiveEntity;
     }
 
@@ -53,7 +52,7 @@ public abstract class BasicInactiveAccessionService<
         saveHistory(UPDATED, entity.getAccession(), reason, Arrays.asList(toInactiveEntity.apply(entity)));
     }
 
-    private void saveHistory(OperationType type, ACCESSION accession, String reason,
+    private void saveHistory(EventType type, ACCESSION accession, String reason,
                              List<ACCESSION_INACTIVE_ENTITY> entities) {
         saveHistory(type, accession, null, reason, entities);
     }
@@ -68,17 +67,17 @@ public abstract class BasicInactiveAccessionService<
     }
 
     @Override
-    public IOperation<ACCESSION> getLastOperation(ACCESSION accession) {
-        return historyRepository.findByAccessionIdOriginOrderByCreatedDateDesc(accession);
-    }
-
-    @Override
     public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
                       List<ACCESSION_ENTITY> accession_entities, String reason) {
-        saveHistory(MERGED_INTO, accessionOrigin, accessionDestination, reason,
+        saveHistory(MERGED, accessionOrigin, accessionDestination, reason,
                 toInactiveEntities(accession_entities));
     }
 
-    protected abstract void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination,
+    @Override
+    public void patch(ACCESSION accession, String reason) {
+        saveHistory(PATCHED, accession, reason, null);
+    }
+
+    protected abstract void saveHistory(EventType type, ACCESSION origin, ACCESSION destination,
                                         String reason, List<ACCESSION_INACTIVE_ENTITY> entities);
 }

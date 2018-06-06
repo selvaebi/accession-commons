@@ -15,17 +15,22 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 
-import java.io.Serializable;
+import java.util.List;
 
-@NoRepositoryBean
-public interface IHistoryRepository<ACCESSION, OPERATION_ENTITY, ID extends Serializable>
-        extends CrudRepository<OPERATION_ENTITY, ID> {
+public interface HistoryService<MODEL, ACCESSION> {
 
-    OPERATION_ENTITY findByAccessionIdOriginOrderByCreatedDateDesc(ACCESSION accession);
+    /**
+     * Returns the history of an accession
+     *
+     * @param accession
+     * @return
+     * @throws AccessionDoesNotExistException
+     */
+    List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException;
 
 }

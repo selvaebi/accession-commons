@@ -15,10 +15,22 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
-public interface IInactiveAccessionedObject<ACCESSION> extends IAccessionedObject<ACCESSION> {
+public enum EventType {
 
-    void setHistoryId(Long historyId);
+    CREATED,
+
+    // accession object has changed
+    UPDATED,
+
+    // new object version with the same accession
+    PATCHED,
+
+    // accession1 merged into accession2
+    MERGED,
+
+    // accession is no longer valid
+    DEPRECATED;
 
 }

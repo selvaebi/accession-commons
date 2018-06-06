@@ -19,8 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -40,7 +39,7 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION> {
+public abstract class OperationEntity<ACCESSION> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -54,7 +53,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private OperationType operationType;
+    private EventType eventType;
 
     @Column(nullable = false, length = 2000)
     private String reason;
@@ -67,33 +66,28 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
         return id;
     }
 
-    @Override
     public ACCESSION getAccessionIdOrigin() {
         return accessionIdOrigin;
     }
 
-    @Override
     public ACCESSION getAccessionIdDestination() {
         return accessionIdDestination;
     }
 
-    @Override
-    public OperationType getOperationType() {
-        return operationType;
+    public EventType getEventType() {
+        return eventType;
     }
 
-    @Override
     public String getReason() {
         return reason;
     }
 
-    @Override
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void fill(OperationType type, ACCESSION origin, ACCESSION destination, String reason) {
-        this.operationType = type;
+    public void fill(EventType type, ACCESSION origin, ACCESSION destination, String reason) {
+        this.eventType = type;
         this.accessionIdOrigin = origin;
         this.accessionIdDestination = destination;
         this.reason = reason;

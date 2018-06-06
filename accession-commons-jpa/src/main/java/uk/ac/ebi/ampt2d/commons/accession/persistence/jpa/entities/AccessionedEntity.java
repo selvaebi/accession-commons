@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -37,7 +37,8 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AccessionedEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION> {
+public abstract class AccessionedEntity<MODEL, ACCESSION extends Serializable>
+        implements IAccessionedObject<MODEL, String, ACCESSION> {
 
     @NotNull
     @Id

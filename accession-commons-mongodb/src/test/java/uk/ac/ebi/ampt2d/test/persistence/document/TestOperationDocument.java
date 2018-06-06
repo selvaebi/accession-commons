@@ -19,8 +19,9 @@ package uk.ac.ebi.ampt2d.test.persistence.document;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.OperationDocument;
+import uk.ac.ebi.ampt2d.test.TestModel;
 
 @Document
-public class TestOperationDocument extends OperationDocument<String, TestInactiveSubDocument> {
+public class TestOperationDocument extends OperationDocument<TestModel, String, TestInactiveSubDocument> {
 
 }

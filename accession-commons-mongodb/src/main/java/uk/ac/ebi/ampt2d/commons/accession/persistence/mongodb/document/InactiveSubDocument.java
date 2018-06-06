@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
  * @param <ACCESSION>
  * @see OperationDocument
  */
-public abstract class InactiveSubDocument<ACCESSION> implements IAccessionedObject<ACCESSION> {
+public abstract class InactiveSubDocument<MODEL, ACCESSION> implements IAccessionedObject<MODEL, String, ACCESSION> {
 
     private String hashedMessage;
 
@@ -41,7 +41,7 @@ public abstract class InactiveSubDocument<ACCESSION> implements IAccessionedObje
     protected InactiveSubDocument() {
     }
 
-    public InactiveSubDocument(IAccessionedObject<ACCESSION> object) {
+    public InactiveSubDocument(IAccessionedObject<MODEL, String, ACCESSION> object) {
         this.hashedMessage = object.getHashedMessage();
         this.accession = object.getAccession();
         this.version = object.getVersion();

@@ -17,25 +17,29 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicInactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.OperationDocument;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class BasicMongoDbInactiveAccessionService<
+public class BasicMongoDbInactiveAccessionService<
+        MODEL,
         ACCESSION extends Serializable,
-        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION_INACTIVE_ENTITY extends InactiveSubDocument<ACCESSION>,
-        OPERATION_ENTITY extends OperationDocument<ACCESSION, ACCESSION_INACTIVE_ENTITY>>
-        extends BasicInactiveAccessionService<ACCESSION, ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY,
-        OPERATION_ENTITY> {
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, ?, ACCESSION>,
+        ACCESSION_INACTIVE_ENTITY extends InactiveSubDocument<MODEL, ACCESSION>,
+        OPERATION_ENTITY extends OperationDocument<MODEL, ACCESSION, ACCESSION_INACTIVE_ENTITY>>
+        extends BasicInactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> {
+
+    private IHistoryRepository<ACCESSION, OPERATION_ENTITY, String> historyRepository;
 
     private Supplier<OPERATION_ENTITY> supplier;
 
@@ -43,16 +47,35 @@ public abstract class BasicMongoDbInactiveAccessionService<
             IHistoryRepository<ACCESSION, OPERATION_ENTITY, String> historyRepository,
             Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity,
             Supplier<OPERATION_ENTITY> supplier) {
-        super(historyRepository, toInactiveEntity);
+        super(toInactiveEntity);
+        this.historyRepository = historyRepository;
         this.supplier = supplier;
     }
 
     @Override
-    protected void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination, String reason,
+    protected void saveHistory(EventType type, ACCESSION origin, ACCESSION destination, String reason,
                                List<ACCESSION_INACTIVE_ENTITY> entities) {
         OPERATION_ENTITY operation = supplier.get();
         operation.fill(type, origin, destination, reason, entities);
         historyRepository.save(operation);
     }
 
+    @Override
+    public Optional<EventType> getLastEventType(ACCESSION accession) {
+        final OPERATION_ENTITY lastEvent = historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+        if (lastEvent != null) {
+            return Optional.of(lastEvent.getEventType());
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public IOperation<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
+        return historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+    }
+
+    @Override
+    public List<? extends IOperation<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
+        return historyRepository.findAllByAccessionIdOrigin(accession);
+    }
 }

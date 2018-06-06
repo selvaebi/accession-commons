@@ -15,26 +15,23 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-/**
- * An entry of operations performed over accessioned objects that are considered no longer active.
- * @param <ACCESSION>
- */
-public interface IOperation<ACCESSION> {
+public interface IAccessionedObjectCustomRepository<ACCESSION,
+        ENTITY extends IAccessionedObject<?, String, ACCESSION>> {
 
-    ACCESSION getAccessionIdOrigin();
-
-    ACCESSION getAccessionIdDestination();
-
-    OperationType getOperationType();
-
-    String getReason();
-
-    LocalDateTime getCreatedDate();
+    /**
+     * Bulk insert of accessioned objects. All the hashes must be unique.
+     *
+     * @param entities
+     * @return
+     * @throws RuntimeException if any hash is not unique.
+     */
+    SaveResponse<ACCESSION> insert(List<ENTITY> entities);
 
 }

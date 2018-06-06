@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.BulkOperationException;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.AccessionedDocument;
 
 import java.io.Serializable;
@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 
 public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
         ACCESSION extends Serializable,
-        DOCUMENT extends AccessionedDocument<ACCESSION>>
+        DOCUMENT extends AccessionedDocument<?, ACCESSION>>
         implements IAccessionedObjectCustomRepository<ACCESSION, DOCUMENT> {
 
     private final static Logger logger = LoggerFactory.getLogger(BasicMongoDbAccessionedCustomRepositoryImpl.class);

@@ -17,42 +17,52 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest.dto;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 
+import java.time.LocalDateTime;
 import java.util.function.Function;
 
-/**
- * Response containing the object that has been accessioned, as well as additional information like the accession or a
- * flag indicating whether the accession is active. To be used at the REST API layer.
- *
- * @param <DTO>
- * @param <MODEL>
- * @param <HASH>
- * @param <ACCESSION>
- */
-public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
+public class HistoryEventDTO<ACCESSION, DTO> {
+
+    private EventType type;
 
     private ACCESSION accession;
 
-    private int version;
+    private Integer version;
+
+    private ACCESSION mergedInto;
+
+    private LocalDateTime localDateTime;
 
     private DTO data;
 
-    AccessionResponseDTO() {
+    public <MODEL> HistoryEventDTO(HistoryEvent<MODEL, ACCESSION> event, Function<MODEL, DTO> modelToDTO) {
+        this.type = event.getType();
+        this.accession = event.getAccession();
+        this.mergedInto = event.getMergedInto();
+        this.localDateTime = event.getLocalDateTime();
+        this.data = modelToDTO.apply(event.getData());
     }
 
-    public AccessionResponseDTO(AccessionWrapper<MODEL, HASH, ACCESSION> accessionWrapper, Function<MODEL, DTO> modelToDto) {
-        this.accession = accessionWrapper.getAccession();
-        this.version = accessionWrapper.getVersion();
-        this.data = modelToDto.apply(accessionWrapper.getData());
+    public EventType getType() {
+        return type;
     }
 
     public ACCESSION getAccession() {
         return accession;
     }
 
-    public int getVersion() {
+    public Integer getVersion() {
         return version;
+    }
+
+    public ACCESSION getMergedInto() {
+        return mergedInto;
+    }
+
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
     }
 
     public DTO getData() {

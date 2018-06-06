@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.test.configuration.MongoDbTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;

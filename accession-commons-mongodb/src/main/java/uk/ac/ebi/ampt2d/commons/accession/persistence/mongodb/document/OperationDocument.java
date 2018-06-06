@@ -20,8 +20,8 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -37,14 +37,15 @@ import java.util.List;
  * @param <INACTIVE_DOCUMENT>
  */
 public abstract class OperationDocument<
+        MODEL,
         ACCESSION extends Serializable,
-        INACTIVE_DOCUMENT extends InactiveSubDocument<ACCESSION>>
-        implements IOperation<ACCESSION>, Persistable<String> {
+        INACTIVE_DOCUMENT extends InactiveSubDocument<MODEL, ACCESSION>>
+        implements IOperation<MODEL, ACCESSION>, Persistable<String> {
 
     @Id
     private String id;
 
-    private OperationType operationType;
+    private EventType eventType;
 
     @Indexed
     private ACCESSION accessionIdOrigin;
@@ -61,19 +62,21 @@ public abstract class OperationDocument<
     protected OperationDocument() {
     }
 
-    public void fill(OperationType operationType, ACCESSION accessionIdOrigin, ACCESSION accessionIdDestiny,
+    public void fill(EventType eventType, ACCESSION accessionIdOrigin, ACCESSION accessionIdDestiny,
                      String reason, List<INACTIVE_DOCUMENT> inactiveObjects) {
-        this.operationType = operationType;
+        this.eventType = eventType;
         this.accessionIdOrigin = accessionIdOrigin;
         this.accessionIdDestination = accessionIdDestiny;
         this.reason = reason;
         this.inactiveObjects = new ArrayList<>();
-        this.inactiveObjects.addAll(inactiveObjects);
+        if (inactiveObjects != null && !inactiveObjects.isEmpty()) {
+            this.inactiveObjects.addAll(inactiveObjects);
+        }
     }
 
     @Override
-    public OperationType getOperationType() {
-        return operationType;
+    public EventType getEventType() {
+        return eventType;
     }
 
     @Override
@@ -106,6 +109,7 @@ public abstract class OperationDocument<
         return true;
     }
 
+    @Override
     public List<INACTIVE_DOCUMENT> getInactiveObjects() {
         return inactiveObjects;
     }

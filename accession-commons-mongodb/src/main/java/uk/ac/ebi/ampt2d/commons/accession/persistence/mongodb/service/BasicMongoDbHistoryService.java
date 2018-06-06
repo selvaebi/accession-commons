@@ -1,0 +1,60 @@
+/*
+ *
+ * Copyright 2018 EMBL - European Bioinformatics Institute
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service;
+
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicHistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class BasicMongoDbHistoryService<
+        MODEL,
+        ACCESSION extends Serializable,
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, String, ACCESSION>>
+        extends BasicHistoryService<MODEL, ACCESSION> {
+
+    private IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> accessionRepository;
+
+    private InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+
+    public BasicMongoDbHistoryService(
+            IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> accessionRepository,
+            InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
+        super();
+        this.accessionRepository = accessionRepository;
+        this.inactiveAccessionService = inactiveAccessionService;
+    }
+
+    @Override
+    public List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException {
+        final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
+        final List<? extends IOperation<MODEL, ACCESSION>> operations =
+                inactiveAccessionService.getOperations(accession);
+        if (current.isEmpty() && operations.isEmpty()) {
+            throw new AccessionDoesNotExistException(accession.toString());
+        }
+        return generateHistory(current, operations);
+    }
+
+}

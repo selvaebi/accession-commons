@@ -15,29 +15,40 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface InactiveAccessionService<
+        MODEL,
         ACCESSION extends Serializable,
-        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>> {
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, ?, ACCESSION>> {
 
     @Transactional
     void update(ACCESSION_ENTITY entity, String reason);
 
     @Transactional
-    void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
+    void patch(ACCESSION accession, String reason);
 
-    IOperation<ACCESSION> getLastOperation(ACCESSION accession);
+    @Transactional
+    void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
 
     @Transactional
     void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, List<ACCESSION_ENTITY> entities,
                String reason);
+
+    Optional<EventType> getLastEventType(ACCESSION accession);
+
+    IOperation<MODEL, ACCESSION> getLastOperation(ACCESSION accession);
+
+    List<? extends IOperation<MODEL, ACCESSION>> getOperations(ACCESSION accession);
 
 }

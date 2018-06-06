@@ -15,21 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface IAccessionedObjectCustomRepository<ACCESSION, ENTITY extends IAccessionedObject<ACCESSION>> {
+@NoRepositoryBean
+public interface IHistoryRepository<ACCESSION, OPERATION_ENTITY, ID extends Serializable>
+        extends CrudRepository<OPERATION_ENTITY, ID> {
 
-    /**
-     * Bulk insert of accessioned objects. All the hashes must be unique.
-     *
-     * @param entities
-     * @return
-     * @throws RuntimeException if any hash is not unique.
-     */
-    SaveResponse<ACCESSION> insert(List<ENTITY> entities);
+    OPERATION_ENTITY findTopByAccessionIdOriginOrderByCreatedDateDesc(ACCESSION accession);
+
+    List<OPERATION_ENTITY> findAllByAccessionIdOrigin(ACCESSION accession);
 
 }

@@ -15,17 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 @NoRepositoryBean
-public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
+public interface IAccessionedObjectRepository<
+        ENTITY extends IAccessionedObject<?, String, ACCESSION>,
         ACCESSION extends Serializable> extends CrudRepository<ENTITY, String>,
         IAccessionedObjectCustomRepository<ACCESSION, ENTITY> {
 

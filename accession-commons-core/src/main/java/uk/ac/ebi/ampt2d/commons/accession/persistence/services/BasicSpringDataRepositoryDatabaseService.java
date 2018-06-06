@@ -15,17 +15,19 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,27 +50,21 @@ import java.util.stream.Collectors;
 public class BasicSpringDataRepositoryDatabaseService<
         MODEL,
         ACCESSION extends Serializable,
-        ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>>
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, String, ACCESSION>>
         implements DatabaseService<MODEL, String, ACCESSION> {
-
-    private final static Logger logger = LoggerFactory.getLogger(BasicSpringDataRepositoryDatabaseService.class);
 
     private final IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository;
 
     private final Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction;
 
-    private final Function<ACCESSION_ENTITY, MODEL> toModelFunction;
-
-    private final InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+    private final InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
 
     public BasicSpringDataRepositoryDatabaseService(
             IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository,
             Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction,
-            Function<ACCESSION_ENTITY, MODEL> toModelFunction,
-            InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
+            InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
         this.repository = repository;
         this.toEntityFunction = toEntityFunction;
-        this.toModelFunction = toModelFunction;
         this.inactiveAccessionService = inactiveAccessionService;
     }
 
@@ -81,7 +77,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     private AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ENTITY entity) {
-        return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
+        return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), entity.getModel(),
                 entity.getVersion());
     }
 
@@ -97,20 +93,18 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         if (entities == null || entities.isEmpty()) {
             checkAccessionMergedOrDeprecated(accession);
-            throw new AccessionDoesNotExistException(accession.toString());
         }
     }
 
     private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
-        IOperation<ACCESSION> operation = inactiveAccessionService.getLastOperation(accession);
-        if (operation != null) {
-            switch (operation.getOperationType()) {
-                case MERGED_INTO:
-                    throw new AccessionMergedException(operation.getAccessionIdOrigin());
-                case DEPRECATED:
-                    throw new AccessionDeprecatedException(accession.toString());
-            }
+        EventType eventType = inactiveAccessionService.getLastEventType(accession).orElseThrow(() -> new
+                AccessionDoesNotExistException(accession.toString()));
+        switch (eventType) {
+            case MERGED:
+                throw new AccessionMergedException(accession.toString());
+            case DEPRECATED:
+                throw new AccessionDeprecatedException(accession.toString());
         }
     }
 
@@ -167,13 +161,15 @@ public class BasicSpringDataRepositoryDatabaseService<
         ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
         if (result == null) {
             checkAccessionMergedOrDeprecated(accession);
-            throw new AccessionDoesNotExistException(accession.toString(), version);
+            //Accession does exist version does not.
+            throw new AccessionDoesNotExistException(accession.toString());
         }
         return result;
     }
 
     @Override
-    public AccessionVersionsWrapper<MODEL, String, ACCESSION> patch(ACCESSION accession, String hash, MODEL model)
+    public AccessionVersionsWrapper<MODEL, String, ACCESSION> patch(ACCESSION accession, String hash, MODEL model,
+                                                                    String reason)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
         List<ACCESSION_ENTITY> entities = getAccession(accession);
@@ -186,6 +182,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         }
         maxVersion = maxVersion + 1;
         checkedInsert(accession, hash, model, maxVersion);
+        inactiveAccessionService.patch(accession, reason);
         return findByAccession(accession);
     }
 

@@ -15,18 +15,31 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.models;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@NoRepositoryBean
-public interface InactiveAccessionRepository<ACCESSION, ENTITY> extends CrudRepository<ENTITY, Long> {
+/**
+ * An entry of operations performed over accessioned objects that are considered no longer active.
+ *
+ * @param <MODEL>
+ * @param <ACCESSION>
+ */
+public interface IOperation<MODEL, ACCESSION> {
 
-    List<ENTITY> findAllByHistoryId(Long historyId);
+    ACCESSION getAccessionIdOrigin();
 
-    List<ENTITY> findAllByAccessionAndVersion(ACCESSION accession, int version);
+    ACCESSION getAccessionIdDestination();
+
+    EventType getEventType();
+
+    String getReason();
+
+    LocalDateTime getCreatedDate();
+
+    List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> getInactiveObjects();
+
 }

@@ -15,12 +15,16 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories;
 
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
-import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
+import java.util.List;
 
-@Repository
-public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String> {
+@NoRepositoryBean
+public interface InactiveAccessionRepository<ENTITY> extends CrudRepository<ENTITY, Long> {
+
+    List<ENTITY> findAllByHistoryId(Long historyId);
+
 }

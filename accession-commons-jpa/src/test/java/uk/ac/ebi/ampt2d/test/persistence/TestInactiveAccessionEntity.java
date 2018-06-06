@@ -24,7 +24,7 @@ import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
 @Entity
-public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String> implements TestModel {
+public class TestInactiveAccessionEntity extends InactiveAccessionEntity<TestModel, String> implements TestModel {
 
     private String something;
 
@@ -59,5 +59,10 @@ public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String>
     @Override
     public int getVersion() {
         return 0;
+    }
+
+    @Override
+    public TestModel getModel() {
+        return this;
     }
 }

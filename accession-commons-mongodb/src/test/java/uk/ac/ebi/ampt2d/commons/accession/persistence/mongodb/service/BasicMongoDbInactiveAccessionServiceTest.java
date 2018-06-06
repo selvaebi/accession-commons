@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 import uk.ac.ebi.ampt2d.test.configuration.MongoDbTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
@@ -42,9 +42,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.DEPRECATED;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.MERGED_INTO;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.UPDATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.DEPRECATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.MERGED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.UPDATED;
 import static uk.ac.ebi.ampt2d.test.persistence.document.TestDocument.document;
 
 @RunWith(SpringRunner.class)
@@ -52,6 +52,7 @@ import static uk.ac.ebi.ampt2d.test.persistence.document.TestDocument.document;
 public class BasicMongoDbInactiveAccessionServiceTest {
 
     private static final String DEFAULT_REASON = "default-test-reason";
+
     @Rule
     public MongoDbRule mongoDbRule = new FixSpringMongoDbRule(MongoDbConfigurationBuilder.mongoDb()
             .databaseName("accession-test").build());
@@ -109,7 +110,7 @@ public class BasicMongoDbInactiveAccessionServiceTest {
 
     private class LastOperationAsserts {
 
-        private final IOperation<String> lastOperation;
+        private final IOperation<?, String> lastOperation;
 
         public LastOperationAsserts(String accession) {
             this.lastOperation = service.getLastOperation(accession);
@@ -129,8 +130,8 @@ public class BasicMongoDbInactiveAccessionServiceTest {
             return isOfType(UPDATED);
         }
 
-        private LastOperationAsserts isOfType(OperationType type) {
-            assertEquals(type, lastOperation.getOperationType());
+        private LastOperationAsserts isOfType(EventType type) {
+            assertEquals(type, lastOperation.getEventType());
             return this;
         }
 
@@ -139,7 +140,7 @@ public class BasicMongoDbInactiveAccessionServiceTest {
         }
 
         public LastOperationAsserts assertIsMerge(String origin, String destination, int totalElements) {
-            return isOfType(MERGED_INTO).assertOrigin(origin).assertDestination(destination).assertTotalStoredElements(totalElements);
+            return isOfType(MERGED).assertOrigin(origin).assertDestination(destination).assertTotalStoredElements(totalElements);
         }
 
         private LastOperationAsserts assertOrigin(String origin) {

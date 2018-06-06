@@ -17,8 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service.BasicMongoDbInactiveAccessionService;
+import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
@@ -26,7 +27,8 @@ import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class TestMongoDbInactiveAccessionService extends BasicMongoDbInactiveAccessionService<String, TestDocument,
+public class TestMongoDbInactiveAccessionService extends BasicMongoDbInactiveAccessionService<TestModel, String,
+        TestDocument,
         TestInactiveSubDocument, TestOperationDocument> {
 
     public TestMongoDbInactiveAccessionService(
