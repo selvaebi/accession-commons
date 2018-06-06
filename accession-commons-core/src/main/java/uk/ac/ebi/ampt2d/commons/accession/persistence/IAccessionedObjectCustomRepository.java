@@ -28,7 +28,7 @@ public interface IAccessionedObjectCustomRepository<ACCESSION, ENTITY extends IA
      *
      * @param entities
      * @return
-     * @throws RuntimeException if all hashes are not unique.
+     * @throws RuntimeException if any hash is not unique.
      */
     SaveResponse<ACCESSION> insert(List<ENTITY> entities);
 
