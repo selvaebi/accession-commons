@@ -24,7 +24,7 @@ import java.util.List;
 public interface IAccessionedObjectCustomRepository<ACCESSION, ENTITY extends IAccessionedObject<ACCESSION>> {
 
     /**
-     * Bulk insert of accessioned objects all hashes must be unique.
+     * Bulk insert of accessioned objects. All the hashes must be unique.
      *
      * @param entities
      * @return
