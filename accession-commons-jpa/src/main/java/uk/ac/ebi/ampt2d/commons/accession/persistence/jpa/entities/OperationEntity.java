@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
 /**
  * Base class for operations with accessions to be serialized as relational entities. The derived classes must be
  * annotated as Entity.
- * 
+ *
  * @param <ACCESSION>
  */
 @MappedSuperclass

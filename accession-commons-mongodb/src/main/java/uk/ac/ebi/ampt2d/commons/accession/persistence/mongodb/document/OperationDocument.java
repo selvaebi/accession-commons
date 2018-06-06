@@ -49,7 +49,7 @@ public abstract class OperationDocument<
     @Indexed
     private ACCESSION accessionIdOrigin;
 
-    private ACCESSION accessionIdDestiny;
+    private ACCESSION accessionIdDestination;
 
     private String reason;
 
@@ -65,7 +65,7 @@ public abstract class OperationDocument<
                      String reason, List<INACTIVE_DOCUMENT> inactiveObjects) {
         this.operationType = operationType;
         this.accessionIdOrigin = accessionIdOrigin;
-        this.accessionIdDestiny = accessionIdDestiny;
+        this.accessionIdDestination = accessionIdDestiny;
         this.reason = reason;
         this.inactiveObjects = new ArrayList<>();
         this.inactiveObjects.addAll(inactiveObjects);
@@ -83,7 +83,7 @@ public abstract class OperationDocument<
 
     @Override
     public ACCESSION getAccessionIdDestination() {
-        return accessionIdDestiny;
+        return accessionIdDestination;
     }
 
     @Override
