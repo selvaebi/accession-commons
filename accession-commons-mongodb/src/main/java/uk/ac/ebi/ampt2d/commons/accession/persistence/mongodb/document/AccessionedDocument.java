@@ -78,6 +78,10 @@ public abstract class AccessionedDocument<ACCESSION extends Serializable>
         return createdDate;
     }
 
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
     @Override
     public int getVersion() {
         return version;

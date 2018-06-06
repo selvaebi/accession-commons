@@ -18,20 +18,21 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
 
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OperationDocument<
         ACCESSION extends Serializable,
         INACTIVE_DOCUMENT extends InactiveSubDocument<ACCESSION>>
-        implements IOperation<ACCESSION> {
+        implements IOperation<ACCESSION>, Persistable<String> {
 
     @Id
     private String id;
@@ -48,7 +49,7 @@ public abstract class OperationDocument<
     private List<INACTIVE_DOCUMENT> inactiveObjects;
 
     @CreatedDate
-    private ZonedDateTime createdDate;
+    private LocalDateTime createdDate;
 
     protected OperationDocument() {
     }
@@ -84,7 +85,21 @@ public abstract class OperationDocument<
     }
 
     @Override
-    public ZonedDateTime getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return true;
+    }
+
+    public List<INACTIVE_DOCUMENT> getInactiveObjects() {
+        return inactiveObjects;
     }
 }

@@ -40,6 +40,9 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static uk.ac.ebi.ampt2d.test.persistence.document.TestDocument.document;
+
+;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MongoDbTestConfiguration.class})
@@ -98,13 +101,9 @@ public class AccessionedDocumentRepositoryTest {
     private TestInsert insertDocuments(int totalDocuments) {
         final List<TestDocument> documents = new ArrayList<>();
         for (int i = 0; i < totalDocuments; i++) {
-            documents.add(getDocument(i));
+            documents.add(document(i));
         }
         return new TestInsert(documents);
-    }
-
-    private TestDocument getDocument(int num) {
-        return new TestDocument("test-" + num, "h" + num, "a" + num);
     }
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
@@ -125,7 +124,7 @@ public class AccessionedDocumentRepositoryTest {
     @Test(expected = RuntimeException.class)
     public void testInsertDuplicatedHashInBatch() {
         assertEquals(0, repository.count());
-        insertDocuments(getDocument(1), getDocument(2), getDocument(1));
+        insertDocuments(document(1), document(2), document(1));
     }
 
     private TestInsert insertDocuments(TestDocument... documents) {
@@ -141,9 +140,9 @@ public class AccessionedDocumentRepositoryTest {
 
         // Insert second batch
         insertDocuments(
-                getDocument(1),
-                getDocument(2),
-                getDocument(3))
+                document(1),
+                document(2),
+                document(3))
                 .assertTotalDbDocuments(4)
                 .assertSavedDocuments(2)
                 .assertSaveFailedDocuments(1)
@@ -159,9 +158,9 @@ public class AccessionedDocumentRepositoryTest {
 
         // Insert second batch
         insertDocuments(
-                getDocument(2),
-                getDocument(1),
-                getDocument(3))
+                document(2),
+                document(1),
+                document(3))
                 .assertTotalDbDocuments(4)
                 .assertSavedDocuments(2)
                 .assertSaveFailedDocuments(1)
@@ -177,9 +176,9 @@ public class AccessionedDocumentRepositoryTest {
 
         // Insert second batch
         insertDocuments(
-                getDocument(2),
-                getDocument(3),
-                getDocument(0))
+                document(2),
+                document(3),
+                document(0))
                 .assertTotalDbDocuments(4)
                 .assertSavedDocuments(2)
                 .assertSaveFailedDocuments(1)
@@ -195,17 +194,13 @@ public class AccessionedDocumentRepositoryTest {
 
         // Insert second batch
         insertDocuments(
-                getDocument(2),
-                getDocument(3),
-                getDocument(7, 1))
+                document(2),
+                document(3),
+                document(7, 1))
                 .assertTotalDbDocuments(4)
                 .assertSavedDocuments(2)
                 .assertSaveFailedDocuments(1)
                 .assertAccessionHasNotBeenSaved("a7");
-    }
-
-    private TestDocument getDocument(int accessionNum, int hashNum) {
-        return new TestDocument("test-" + hashNum, "h" + hashNum, "a" + accessionNum);
     }
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
@@ -217,15 +212,15 @@ public class AccessionedDocumentRepositoryTest {
 
         // Insert second batch
         insertDocuments(
-                getDocument(10),
-                getDocument(1),
-                getDocument(11),
-                getDocument(12),
-                getDocument(0),
-                getDocument(9),
-                getDocument(13),
-                getDocument(3),
-                getDocument(4))
+                document(10),
+                document(1),
+                document(11),
+                document(12),
+                document(0),
+                document(9),
+                document(13),
+                document(3),
+                document(4))
                 .assertTotalDbDocuments(14)
                 .assertSavedDocuments(4)
                 .assertSaveFailedDocuments(5)
@@ -241,9 +236,9 @@ public class AccessionedDocumentRepositoryTest {
     public void testInsertFindById() {
         insertDocuments(1);
         TestDocument document = repository.findOne("h0");
-        assertEquals("h0",document.getHashedMessage());
-        assertEquals("a0",document.getAccession());
-        assertEquals("test-0",document.getValue());
+        assertEquals("h0", document.getHashedMessage());
+        assertEquals("a0", document.getAccession());
+        assertEquals("test-0", document.getValue());
     }
 
 }

@@ -30,6 +30,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 /**
@@ -59,7 +60,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
 
     @CreatedDate
     @Column(updatable = false)
-    private ZonedDateTime createdDate;
+    private LocalDateTime createdDate;
 
     public Long getId() {
         return id;
@@ -86,7 +87,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     }
 
     @Override
-    public ZonedDateTime getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 

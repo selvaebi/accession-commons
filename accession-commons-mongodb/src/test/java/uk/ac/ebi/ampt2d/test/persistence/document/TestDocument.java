@@ -26,7 +26,7 @@ public class TestDocument extends AccessionedDocument<String> implements TestMod
 
     private String value;
 
-    TestDocument(){
+    TestDocument() {
         super();
     }
 
@@ -44,4 +44,17 @@ public class TestDocument extends AccessionedDocument<String> implements TestMod
     public String getValue() {
         return value;
     }
+
+    public static TestDocument document(int num) {
+        return new TestDocument("test-" + num, "h" + num, "a" + num);
+    }
+
+    public static TestDocument document(int accessionNum, int hashNum) {
+        return new TestDocument("test-" + hashNum, "h" + hashNum, "a" + accessionNum);
+    }
+
+    public static TestDocument document(int accessionNum, String value) {
+        return new TestDocument("test-" + value, "h" + value, "a" + accessionNum);
+    }
+
 }

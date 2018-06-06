@@ -17,11 +17,17 @@
  */
 package uk.ac.ebi.ampt2d.test.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
+import uk.ac.ebi.ampt2d.test.persistence.repository.TestOperationRepository;
+import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
 
 @Configuration
 @EntityScan(basePackages = {"uk.ac.ebi.ampt2d.test.persistence.document"})
@@ -30,5 +36,17 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableMongoAuditing
 @AutoConfigureDataMongo
 public class MongoDbTestConfiguration {
+
+    @Autowired
+    private TestOperationRepository testOperationRepository;
+
+    @Bean
+    public TestMongoDbInactiveAccessionService testMongoDbInactiveAccessionService() {
+        return new TestMongoDbInactiveAccessionService(
+                testOperationRepository,
+                TestInactiveSubDocument::new,
+                TestOperationDocument::new
+        );
+    }
 
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence.document;
+package uk.ac.ebi.ampt2d.test.persistence.repository;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.OperationDocument;
+import org.springframework.stereotype.Repository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
 
-@Document
-public class TestOperations extends OperationDocument<String, TestInactiveSubDocument> {
-
+@Repository
+public interface TestOperationRepository extends IHistoryRepository<String, TestOperationDocument, String> {
 }

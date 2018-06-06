@@ -17,21 +17,19 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence.document;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
 
-@Document
 public class TestInactiveSubDocument extends InactiveSubDocument<String> {
 
     private String value;
 
-    TestInactiveSubDocument(){
+    TestInactiveSubDocument() {
         super();
     }
 
-    public TestInactiveSubDocument(TestInactiveSubDocument inactiveSubDocument) {
-        super(inactiveSubDocument);
-        this.value = inactiveSubDocument.getValue();
+    public TestInactiveSubDocument(TestDocument testDocument) {
+        super(testDocument);
+        this.value = testDocument.getValue();
     }
 
     public String getValue() {
