@@ -21,7 +21,7 @@ import com.lordofthejars.nosqlunit.mongodb.MongoDbConfiguration;
 import com.lordofthejars.nosqlunit.mongodb.SpringMongoDbRule;
 
 /**
- * Temporal fix until nosql unit rc-6 or final is released
+ * Temporary fix until nosql unit rc-6 or final is released
  */
 public class FixSpringMongoDbRule extends SpringMongoDbRule {
 
