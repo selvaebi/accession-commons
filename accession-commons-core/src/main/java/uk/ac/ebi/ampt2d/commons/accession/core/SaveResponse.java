@@ -45,15 +45,14 @@ public class SaveResponse<ACCESSION> {
         return saveFailedAccessions;
     }
 
-
-    public boolean isSavedAccession(AccessionWrapper<?, ?, ACCESSION> accessionWrapper) {
-        if (savedAccessions.contains(accessionWrapper.getAccession())) {
+    public boolean isSavedAccession(ACCESSION accession) {
+        if (savedAccessions.contains(accession)) {
             return true;
         } else {
-            if (saveFailedAccessions.contains(accessionWrapper.getAccession())) {
+            if (saveFailedAccessions.contains(accession)) {
                 return false;
             } else {
-                throw new UnsavedAccessionException(accessionWrapper.getAccession());
+                throw new UnsavedAccessionException(accession);
             }
         }
     }
