@@ -27,7 +27,6 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.Accession
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -53,8 +52,7 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
     public SaveResponse<ACCESSION> insert(List<DOCUMENT> documents) {
         checkHashUniqueness(documents);
         setAuditCreatedDate(documents);
-        final BulkOperations insert = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, clazz)
-                .insert(new ArrayList<>(documents));
+        final BulkOperations insert = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, clazz).insert(documents);
         final Set<String> duplicatedHash = new HashSet<>();
 
         try {
@@ -72,7 +70,7 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
         final Set<String> duplicatedHash = new HashSet<>();
         documents.forEach(document -> {
             if (duplicatedHash.contains(document.getHashedMessage())) {
-                throw new RuntimeException("Duplicated hash in mongodb insert batch");
+                throw new RuntimeException("Duplicated hash in MongoDB bulk insert.");
             }
             duplicatedHash.add(document.getHashedMessage());
         });
@@ -80,11 +78,12 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
 
     /**
      * Unfortunately we need to set this manually when using a bulk operation.
+     *
      * @param documents
      */
     private void setAuditCreatedDate(Iterable<DOCUMENT> documents) {
         LocalDateTime createdDate = LocalDateTime.now();
-        for(DOCUMENT document: documents){
+        for (DOCUMENT document : documents) {
             document.setCreatedDate(createdDate);
         }
     }
