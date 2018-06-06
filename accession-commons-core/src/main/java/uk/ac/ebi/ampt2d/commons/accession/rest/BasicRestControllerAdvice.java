@@ -36,6 +36,9 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingE
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
+import uk.ac.ebi.ampt2d.commons.accession.rest.controllers.BasicRestController;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.ErrorMessage;
+import uk.ac.ebi.ampt2d.commons.accession.rest.validation.CollectionValidator;
 
 import javax.validation.ValidationException;
 import java.util.stream.Collectors;

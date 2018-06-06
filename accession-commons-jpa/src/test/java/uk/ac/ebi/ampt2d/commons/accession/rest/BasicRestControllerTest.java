@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionResponseDTO;
 import uk.ac.ebi.ampt2d.test.configuration.BasicRestControllerTestConfiguration;
 import uk.ac.ebi.ampt2d.test.rest.BasicRestModel;
 

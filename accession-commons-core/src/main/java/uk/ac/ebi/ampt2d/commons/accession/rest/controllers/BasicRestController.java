@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.rest;
+package uk.ac.ebi.ampt2d.commons.accession.rest.controllers;
 
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +29,8 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedExc
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionResponseDTO;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionVersionsResponseDTO;
 
 import javax.validation.Valid;
 import java.util.List;

@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.test.rest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.rest.BasicRestController;
+import uk.ac.ebi.ampt2d.commons.accession.rest.controllers.BasicRestController;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 @RestController

@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.rest;
+package uk.ac.ebi.ampt2d.commons.accession.rest.dto;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
 
