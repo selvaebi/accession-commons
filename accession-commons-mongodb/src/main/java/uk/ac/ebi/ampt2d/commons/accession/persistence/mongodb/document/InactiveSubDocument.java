@@ -23,10 +23,11 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 import java.time.LocalDateTime;
 
 /**
- * Base class for accessioned objects to be serialized as a MongoDB sub document when an operation of update, merge or
- * deprecate has been done.
+ * Mongo subdocument that represents a particular accessioned object that is currently inactive. It is nested under the
+ * document representing the operation that made it become inactive.
  *
  * @param <ACCESSION>
+ * @see OperationDocument
  */
 public abstract class InactiveSubDocument<ACCESSION> implements IAccessionedObject<ACCESSION> {
 

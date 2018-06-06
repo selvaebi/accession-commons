@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class for operations with accessions to be serialized as MongoDB documents. The derived classes must be
- * annotated as Document.
+ * Mongo document that represents an operation that changes the state of an accessioned object. The derived classes must
+ * be annotated as Entity.
  *
  * @param <ACCESSION>
  * @param <INACTIVE_DOCUMENT>
