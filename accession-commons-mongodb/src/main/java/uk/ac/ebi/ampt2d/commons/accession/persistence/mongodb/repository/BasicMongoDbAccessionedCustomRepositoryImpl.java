@@ -52,7 +52,7 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
     @Override
     public SaveResponse<ACCESSION> insert(List<DOCUMENT> documents) {
         checkHashUniqueness(documents);
-        putAuditSaveDate(documents);
+        setAuditCreatedDate(documents);
         final BulkOperations insert = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, clazz)
                 .insert(new ArrayList<>(documents));
         final Set<String> duplicatedHash = new HashSet<>();
@@ -82,7 +82,7 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
      * Unfortunately we need to set this manually when using a bulk operation.
      * @param documents
      */
-    private void putAuditSaveDate(Iterable<DOCUMENT> documents) {
+    private void setAuditCreatedDate(Iterable<DOCUMENT> documents) {
         LocalDateTime createdDate = LocalDateTime.now();
         for(DOCUMENT document: documents){
             document.setCreatedDate(createdDate);
