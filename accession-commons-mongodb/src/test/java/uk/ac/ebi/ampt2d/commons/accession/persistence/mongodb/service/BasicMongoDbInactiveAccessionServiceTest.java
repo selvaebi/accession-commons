@@ -69,25 +69,25 @@ public class BasicMongoDbInactiveAccessionServiceTest {
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
     @Test
     public void testLastOperationDoesNotExistBehaviour() {
-        new LastOperationAsserts("notExist").doesNotExist();
+        new LastOperationAsserts("notExist").assertDoesNotExist();
     }
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
     @Test
     public void testUpdate() {
-        update(document(1, "test-update-1")).exists().isUpdate();
+        update(document(1, "test-update-1")).assertExists().assertIsUpdate();
     }
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
     @Test
     public void testDeprecate() {
-        deprecate(document(1, "test-deprecate-1")).exists().isDeprecate();
+        deprecate(document(1, "test-deprecate-1")).assertExists().assertIsDeprecate();
     }
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
     @Test
     public void testMerge() {
-        merge(document(1, "test-deprecate-1"), "a2").exists().isMerge("a1", "a2", 1);
+        merge(document(1, "test-deprecate-1"), "a2").assertExists().assertIsMerge("a1", "a2", 1);
     }
 
     private LastOperationAsserts merge(TestDocument document, String accession) {
@@ -115,17 +115,17 @@ public class BasicMongoDbInactiveAccessionServiceTest {
             this.lastOperation = service.getLastOperation(accession);
         }
 
-        public LastOperationAsserts doesNotExist() {
+        public LastOperationAsserts assertDoesNotExist() {
             assertNull(lastOperation);
             return this;
         }
 
-        public LastOperationAsserts exists() {
+        public LastOperationAsserts assertExists() {
             assertNotNull(lastOperation);
             return this;
         }
 
-        public LastOperationAsserts isUpdate() {
+        public LastOperationAsserts assertIsUpdate() {
             return isOfType(UPDATED);
         }
 
@@ -134,25 +134,25 @@ public class BasicMongoDbInactiveAccessionServiceTest {
             return this;
         }
 
-        public LastOperationAsserts isDeprecate() {
+        public LastOperationAsserts assertIsDeprecate() {
             return isOfType(DEPRECATED);
         }
 
-        public LastOperationAsserts isMerge(String origin, String destination, int totalElements) {
-            return isOfType(MERGED_INTO).isOrigin(origin).isDestination(destination).totalStoredElements(totalElements);
+        public LastOperationAsserts assertIsMerge(String origin, String destination, int totalElements) {
+            return isOfType(MERGED_INTO).assertOrigin(origin).assertDestination(destination).assertTotalStoredElements(totalElements);
         }
 
-        private LastOperationAsserts isOrigin(String origin) {
+        private LastOperationAsserts assertOrigin(String origin) {
             assertEquals(origin, lastOperation.getAccessionIdOrigin());
             return this;
         }
 
-        private LastOperationAsserts isDestination(String destination) {
+        private LastOperationAsserts assertDestination(String destination) {
             assertEquals(destination, lastOperation.getAccessionIdDestination());
             return this;
         }
 
-        private LastOperationAsserts totalStoredElements(int totalElements) {
+        private LastOperationAsserts assertTotalStoredElements(int totalElements) {
             assertEquals(totalElements, ((TestOperationDocument) lastOperation).getInactiveObjects().size());
             return this;
         }
