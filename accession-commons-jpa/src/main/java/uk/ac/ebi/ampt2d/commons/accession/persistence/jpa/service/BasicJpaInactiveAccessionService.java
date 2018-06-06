@@ -54,8 +54,8 @@ public class BasicJpaInactiveAccessionService<
     }
 
     @Override
-    protected void doSaveHistory(OperationType type, ACCESSION origin, ACCESSION destination, String reason,
-                                 List<ACCESSION_INACTIVE_ENTITY> accessionInactiveEntities) {
+    protected void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination, String reason,
+                               List<ACCESSION_INACTIVE_ENTITY> accessionInactiveEntities) {
         OPERATION_ENTITY operation = historyEntitySupplier.get();
         operation.fill(type, origin, destination, reason);
         historyRepository.save(operation);

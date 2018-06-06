@@ -50,17 +50,17 @@ public abstract class BasicInactiveAccessionService<
 
     @Override
     public void update(ACCESSION_ENTITY entity, String reason) {
-        doSaveHistory(UPDATED, entity.getAccession(), reason, Arrays.asList(toInactiveEntity.apply(entity)));
+        saveHistory(UPDATED, entity.getAccession(), reason, Arrays.asList(toInactiveEntity.apply(entity)));
     }
 
-    private void doSaveHistory(OperationType updated, ACCESSION accession, String reason,
-                               List<ACCESSION_INACTIVE_ENTITY> entities) {
-        doSaveHistory(updated, accession, null, reason, entities);
+    private void saveHistory(OperationType type, ACCESSION accession, String reason,
+                             List<ACCESSION_INACTIVE_ENTITY> entities) {
+        saveHistory(type, accession, null, reason, entities);
     }
 
     @Override
     public void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> accessionEntities, String reason) {
-        doSaveHistory(DEPRECATED, accession, reason, toInactiveEntities(accessionEntities));
+        saveHistory(DEPRECATED, accession, reason, toInactiveEntities(accessionEntities));
     }
 
     private List<ACCESSION_INACTIVE_ENTITY> toInactiveEntities(Collection<ACCESSION_ENTITY> accessionEntities) {
@@ -75,10 +75,10 @@ public abstract class BasicInactiveAccessionService<
     @Override
     public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
                       List<ACCESSION_ENTITY> accession_entities, String reason) {
-        doSaveHistory(MERGED_INTO, accessionOrigin, accessionDestination, reason,
+        saveHistory(MERGED_INTO, accessionOrigin, accessionDestination, reason,
                 toInactiveEntities(accession_entities));
     }
 
-    protected abstract void doSaveHistory(OperationType type, ACCESSION origin, ACCESSION destination,
-                                          String reason, List<ACCESSION_INACTIVE_ENTITY> entities);
+    protected abstract void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination,
+                                        String reason, List<ACCESSION_INACTIVE_ENTITY> entities);
 }

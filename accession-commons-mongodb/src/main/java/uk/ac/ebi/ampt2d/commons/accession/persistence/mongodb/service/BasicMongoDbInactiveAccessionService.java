@@ -48,8 +48,8 @@ public abstract class BasicMongoDbInactiveAccessionService<
     }
 
     @Override
-    protected void doSaveHistory(OperationType type, ACCESSION origin, ACCESSION destination, String reason,
-                                 List<ACCESSION_INACTIVE_ENTITY> entities) {
+    protected void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination, String reason,
+                               List<ACCESSION_INACTIVE_ENTITY> entities) {
         OPERATION_ENTITY operation = supplier.get();
         operation.fill(type, origin, destination, reason, entities);
         historyRepository.save(operation);
