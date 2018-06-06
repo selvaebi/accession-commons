@@ -148,7 +148,7 @@ public class BasicMongoDbInactiveAccessionServiceTest {
         }
 
         private LastOperationAsserts isDestination(String destination) {
-            assertEquals(destination, lastOperation.getAccessionIdDestiny());
+            assertEquals(destination, lastOperation.getAccessionIdDestination());
             return this;
         }
 

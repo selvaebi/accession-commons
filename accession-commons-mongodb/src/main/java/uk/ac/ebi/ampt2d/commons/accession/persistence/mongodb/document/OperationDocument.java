@@ -75,7 +75,7 @@ public abstract class OperationDocument<
     }
 
     @Override
-    public ACCESSION getAccessionIdDestiny() {
+    public ACCESSION getAccessionIdDestination() {
         return accessionIdDestiny;
     }
 

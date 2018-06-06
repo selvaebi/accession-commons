@@ -31,7 +31,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 /**
  * Base entity that represents an entry in an accession history table.
@@ -49,7 +48,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     private ACCESSION accessionIdOrigin;
 
     @Column
-    private ACCESSION accessionIdDestiny;
+    private ACCESSION accessionIdDestination;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
@@ -72,8 +71,8 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     }
 
     @Override
-    public ACCESSION getAccessionIdDestiny() {
-        return accessionIdDestiny;
+    public ACCESSION getAccessionIdDestination() {
+        return accessionIdDestination;
     }
 
     @Override
@@ -94,7 +93,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     public void fill(OperationType type, ACCESSION origin, ACCESSION destination, String reason) {
         this.operationType = type;
         this.accessionIdOrigin = origin;
-        this.accessionIdDestiny = destination;
+        this.accessionIdDestination = destination;
         this.reason = reason;
     }
 }

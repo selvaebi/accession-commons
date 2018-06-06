@@ -29,7 +29,7 @@ public interface IOperation<ACCESSION> {
 
     ACCESSION getAccessionIdOrigin();
 
-    ACCESSION getAccessionIdDestiny();
+    ACCESSION getAccessionIdDestination();
 
     OperationType getOperationType();
 
