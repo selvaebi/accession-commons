@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
@@ -126,11 +127,13 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+        TestTransaction.flagForCommit();
         repository.save(new TestMonotonicEntity(
                 0L,
                 "85C4F271CBD3E11A9F8595854F755ADDFE2C0732",
                 1,
                 "service-test-3"));
+        TestTransaction.end();
 
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
@@ -143,6 +146,13 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
         assertEquals(3, accessions.size());
         accessions.stream().forEach(entry ->
                 assertTrue(entry.getAccession() == 0L || entry.getAccession() >= 100L));
+
+        TestTransaction.start();
+        for(AccessionWrapper<TestModel, String, Long> accession: accessions){
+            repository.delete(accession.getHash());
+        }
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
     }
 
 }

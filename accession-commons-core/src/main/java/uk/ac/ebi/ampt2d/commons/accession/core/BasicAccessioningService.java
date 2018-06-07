@@ -99,7 +99,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         final List<AccessionWrapper<MODEL, HASH, ACCESSION>> savedAccessions = new ArrayList<>();
         final List<AccessionWrapper<MODEL, HASH, ACCESSION>> unsavedAccessions = new ArrayList<>();
         accessions.stream().forEach(accessionModel -> {
-            if (response.isSavedAccession(accessionModel)) {
+            if (response.isSavedAccession(accessionModel.getAccession())) {
                 savedAccessions.add(accessionModel);
             } else {
                 unsavedAccessions.add(accessionModel);

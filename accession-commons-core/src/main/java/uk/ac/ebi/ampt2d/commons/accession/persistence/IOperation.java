@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 /**
  * An entry of operations performed over accessioned objects that are considered no longer active.
@@ -27,24 +27,14 @@ import java.time.ZonedDateTime;
  */
 public interface IOperation<ACCESSION> {
 
-    Long getId();
-
     ACCESSION getAccessionIdOrigin();
 
-    ACCESSION getAccessionIdDestiny();
+    ACCESSION getAccessionIdDestination();
 
     OperationType getOperationType();
 
     String getReason();
 
-    ZonedDateTime getCreatedDate();
-
-    void setAccessionIdOrigin(ACCESSION accessionIdOrigin);
-
-    void setAccessionIdDestiny(ACCESSION accessionIdDestiny);
-
-    void setOperationType(OperationType operationType);
-
-    void setReason(String reason);
+    LocalDateTime getCreatedDate();
 
 }

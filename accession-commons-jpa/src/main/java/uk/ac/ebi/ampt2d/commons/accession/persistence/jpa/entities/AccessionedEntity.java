@@ -29,6 +29,12 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Base class for accessioned objects to be serialized as relational entities.
+ * The derived classes must be annotated as Entity.
+ *
+ * @param <ACCESSION>
+ */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AccessionedEntity<ACCESSION extends Serializable> implements IAccessionedObject<ACCESSION> {

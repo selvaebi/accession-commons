@@ -17,8 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
 
 import java.io.Serializable;
@@ -26,101 +24,47 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class BasicInactiveAccessionService<
-        MODEL,
+import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.DEPRECATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.MERGED_INTO;
+import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.UPDATED;
+
+public abstract class BasicInactiveAccessionService<
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION_INACTIVE_ENTITY extends IInactiveAccessionedObject<ACCESSION>,
-        OPERATION_ENTITY extends IOperation<ACCESSION>>
-        implements InactiveAccessionService<MODEL, String, ACCESSION, ACCESSION_ENTITY> {
+        ACCESSION_INACTIVE_ENTITY extends IAccessionedObject<ACCESSION>,
+        OPERATION_ENTITY extends IOperation<ACCESSION>
+        >
+        implements InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> {
 
-    private final InactiveAccessionRepository<ACCESSION, ACCESSION_INACTIVE_ENTITY> inactiveAccessionRepository;
+    protected IHistoryRepository<ACCESSION, OPERATION_ENTITY, ?> historyRepository;
+    private Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity;
 
-    private final Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity;
-
-    private final IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository;
-
-    private final Supplier<OPERATION_ENTITY> historyEntitySupplier;
-
-    private final Function<ACCESSION_INACTIVE_ENTITY, MODEL> toModelFunction;
-
-    public BasicInactiveAccessionService(InactiveAccessionRepository<ACCESSION, ACCESSION_INACTIVE_ENTITY>
-                                                 inactiveAccessionRepository,
-                                         Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity,
-                                         IHistoryRepository<ACCESSION, OPERATION_ENTITY, Long> historyRepository,
-                                         Supplier<OPERATION_ENTITY> historyEntitySupplier,
-                                         Function<ACCESSION_INACTIVE_ENTITY, MODEL> toModelFunction) {
-        this.inactiveAccessionRepository = inactiveAccessionRepository;
-        this.toInactiveEntity = toInactiveEntity;
+    public BasicInactiveAccessionService(
+            IHistoryRepository<ACCESSION, OPERATION_ENTITY, ?> historyRepository,
+            Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity) {
         this.historyRepository = historyRepository;
-        this.historyEntitySupplier = historyEntitySupplier;
-        this.toModelFunction = toModelFunction;
+        this.toInactiveEntity = toInactiveEntity;
     }
 
     @Override
     public void update(ACCESSION_ENTITY entity, String reason) {
-        OPERATION_ENTITY operation = generateUpdateOperation(entity.getAccession(), reason);
-        storeInactive(Arrays.asList(entity), operation);
+        saveHistory(UPDATED, entity.getAccession(), reason, Arrays.asList(toInactiveEntity.apply(entity)));
     }
 
-    private OPERATION_ENTITY generateUpdateOperation(ACCESSION accession, String reason) {
-        return generateOperation(OperationType.UPDATED, accession, accession, reason);
-    }
-
-    private OPERATION_ENTITY generateOperation(OperationType status, ACCESSION origin, ACCESSION destiny,
-                                               String reason) {
-        OPERATION_ENTITY operation = historyEntitySupplier.get();
-        operation.setOperationType(status);
-        operation.setAccessionIdOrigin(origin);
-        operation.setAccessionIdDestiny(destiny);
-        operation.setReason(reason);
-        return operation;
-    }
-
-
-    private void storeInactive(Collection<ACCESSION_ENTITY> accessionedElements, OPERATION_ENTITY operation) {
-        historyRepository.save(operation);
-        final List<ACCESSION_INACTIVE_ENTITY> inactiveEntities = accessionedElements.stream().map(toInactiveEntity)
-                .collect(Collectors.toList());
-        inactiveEntities.forEach(entity -> entity.setHistoryId(operation.getId()));
-        inactiveAccessionRepository.save(inactiveEntities);
+    private void saveHistory(OperationType type, ACCESSION accession, String reason,
+                             List<ACCESSION_INACTIVE_ENTITY> entities) {
+        saveHistory(type, accession, null, reason, entities);
     }
 
     @Override
-    public void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason) {
-        OPERATION_ENTITY operation = generateDeprecationOperation(accession, reason);
-        storeInactive(entities, operation);
+    public void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> accessionEntities, String reason) {
+        saveHistory(DEPRECATED, accession, reason, toInactiveEntities(accessionEntities));
     }
 
-    private OPERATION_ENTITY generateDeprecationOperation(ACCESSION accession, String reason) {
-        return generateOperation(OperationType.DEPRECATED, accession, null, reason);
-    }
-
-    @Override
-    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
-                      List<ACCESSION_ENTITY> entities, String reason) {
-        OPERATION_ENTITY operation = generateMergeOperation(accessionOrigin, accessionDestination, reason);
-        storeInactive(entities, operation);
-    }
-
-    private OPERATION_ENTITY generateMergeOperation(ACCESSION accessionOrigin, ACCESSION accessionDestination,
-                                                    String reason) {
-        return generateOperation(OperationType.MERGED_INTO, accessionOrigin, accessionDestination, reason);
-    }
-
-    @Override
-    public AccessionVersionsWrapper<MODEL, String, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version) {
-        final List<AccessionWrapper<MODEL, String, ACCESSION>> result =
-                inactiveAccessionRepository.findAllByAccessionAndVersion(accession, version).stream()
-                        .map(this::toModelWrapper)
-                        .collect(Collectors.toList());
-        if (result.isEmpty()) {
-            return null;
-        }
-        return new AccessionVersionsWrapper<>(result);
+    private List<ACCESSION_INACTIVE_ENTITY> toInactiveEntities(Collection<ACCESSION_ENTITY> accessionEntities) {
+        return accessionEntities.stream().map(toInactiveEntity).collect(Collectors.toList());
     }
 
     @Override
@@ -128,9 +72,13 @@ public class BasicInactiveAccessionService<
         return historyRepository.findByAccessionIdOriginOrderByCreatedDateDesc(accession);
     }
 
-    private AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_INACTIVE_ENTITY entity) {
-        return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), toModelFunction.apply(entity),
-                entity.getVersion());
+    @Override
+    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
+                      List<ACCESSION_ENTITY> accession_entities, String reason) {
+        saveHistory(MERGED_INTO, accessionOrigin, accessionDestination, reason,
+                toInactiveEntities(accession_entities));
     }
 
+    protected abstract void saveHistory(OperationType type, ACCESSION origin, ACCESSION destination,
+                                        String reason, List<ACCESSION_INACTIVE_ENTITY> entities);
 }

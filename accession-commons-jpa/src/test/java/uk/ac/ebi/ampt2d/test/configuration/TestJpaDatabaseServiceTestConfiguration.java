@@ -28,16 +28,16 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
-import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
@@ -72,13 +72,12 @@ public class TestJpaDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public InactiveAccessionService<TestModel, String, String, TestEntity> inactiveService() {
-        return new BasicInactiveAccessionService<>(
-                testInactiveAccessionRepository,
-                TestInactiveAccessionEntity::new,
+    public InactiveAccessionService<String, String, TestEntity> inactiveService() {
+        return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
-                TestStringOperationEntity::new,
-                TestModel.class::cast
+                TestInactiveAccessionEntity::new,
+                testInactiveAccessionRepository,
+                TestStringOperationEntity::new
         );
     }
 

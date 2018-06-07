@@ -17,13 +17,19 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence;
 
-import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 
-import java.util.Collection;
+import java.util.List;
 
-public interface IAccessionedObjectCustomRepository<ENTITY> {
+public interface IAccessionedObjectCustomRepository<ACCESSION, ENTITY extends IAccessionedObject<ACCESSION>> {
 
-    @Transactional
-    void insert(Collection<ENTITY> entities);
+    /**
+     * Bulk insert of accessioned objects. All the hashes must be unique.
+     *
+     * @param entities
+     * @return
+     * @throws RuntimeException if any hash is not unique.
+     */
+    SaveResponse<ACCESSION> insert(List<ENTITY> entities);
 
 }

@@ -11,7 +11,7 @@
         <module>accession-commons-core</module>
         <module>accession-commons-monotonic-generator-jpa</module>
         <module>accession-commons-jpa</module>
-        <!--<module>accession-commons-mongodb</module>-->
+        <module>accession-commons-mongodb</module>
     </modules>
 
     <name>accession-commons</name>

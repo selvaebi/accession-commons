@@ -30,11 +30,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 /**
- * Base entity that represents an entry in an accession history table.
- * Must be extended to include the attribute that will represent the type of actual accession.
+ * Entity that represents an operation that changes the state of an accessioned object. The derived classes must
+ * be annotated as Entity.
+ *
+ * @param <ACCESSION>
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -48,7 +50,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     private ACCESSION accessionIdOrigin;
 
     @Column
-    private ACCESSION accessionIdDestiny;
+    private ACCESSION accessionIdDestination;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
@@ -59,7 +61,7 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
 
     @CreatedDate
     @Column(updatable = false)
-    private ZonedDateTime createdDate;
+    private LocalDateTime createdDate;
 
     public Long getId() {
         return id;
@@ -71,8 +73,8 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     }
 
     @Override
-    public ACCESSION getAccessionIdDestiny() {
-        return accessionIdDestiny;
+    public ACCESSION getAccessionIdDestination() {
+        return accessionIdDestination;
     }
 
     @Override
@@ -86,27 +88,14 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
     }
 
     @Override
-    public ZonedDateTime getCreatedDate() {
+    public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    @Override
-    public void setAccessionIdOrigin(ACCESSION accessionIdOrigin) {
-        this.accessionIdOrigin = accessionIdOrigin;
-    }
-
-    @Override
-    public void setAccessionIdDestiny(ACCESSION accessionIdDestiny) {
-        this.accessionIdDestiny = accessionIdDestiny;
-    }
-
-    @Override
-    public void setOperationType(OperationType operationType) {
-        this.operationType = operationType;
-    }
-
-    @Override
-    public void setReason(String reason) {
+    public void fill(OperationType type, ACCESSION origin, ACCESSION destination, String reason) {
+        this.operationType = type;
+        this.accessionIdOrigin = origin;
+        this.accessionIdDestination = destination;
         this.reason = reason;
     }
 }

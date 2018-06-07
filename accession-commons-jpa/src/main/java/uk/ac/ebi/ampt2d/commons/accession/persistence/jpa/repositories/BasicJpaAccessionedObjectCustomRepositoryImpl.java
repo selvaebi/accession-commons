@@ -17,33 +17,89 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.AccessionedEntity;
 
 import javax.persistence.EntityManager;
-import java.util.Collection;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Stack;
 
-public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<ENTITY extends AccessionedEntity<?>>
-        implements IAccessionedObjectCustomRepository<ENTITY> {
+public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<
+        ACCESSION extends Serializable,
+        ENTITY extends AccessionedEntity<ACCESSION>>
+        implements IAccessionedObjectCustomRepository<ACCESSION, ENTITY> {
+
+    private class Partition {
+
+        private int start;
+        private int end;
+
+        public Partition(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+    }
 
     private JpaEntityInformation<ENTITY, ?> entityInformation;
 
+    private PlatformTransactionManager platformTransactionManager;
+
     private EntityManager entityManager;
 
-    public BasicJpaAccessionedObjectCustomRepositoryImpl(Class<ENTITY> entityClass, EntityManager entityManager) {
+    public BasicJpaAccessionedObjectCustomRepositoryImpl(Class<ENTITY> entityClass,
+                                                         PlatformTransactionManager platformTransactionManager,
+                                                         EntityManager entityManager) {
         entityInformation = JpaEntityInformationSupport.getEntityInformation(entityClass, entityManager);
+        this.platformTransactionManager = platformTransactionManager;
         this.entityManager = entityManager;
     }
 
     @Override
-    @Transactional
-    public void insert(Collection<ENTITY> entities) {
-        for (ENTITY entity : entities) {
-            entityManager.persist(entity);
+    public SaveResponse<ACCESSION> insert(List<ENTITY> entities) {
+        Stack<Partition> partitions = new Stack<>();
+        partitions.add(new Partition(0, entities.size()));
+        SaveResponse<ACCESSION> saveResponse = new SaveResponse<>();
+
+        while (!partitions.isEmpty()) {
+            Partition partition = partitions.pop();
+            final List<ENTITY> partitionToSave = entities.subList(partition.start, partition.end);
+            try {
+                doTransactionalInsert(partitionToSave);
+                partitionToSave.stream().map(AccessionedEntity::getAccession).forEach(saveResponse::addSavedAccession);
+            } catch (DataIntegrityViolationException e) {
+                if (partitionToSave.size() != 1) {
+                    int start = partition.start;
+                    int middle = (partition.end + partition.start) / 2;
+                    int end = partition.end;
+                    partitions.add(new Partition(start, middle));
+                    partitions.add(new Partition(middle, end));
+                } else {
+                    saveResponse.addSaveFailedAccession(partitionToSave.get(0).getAccession());
+                }
+            }
         }
+        return saveResponse;
+    }
+
+    private void doTransactionalInsert(List<ENTITY> entities) {
+        TransactionTemplate template = new TransactionTemplate(platformTransactionManager);
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                for (ENTITY entity : entities) {
+                    entityManager.persist(entity);
+                }
+            }
+        });
     }
 
 }

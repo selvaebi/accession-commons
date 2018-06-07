@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 public interface InactiveAccessionService<
-        MODEL,
         HASH,
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>> {
@@ -35,8 +34,6 @@ public interface InactiveAccessionService<
 
     @Transactional
     void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
-
-    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccessionAndVersion(ACCESSION accession, int version);
 
     IOperation<ACCESSION> getLastOperation(ACCESSION accession);
 
