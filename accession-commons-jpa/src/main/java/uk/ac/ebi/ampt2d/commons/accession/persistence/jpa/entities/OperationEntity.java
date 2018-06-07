@@ -33,7 +33,7 @@ import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 /**
- * Mongo document that represents an operation that changes the state of an accessioned object. The derived classes must
+ * Entity that represents an operation that changes the state of an accessioned object. The derived classes must
  * be annotated as Entity.
  *
  * @param <ACCESSION>

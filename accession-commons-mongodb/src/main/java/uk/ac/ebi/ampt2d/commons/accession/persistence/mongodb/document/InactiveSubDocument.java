@@ -17,7 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ public abstract class InactiveSubDocument<ACCESSION> implements IAccessionedObje
 
     private String hashedMessage;
 
-    @Indexed
     private ACCESSION accession;
 
     private int version;
