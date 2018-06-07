@@ -78,7 +78,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public InactiveAccessionService<String, Long, TestMonotonicEntity> inactiveService() {
+    public InactiveAccessionService<Long, TestMonotonicEntity> inactiveService() {
         return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
                 TestMonotonicInactiveAccessionEntity::new,
