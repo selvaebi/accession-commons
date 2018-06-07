@@ -59,13 +59,13 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     private final Function<ACCESSION_ENTITY, MODEL> toModelFunction;
 
-    private final InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+    private final InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
 
     public BasicSpringDataRepositoryDatabaseService(
             IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> repository,
             Function<AccessionWrapper<MODEL, String, ACCESSION>, ACCESSION_ENTITY> toEntityFunction,
             Function<ACCESSION_ENTITY, MODEL> toModelFunction,
-            InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
+            InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
         this.repository = repository;
         this.toEntityFunction = toEntityFunction;
         this.toModelFunction = toModelFunction;

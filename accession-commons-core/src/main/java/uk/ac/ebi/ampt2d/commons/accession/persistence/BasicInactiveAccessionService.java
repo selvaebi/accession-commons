@@ -36,7 +36,7 @@ public abstract class BasicInactiveAccessionService<
         ACCESSION_INACTIVE_ENTITY extends IAccessionedObject<ACCESSION>,
         OPERATION_ENTITY extends IOperation<ACCESSION>
         >
-        implements InactiveAccessionService<String, ACCESSION, ACCESSION_ENTITY> {
+        implements InactiveAccessionService<ACCESSION, ACCESSION_ENTITY> {
 
     protected IHistoryRepository<ACCESSION, OPERATION_ENTITY, ?> historyRepository;
     private Function<ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> toInactiveEntity;

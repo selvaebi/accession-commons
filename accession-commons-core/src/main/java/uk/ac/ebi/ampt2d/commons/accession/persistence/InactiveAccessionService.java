@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 public interface InactiveAccessionService<
-        HASH,
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends IAccessionedObject<ACCESSION>> {
 
@@ -39,6 +38,6 @@ public interface InactiveAccessionService<
 
     @Transactional
     void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, List<ACCESSION_ENTITY> entities,
-               HASH reason);
+               String reason);
 
 }

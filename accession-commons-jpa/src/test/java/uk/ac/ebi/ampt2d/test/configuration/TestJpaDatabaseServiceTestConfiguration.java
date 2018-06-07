@@ -72,7 +72,7 @@ public class TestJpaDatabaseServiceTestConfiguration {
     }
 
     @Bean
-    public InactiveAccessionService<String, String, TestEntity> inactiveService() {
+    public InactiveAccessionService<String, TestEntity> inactiveService() {
         return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
                 TestInactiveAccessionEntity::new,
