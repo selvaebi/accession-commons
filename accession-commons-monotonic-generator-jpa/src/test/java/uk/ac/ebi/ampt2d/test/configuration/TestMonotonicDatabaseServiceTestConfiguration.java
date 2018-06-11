@@ -70,10 +70,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     @Bean
     public MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator() {
         return new MonotonicAccessionGenerator<>(
-                BLOCK_SIZE,
-                CATEGORY_ID,
-                INSTANCE_ID,
-                contiguousIdBlockService);
+                BLOCK_SIZE, 0, INSTANCE_ID, CATEGORY_ID, contiguousIdBlockService);
     }
 
     @Bean

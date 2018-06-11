@@ -45,10 +45,10 @@ public class ContiguousIdBlockService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId, long size) {
+    public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId, long size, long nextBlockInterval) {
         ContiguousIdBlock lastBlock = repository.findFirstByCategoryIdOrderByLastValueDesc(categoryId);
         if (lastBlock != null) {
-            return repository.save(lastBlock.nextBlock(instanceId, size));
+            return repository.save(lastBlock.nextBlock(instanceId, size, nextBlockInterval));
         } else {
             ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, getInitValue(categoryId), size);
             return repository.save(newBlock);

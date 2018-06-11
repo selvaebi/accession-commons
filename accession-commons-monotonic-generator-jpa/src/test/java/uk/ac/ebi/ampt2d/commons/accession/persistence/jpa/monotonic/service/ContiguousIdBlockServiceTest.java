@@ -39,6 +39,7 @@ public class ContiguousIdBlockServiceTest {
 
     private static final String CATEGORY_ID = "test-cat";
     private static final String INSTANCE_ID = "test-instance";
+    private static final long NEXT_BLOCK_INTERVAL = 0L;
     private static final long TEST_SIZE = 1000l;
     private static final String INSTANCE_ID_2 = "test-instance2";
 
@@ -47,11 +48,11 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testReserveNewBlocks() {
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(0, block.getFirstValue());
         assertEquals(999, block.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE);
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(1000, block2.getFirstValue());
         assertEquals(1999, block2.getLastValue());
         assertTrue(block.isNotFull());
@@ -61,7 +62,7 @@ public class ContiguousIdBlockServiceTest {
     public void testReserveWithExistingData() {
         // Save a block
         service.save(Arrays.asList(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 5)));
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(5, block.getFirstValue());
         assertEquals(1004, block.getLastValue());
         assertTrue(block.isNotFull());
@@ -69,15 +70,15 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testReserveNewBlocksWithMultipleInstances() {
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(0, block.getFirstValue());
         assertEquals(999, block.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID_2, TEST_SIZE);
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID_2, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(1000, block2.getFirstValue());
         assertEquals(1999, block2.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE);
+        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
         assertEquals(2000, block3.getFirstValue());
         assertEquals(2999, block3.getLastValue());
         assertTrue(block.isNotFull());

@@ -46,13 +46,15 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
 
     private String applicationInstanceId;
 
+    private long nextBlockInterval;
+
     private ContiguousIdBlockService blockService;
 
     private final BlockManager blockManager;
 
-    public MonotonicAccessionGenerator(long blockSize, String categoryId, String applicationInstanceId,
-                                       ContiguousIdBlockService contiguousIdBlockService) {
+    public MonotonicAccessionGenerator(long blockSize, long nextBlockInterval, String applicationInstanceId, String categoryId, ContiguousIdBlockService contiguousIdBlockService) {
         this.blockSize = blockSize;
+        this.nextBlockInterval = nextBlockInterval;
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
         this.blockService = contiguousIdBlockService;
@@ -107,15 +109,16 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
         while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
-                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
+                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize,
+                        nextBlockInterval), 10, 30);
             } catch (ExponentialBackOffMaxRetriesRuntimeException e) {
                 // Ignore, max backoff have been reached, we will try again until we can reserve blocks
             }
         }
     }
 
-    private synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
-        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size));
+    private synchronized void reserveNewBlock(String categoryId, String instanceId, long size, long nextBlockInterval) {
+        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size, nextBlockInterval));
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPendingException {
