@@ -135,8 +135,8 @@ public class DecoratedAccessionGeneratorTest {
     private MonotonicAccessionGenerator<String> getGenerator() throws Exception {
         assertEquals(0, repository.count());
 
-        MonotonicAccessionGenerator<String> generator = new MonotonicAccessionGenerator<>(BLOCK_SIZE, NEXT_BLOCK_INTERVAL,
-                INSTANCE_ID, CATEGORY_ID,service);
+        MonotonicAccessionGenerator<String> generator = new MonotonicAccessionGenerator<>(BLOCK_SIZE,
+                NEXT_BLOCK_INTERVAL, CATEGORY_ID, INSTANCE_ID, service);
         return generator;
     }
 

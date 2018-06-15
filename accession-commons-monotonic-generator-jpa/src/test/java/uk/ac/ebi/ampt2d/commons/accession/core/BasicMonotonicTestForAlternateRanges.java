@@ -25,6 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.generators.DecoratedAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -34,7 +35,9 @@ import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfi
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,18 +49,17 @@ public class BasicMonotonicTestForAlternateRanges {
 
     @Autowired
     private TestMonotonicDatabaseService databaseService;
-
     @Autowired
     private ContiguousIdBlockService contiguousIdBlockService;
 
-    private static final int BLOCK_SIZE = 1000;
+    private static final int BLOCK_SIZE = 5;
     private static final String INSTANCE_ID = "APP1";
     private static final long NEXT_BLOCK_INTERVAL = 5L;
+    private static final String CATEGORY_ID = "eva";
 
     @Test
     public void testAlternateRanges() throws AccessionCouldNotBeGeneratedException {
         BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService1();
-        BasicAccessioningService<TestModel, String, Long> accessioningService1 = getAccessioningService2();
 
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -68,41 +70,42 @@ public class BasicMonotonicTestForAlternateRanges {
                         TestModel.of("service-test-5"),
                         TestModel.of("service-test-6")
                 ));
-        List<AccessionWrapper<TestModel, String, Long>> dbSNPAccessions = accessioningService1.getOrCreate(
-                Arrays.asList(
-                        TestModel.of("service-test-7"),
-                        TestModel.of("service-test-8"),
-                        TestModel.of("service-test-9"),
-                        TestModel.of("service-test-10"),
-                        TestModel.of("service-test-11"),
-                        TestModel.of("service-test-12")
-                ));
 
         assertEquals(6, evaAccessions.size());
-        assertEquals(6, dbSNPAccessions.size());
         evaAccessions.stream().allMatch(accession -> accession.getAccession() < 5L || accession.getAccession() == 11L);
-        evaAccessions.stream().allMatch(accession -> (accession.getAccession() >= 6L
-                && accession.getAccession() <= 10L) || accession.getAccession() == 16L);
+    }
+
+    @Test
+    public void testAlternateRangesWithPrefixes() throws AccessionCouldNotBeGeneratedException {
+        Map<String, TestModel> objects = new LinkedHashMap<>();
+        objects.put("hash1", TestModel.of("service-test-1"));
+        objects.put("hash2", TestModel.of("service-test-2"));
+        objects.put("hash3", TestModel.of("service-test-3"));
+        objects.put("hash4", TestModel.of("service-test-4"));
+        objects.put("hash5", TestModel.of("service-test-5"));
+        objects.put("hash6", TestModel.of("service-test-6"));
+        DecoratedAccessionGenerator<TestModel, Long> generator = DecoratedAccessionGenerator
+                .buildPrefixSuffixAccessionGenerator(getGenerator(), "RS", null, Long::parseLong);
+        List<AccessionWrapper<TestModel, String, String>> generated = generator.generateAccessions(objects);
+        assertEquals(6, generated.size());
+        assertEquals("RS1", generated.get(0).getAccession());
+        assertEquals("RS2", generated.get(1).getAccession());
+        assertEquals("RS11", generated.get(5).getAccession());
+
     }
 
     private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService1() {
         return new BasicMonotonicAccessioningService<>(
-                new MonotonicAccessionGenerator<>(BLOCK_SIZE, NEXT_BLOCK_INTERVAL, INSTANCE_ID, "EVA",
-                        contiguousIdBlockService),
+                getGenerator(),
                 databaseService,
                 TestModel::getValue,
                 new SHA1HashingFunction()
         );
     }
 
-    private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService2() {
-        return new BasicMonotonicAccessioningService<>(
-                new MonotonicAccessionGenerator<>(BLOCK_SIZE, NEXT_BLOCK_INTERVAL, INSTANCE_ID, "dbSNP",
-                        contiguousIdBlockService),
-                databaseService,
-                TestModel::getValue,
-                new SHA1HashingFunction()
-        );
+    private MonotonicAccessionGenerator<TestModel> getGenerator() {
+        return new MonotonicAccessionGenerator(BLOCK_SIZE, NEXT_BLOCK_INTERVAL,
+                CATEGORY_ID,INSTANCE_ID,contiguousIdBlockService);
     }
 }
 

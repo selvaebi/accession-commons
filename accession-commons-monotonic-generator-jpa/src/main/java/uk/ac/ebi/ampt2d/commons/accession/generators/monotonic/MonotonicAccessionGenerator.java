@@ -52,7 +52,8 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
 
     private final BlockManager blockManager;
 
-    public MonotonicAccessionGenerator(long blockSize, long nextBlockInterval, String applicationInstanceId, String categoryId, ContiguousIdBlockService contiguousIdBlockService) {
+    public MonotonicAccessionGenerator(long blockSize, long nextBlockInterval, String categoryId,
+                          String applicationInstanceId, ContiguousIdBlockService contiguousIdBlockService) {
         this.blockSize = blockSize;
         this.nextBlockInterval = nextBlockInterval;
         this.categoryId = categoryId;
@@ -71,7 +72,6 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
             blockManager.addBlock(block);
         }
     }
-
 
     /**
      * This function will recover the internal state of committed elements and will remove them from the available
