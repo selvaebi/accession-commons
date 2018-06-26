@@ -17,8 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
-
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 import javax.validation.constraints.NotNull;
 

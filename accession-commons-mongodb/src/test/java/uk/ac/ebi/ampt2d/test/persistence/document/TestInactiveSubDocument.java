@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.test.persistence.document;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 public class TestInactiveSubDocument extends InactiveSubDocument<TestModel, String> implements TestModel {
 

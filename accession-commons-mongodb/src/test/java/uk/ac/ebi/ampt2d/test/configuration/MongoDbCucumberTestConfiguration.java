@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
@@ -39,6 +40,7 @@ import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestOperationRepository;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
+import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
 
 @Configuration
 @EntityScan(basePackages = {"uk.ac.ebi.ampt2d.test.persistence.document"})
@@ -46,7 +48,7 @@ import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionSer
         "uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.repository"})
 @EnableMongoAuditing
 @AutoConfigureDataMongo
-public class MongoDbTestConfiguration {
+public class MongoDbCucumberTestConfiguration {
 
     @Autowired
     private TestRepository testRepository;
@@ -81,11 +83,17 @@ public class MongoDbTestConfiguration {
     public AccessioningService<TestModel, String, String> testMongoDbAccessioningService() {
         return new BasicAccessioningService<>(
                 new SingleAccessionGenerator<>(o ->
-                        "id-" + o.getValue()),
+                        "id-service-" + o.getValue()),
                 testMongoDbService(),
-                testModel -> testModel.getValue(),
+                TestModel::getValue,
                 new SHA1HashingFunction()
         );
+    }
+
+    @Bean
+    @Scope("cucumber-glue")
+    public AccessioningServiceTester accessioningServiceTester() {
+        return new AccessioningServiceTester(testMongoDbAccessioningService());
     }
 
 }

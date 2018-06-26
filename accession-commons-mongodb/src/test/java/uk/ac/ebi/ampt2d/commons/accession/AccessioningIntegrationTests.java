@@ -15,14 +15,23 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.commons.accession;
 
-public interface TestModel {
+import cucumber.api.CucumberOptions;
+import cucumber.api.junit.Cucumber;
+import org.junit.runner.RunWith;
 
-    String getValue();
-
-    static TestModel of(String value) {
-        return () -> value;
-    }
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {
+                "src/test/resources/features/accession.feature",
+                "src/test/resources/features/modification.feature",
+                "src/test/resources/features/merge.feature",
+                "src/test/resources/features/retrieval.feature"},
+        plugin = {
+                "pretty",
+                "html:target/cucumber"},
+        tags = {"not @ignore"})
+public class AccessioningIntegrationTests {
 
 }

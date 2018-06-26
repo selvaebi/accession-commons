@@ -15,14 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.test.testers;
 
-public interface TestModel {
+public interface IMethodTester {
 
-    String getValue();
+    void assertNoException();
 
-    static TestModel of(String value) {
-        return () -> value;
-    }
+    void assertThrow(Class<? extends Throwable> exception);
 
 }

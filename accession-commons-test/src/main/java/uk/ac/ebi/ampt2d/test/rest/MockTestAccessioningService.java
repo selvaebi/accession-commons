@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.test.rest;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 /**
  * Mock service, generates accessions using in-memory data structures

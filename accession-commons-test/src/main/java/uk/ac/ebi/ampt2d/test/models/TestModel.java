@@ -15,13 +15,14 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence.document;
+package uk.ac.ebi.ampt2d.test.models;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.EventDocument;
-import uk.ac.ebi.ampt2d.test.models.TestModel;
+public interface TestModel {
 
-@Document
-public class TestEventDocument extends EventDocument<TestModel, String, TestInactiveSubDocument> {
+    String getValue();
+
+    static TestModel of(String value) {
+        return () -> value;
+    }
 
 }

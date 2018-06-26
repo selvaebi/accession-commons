@@ -15,14 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession;
+package uk.ac.ebi.ampt2d.test.utils;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.junit.Cucumber;
-import org.junit.runner.RunWith;
+@FunctionalInterface
+public interface VoidThrowingSupplier {
 
-@RunWith(Cucumber.class)
-@CucumberOptions(features = "src/test/resources/features/bag.feature", plugin = {"pretty", "html:target/cucumber"})
-public class BagCucumberIntegrationTest {
+    void get() throws Exception;
 
 }
+

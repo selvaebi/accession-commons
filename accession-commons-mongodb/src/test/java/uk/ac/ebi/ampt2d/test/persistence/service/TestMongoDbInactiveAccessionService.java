@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.test.persistence.service;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service.BasicMongoDbInactiveAccessionService;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
