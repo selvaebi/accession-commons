@@ -18,6 +18,8 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.repository;
 
 import com.mongodb.BulkWriteError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.BulkOperationException;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -40,6 +42,8 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
         DOCUMENT extends AccessionedDocument<ACCESSION>>
         implements IAccessionedObjectCustomRepository<ACCESSION, DOCUMENT> {
 
+    private final static Logger logger = LoggerFactory.getLogger(BasicMongoDbAccessionedCustomRepositoryImpl.class);
+
     private final Class<DOCUMENT> clazz;
     private final MongoTemplate mongoTemplate;
 
@@ -53,17 +57,20 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
         checkHashUniqueness(documents);
         setAuditCreatedDate(documents);
         final BulkOperations insert = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, clazz).insert(documents);
-        final Set<String> duplicatedHash = new HashSet<>();
+        final Set<String> erroneousIds = new HashSet<>();
 
         try {
             insert.execute();
         } catch (BulkOperationException e) {
             e.getErrors().forEach(error -> {
-                String duplicatedId = parseIdDuplicateKey(error).orElseThrow(() -> e);
-                duplicatedHash.add(duplicatedId);
+                String errorId = reportBulkOperationException(error).orElseThrow(() -> e);
+                erroneousIds.add(errorId);
             });
+        } catch (RuntimeException e) {
+            logger.error("Unexpected runtime exception in MongoDB bulk insert", e);
+            throw e;
         }
-        return generateSaveResponse(documents, duplicatedHash);
+        return generateSaveResponse(documents, erroneousIds);
     }
 
     private void checkHashUniqueness(Collection<DOCUMENT> documents) {
@@ -83,19 +90,25 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
      */
     private void setAuditCreatedDate(Iterable<DOCUMENT> documents) {
         LocalDateTime createdDate = LocalDateTime.now();
-        for (DOCUMENT document : documents) {
+        for (DOCUMENT document: documents) {
             document.setCreatedDate(createdDate);
         }
     }
 
-    private Optional<String> parseIdDuplicateKey(BulkWriteError error) {
+    private Optional<String> reportBulkOperationException(BulkWriteError error) {
         if (11000 == error.getCode()) {
             final String message = error.getMessage();
             Pattern pattern = Pattern.compile("_id_ dup key:.\\{.:.\"(.*)\".\\}");
             Matcher matcher = pattern.matcher(message);
             if (matcher.find()) {
                 return Optional.of(matcher.group(1));
+            } else {
+                logger.error("Error parsing BulkWriteError in BulkOperationException. Code '" + error.getCode()
+                        + "' Message: '" + error.getMessage() + "'");
             }
+        } else {
+            logger.error("Unexpected BulkWriteError in BulkOperationException. Code: '" + error.getCode()
+                    + "'. Message: '" + error.getMessage() + "'");
         }
         return Optional.empty();
     }
