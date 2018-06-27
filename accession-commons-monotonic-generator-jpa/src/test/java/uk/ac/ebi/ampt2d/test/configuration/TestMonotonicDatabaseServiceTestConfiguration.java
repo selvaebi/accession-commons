@@ -19,10 +19,12 @@ package uk.ac.ebi.ampt2d.test.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
+import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.MonotonicGeneratorProperties;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -41,11 +43,6 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 @EntityScan("uk.ac.ebi.ampt2d.test.persistence")
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
 public class TestMonotonicDatabaseServiceTestConfiguration {
-
-    private static final int BLOCK_SIZE = 1000;
-    private static final long NEXT_BLOCK_INTERVAL=0L;
-    private static final String CATEGORY_ID = "category-id-monotonic-test";
-    private static final String INSTANCE_ID = "instance-id-monotonic-test";
 
     @Autowired
     private TestMonotonicRepository repository;
@@ -69,12 +66,25 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     }
 
     @Bean
+    @ConfigurationProperties(prefix = "accessioning.monotonic.category-id-monotonic-test")
+    public MonotonicGeneratorProperties getMonotonicGeneratorProperties() {
+        return new MonotonicGeneratorProperties();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "accessioning.monotonic.eva")
+    public MonotonicGeneratorProperties getMonotonicGeneratorPropertiesForEva() {
+        return new MonotonicGeneratorProperties();
+    }
+
+    @Bean
     public MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator() {
+        MonotonicGeneratorProperties monotonicGeneratorProperties = getMonotonicGeneratorProperties();
         return new MonotonicAccessionGenerator<>(
-                BLOCK_SIZE,
-                NEXT_BLOCK_INTERVAL,
-                CATEGORY_ID,
-                INSTANCE_ID,
+                monotonicGeneratorProperties.getBlockSize(),
+                monotonicGeneratorProperties.getNextBlockInterval(),
+                monotonicGeneratorProperties.getCategoryId(),
+                monotonicGeneratorProperties.getApplicationInstanceId(),
                 contiguousIdBlockService);
     }
 

@@ -17,11 +17,20 @@
  */
 package uk.ac.ebi.ampt2d.test.configuration;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
+import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.MonotonicGeneratorProperties;
 
 @Configuration
 @EnableSpringDataContiguousIdService
 public class MonotonicAccessionGeneratorTestConfiguration {
+
+    @Bean
+    @ConfigurationProperties(prefix = "accessioning.monotonic.decorator-monotonic-test")
+    public MonotonicGeneratorProperties getMonotonicGeneratorProperties() {
+        return new MonotonicGeneratorProperties();
+    }
 
 }

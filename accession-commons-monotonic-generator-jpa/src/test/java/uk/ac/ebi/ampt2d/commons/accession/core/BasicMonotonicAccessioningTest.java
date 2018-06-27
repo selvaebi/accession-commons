@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
@@ -42,6 +43,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {TestMonotonicDatabaseServiceTestConfiguration.class})
+@TestPropertySource("classpath:application-test1.properties")
 public class BasicMonotonicAccessioningTest {
 
     @Autowired
