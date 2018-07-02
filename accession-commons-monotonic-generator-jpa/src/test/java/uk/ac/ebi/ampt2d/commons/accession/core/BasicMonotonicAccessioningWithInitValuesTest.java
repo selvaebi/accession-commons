@@ -45,7 +45,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ContextConfiguration(classes = {TestMonotonicDatabaseServiceTestConfiguration.class})
-@TestPropertySource("classpath:application-test1.properties")
 public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Autowired

@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service;
 
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockInitialization;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 
@@ -31,12 +32,12 @@ public class ContiguousIdBlockService {
 
     private ContiguousIdBlockRepository repository;
 
-    private HashMap<String, String> categoryInitValues;
+    private HashMap<String, HashMap<String, Object>> categoryBlockInitializations;
 
-    public ContiguousIdBlockService(ContiguousIdBlockRepository repository, HashMap<String, String>
-            categoryInitValues) {
+    public ContiguousIdBlockService(ContiguousIdBlockRepository repository, HashMap<String, HashMap<String, Object>>
+            categoryBlockInitializations) {
         this.repository = repository;
-        this.categoryInitValues = categoryInitValues;
+        this.categoryBlockInitializations = categoryBlockInitializations;
     }
 
     @Transactional
@@ -45,22 +46,21 @@ public class ContiguousIdBlockService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId, long size, long nextBlockInterval) {
+    public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId) {
         ContiguousIdBlock lastBlock = repository.findFirstByCategoryIdOrderByLastValueDesc(categoryId);
+        BlockInitialization blockInitialization = getBlockInitialization(categoryId);
         if (lastBlock != null) {
-            return repository.save(lastBlock.nextBlock(instanceId, size, nextBlockInterval));
+            return repository.save(lastBlock.nextBlock(instanceId, blockInitialization.getBlockSize(),
+                    blockInitialization.getNextBlockInterval()));
         } else {
-            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId, getInitValue(categoryId), size);
+            ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId,
+                    blockInitialization.getBlockStartValue(), blockInitialization.getBlockSize());
             return repository.save(newBlock);
         }
     }
 
-    private long getInitValue(String categoryId) {
-        if (categoryInitValues.get(categoryId) != null) {
-            return Long.parseLong(categoryInitValues.get(categoryId));
-        } else {
-            return 0;
-        }
+    private BlockInitialization getBlockInitialization(String categoryId) {
+        return new BlockInitialization(categoryBlockInitializations.get(categoryId));
     }
 
     @Transactional(readOnly = true)
@@ -72,4 +72,7 @@ public class ContiguousIdBlockService {
         }
     }
 
+    public void checkIsBlockInitializationsValid(String categoryId) {
+        BlockInitialization.checkIsBlockSizeValid(categoryBlockInitializations.get(categoryId));
+    }
 }

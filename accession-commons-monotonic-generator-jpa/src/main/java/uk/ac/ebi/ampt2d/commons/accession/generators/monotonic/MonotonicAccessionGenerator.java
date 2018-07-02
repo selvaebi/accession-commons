@@ -40,22 +40,14 @@ import java.util.Map;
  */
 public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MODEL, Long> {
 
-    private long blockSize;
-
+    private final BlockManager blockManager;
     private String categoryId;
-
     private String applicationInstanceId;
-
-    private long nextBlockInterval;
-
     private ContiguousIdBlockService blockService;
 
-    private final BlockManager blockManager;
-
-    public MonotonicAccessionGenerator(long blockSize, long nextBlockInterval, String categoryId,
-                          String applicationInstanceId, ContiguousIdBlockService contiguousIdBlockService) {
-        this.blockSize = blockSize;
-        this.nextBlockInterval = nextBlockInterval;
+    public MonotonicAccessionGenerator(String categoryId,
+                                       String applicationInstanceId,
+                                       ContiguousIdBlockService contiguousIdBlockService) {
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
         this.blockService = contiguousIdBlockService;
@@ -109,16 +101,16 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
         while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
-                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize,
-                        nextBlockInterval), 10, 30);
+                blockService.checkIsBlockInitializationsValid(categoryId);
+                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId), 10, 30);
             } catch (ExponentialBackOffMaxRetriesRuntimeException e) {
                 // Ignore, max backoff have been reached, we will try again until we can reserve blocks
             }
         }
     }
 
-    private synchronized void reserveNewBlock(String categoryId, String instanceId, long size, long nextBlockInterval) {
-        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size, nextBlockInterval));
+    private synchronized void reserveNewBlock(String categoryId, String instanceId) {
+        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId));
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPendingException {

@@ -43,11 +43,8 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
 public class DecoratedAccessionGeneratorTest {
 
-    private static final int BLOCK_SIZE = 1000;
-    private static final long NEXT_BLOCK_INTERVAL = 0L;
-    private static final String CATEGORY_ID = "DECORATOR_TEST";
+    private static final String CATEGORY_ID = "decorator-monotonic-test";
     private static final String INSTANCE_ID = "decorator-inst-01";
-
     @Autowired
     private ContiguousIdBlockRepository repository;
 
@@ -135,8 +132,8 @@ public class DecoratedAccessionGeneratorTest {
     private MonotonicAccessionGenerator<String> getGenerator() throws Exception {
         assertEquals(0, repository.count());
 
-        MonotonicAccessionGenerator<String> generator = new MonotonicAccessionGenerator<>(BLOCK_SIZE,
-                NEXT_BLOCK_INTERVAL, CATEGORY_ID, INSTANCE_ID, service);
+        MonotonicAccessionGenerator<String> generator =
+                new MonotonicAccessionGenerator<>(CATEGORY_ID, INSTANCE_ID, service);
         return generator;
     }
 

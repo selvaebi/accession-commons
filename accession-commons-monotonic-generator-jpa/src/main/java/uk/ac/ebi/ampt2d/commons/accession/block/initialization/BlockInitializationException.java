@@ -15,13 +15,10 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.configuration;
+package uk.ac.ebi.ampt2d.commons.accession.block.initialization;
 
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableSpringDataContiguousIdService;
-
-@Configuration
-@EnableSpringDataContiguousIdService
-public class MonotonicAccessionGeneratorTestConfiguration {
-
+public class BlockInitializationException extends RuntimeException {
+    public BlockInitializationException(String message) {
+        super(message);
+    }
 }

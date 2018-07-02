@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.test.configuration.MonotonicAccessionGeneratorTestConfiguration;
 
 import java.util.Arrays;
@@ -37,22 +38,24 @@ import static org.junit.Assert.assertTrue;
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
 public class ContiguousIdBlockServiceTest {
 
-    private static final String CATEGORY_ID = "test-cat";
+    private static final String CATEGORY_ID = "cat-test";
+    private static final String CATEGORY_ID_2 = "contiguous-block-test";
     private static final String INSTANCE_ID = "test-instance";
-    private static final long NEXT_BLOCK_INTERVAL = 0L;
-    private static final long TEST_SIZE = 1000l;
     private static final String INSTANCE_ID_2 = "test-instance2";
+
+    @Autowired
+    private ContiguousIdBlockRepository repository;
 
     @Autowired
     private ContiguousIdBlockService service;
 
     @Test
     public void testReserveNewBlocks() {
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(0, block.getFirstValue());
         assertEquals(999, block.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(1000, block2.getFirstValue());
         assertEquals(1999, block2.getLastValue());
         assertTrue(block.isNotFull());
@@ -62,7 +65,7 @@ public class ContiguousIdBlockServiceTest {
     public void testReserveWithExistingData() {
         // Save a block
         service.save(Arrays.asList(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 5)));
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(5, block.getFirstValue());
         assertEquals(1004, block.getLastValue());
         assertTrue(block.isNotFull());
@@ -70,15 +73,15 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testReserveNewBlocksWithMultipleInstances() {
-        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(0, block.getFirstValue());
         assertEquals(999, block.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID_2, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID_2);
         assertEquals(1000, block2.getFirstValue());
         assertEquals(1999, block2.getLastValue());
         assertTrue(block.isNotFull());
-        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID, TEST_SIZE, NEXT_BLOCK_INTERVAL);
+        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(2000, block3.getFirstValue());
         assertEquals(2999, block3.getLastValue());
         assertTrue(block.isNotFull());
@@ -105,4 +108,30 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(19,contiguousBlocks.get(1).getLastValue());
     }
 
+    @Test
+    public void testBlockSizeAndIntervalForCategory() {
+        ContiguousIdBlock block1 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID);
+        assertEquals(3000, block2.getFirstValue());
+        assertEquals(3999, block2.getLastValue());
+
+        List<ContiguousIdBlock> contiguousBlocks = service
+                .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(CATEGORY_ID_2, INSTANCE_ID);
+        assertEquals(2, contiguousBlocks.size());
+        assertTrue(contiguousBlocks.get(0).isNotFull());
+        assertTrue(contiguousBlocks.get(1).isNotFull());
+    }
+
+    @Test
+    public void testBlockSizeAndIntervalWithMultipleInstances() {
+        ContiguousIdBlock block1 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+        ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
+        assertEquals(3000, block2.getFirstValue());
+        assertEquals(3999, block2.getLastValue());
+        assertTrue(block2.equals(repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2)));
+    }
 }
