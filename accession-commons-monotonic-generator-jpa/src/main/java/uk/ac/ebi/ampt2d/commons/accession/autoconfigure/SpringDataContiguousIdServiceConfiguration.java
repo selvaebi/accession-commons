@@ -41,7 +41,7 @@ public class SpringDataContiguousIdServiceConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "accessioning.monotonic")
-    public HashMap<String, HashMap<String, Object>> contiguousBlockInitializations() {
+    public HashMap<String, HashMap<String, String>> contiguousBlockInitializations() {
         return new HashMap<>();
     }
 

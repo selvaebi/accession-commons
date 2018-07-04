@@ -50,7 +50,10 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
 
     private static final String CATEGORY_ID = "eva";
     private static final String CATEGORY_ID_2 = "eva_2";
+    private static final String UNKNOWN_CATEGORY = "Unknown-Category";
     private static final String INVALID_BLOCK_SIZE_CATEGORY = "invalid-block-size-test";
+    private static final String INVALID_BLOCK_START_VALUE_CATEGORY ="invalid-block-start-value-test";
+    private static final String INVALID_NEXT_BLOCK_INTERVAL_CATEGORY="invalid-next-block-interval-test";
     private static final String INSTANCE_ID = "test-instance";
     private static final String INSTANCE_ID_2 = "test-instance_2";
 
@@ -62,7 +65,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     @Test(expected = BlockInitializationException.class)
     public void testUnknownCategory() throws AccessionCouldNotBeGeneratedException {
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
-                getAccessioningService1("Unknown-Category", INSTANCE_ID)
+                getAccessioningService1(UNKNOWN_CATEGORY, INSTANCE_ID)
                         .getOrCreate(getObjectsForAccessionsInRange(1, 10));
     }
 
@@ -70,6 +73,20 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     public void testInvalidBlockSize() throws AccessionCouldNotBeGeneratedException {
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
                 getAccessioningService1(INVALID_BLOCK_SIZE_CATEGORY, INSTANCE_ID)
+                        .getOrCreate(getObjectsForAccessionsInRange(1, 10));
+    }
+
+    @Test(expected = BlockInitializationException.class)
+    public void testInvalidBlockStartValue() throws AccessionCouldNotBeGeneratedException {
+        List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
+                getAccessioningService1(INVALID_BLOCK_START_VALUE_CATEGORY, INSTANCE_ID)
+                        .getOrCreate(getObjectsForAccessionsInRange(1, 10));
+    }
+
+    @Test(expected = BlockInitializationException.class)
+    public void testInvalidNextblockInterval() throws AccessionCouldNotBeGeneratedException {
+        List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
+                getAccessioningService1(INVALID_NEXT_BLOCK_INTERVAL_CATEGORY, INSTANCE_ID)
                         .getOrCreate(getObjectsForAccessionsInRange(1, 10));
     }
 
