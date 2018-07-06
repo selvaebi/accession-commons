@@ -21,7 +21,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -36,11 +36,11 @@ import java.util.List;
  * @param <ACCESSION>
  * @param <INACTIVE_DOCUMENT>
  */
-public abstract class OperationDocument<
+public abstract class EventDocument<
         MODEL,
         ACCESSION extends Serializable,
         INACTIVE_DOCUMENT extends InactiveSubDocument<MODEL, ACCESSION>>
-        implements IOperation<MODEL, ACCESSION>, Persistable<String> {
+        implements IEvent<MODEL, ACCESSION>, Persistable<String> {
 
     @Id
     private String id;
@@ -48,9 +48,9 @@ public abstract class OperationDocument<
     private EventType eventType;
 
     @Indexed
-    private ACCESSION accessionIdOrigin;
+    private ACCESSION accession;
 
-    private ACCESSION accessionIdDestination;
+    private ACCESSION mergeInto;
 
     private String reason;
 
@@ -59,14 +59,14 @@ public abstract class OperationDocument<
     @CreatedDate
     private LocalDateTime createdDate;
 
-    protected OperationDocument() {
+    protected EventDocument() {
     }
 
     public void fill(EventType eventType, ACCESSION accessionIdOrigin, ACCESSION accessionIdDestiny,
                      String reason, List<INACTIVE_DOCUMENT> inactiveObjects) {
         this.eventType = eventType;
-        this.accessionIdOrigin = accessionIdOrigin;
-        this.accessionIdDestination = accessionIdDestiny;
+        this.accession = accessionIdOrigin;
+        this.mergeInto = accessionIdDestiny;
         this.reason = reason;
         this.inactiveObjects = new ArrayList<>();
         if (inactiveObjects != null && !inactiveObjects.isEmpty()) {
@@ -80,13 +80,13 @@ public abstract class OperationDocument<
     }
 
     @Override
-    public ACCESSION getAccessionIdOrigin() {
-        return accessionIdOrigin;
+    public ACCESSION getAccession() {
+        return accession;
     }
 
     @Override
-    public ACCESSION getAccessionIdDestination() {
-        return accessionIdDestination;
+    public ACCESSION getMergedInto() {
+        return mergeInto;
     }
 
     @Override

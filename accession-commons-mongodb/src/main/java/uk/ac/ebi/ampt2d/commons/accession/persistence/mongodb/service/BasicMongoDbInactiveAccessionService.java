@@ -21,9 +21,9 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.OperationDocument;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.EventDocument;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +36,7 @@ public class BasicMongoDbInactiveAccessionService<
         ACCESSION extends Serializable,
         ACCESSION_ENTITY extends IAccessionedObject<MODEL, ?, ACCESSION>,
         ACCESSION_INACTIVE_ENTITY extends InactiveSubDocument<MODEL, ACCESSION>,
-        OPERATION_ENTITY extends OperationDocument<MODEL, ACCESSION, ACCESSION_INACTIVE_ENTITY>>
+        OPERATION_ENTITY extends EventDocument<MODEL, ACCESSION, ACCESSION_INACTIVE_ENTITY>>
         extends BasicInactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY, ACCESSION_INACTIVE_ENTITY> {
 
     private IHistoryRepository<ACCESSION, OPERATION_ENTITY, String> historyRepository;
@@ -53,16 +53,16 @@ public class BasicMongoDbInactiveAccessionService<
     }
 
     @Override
-    protected void saveHistory(EventType type, ACCESSION origin, ACCESSION destination, String reason,
+    protected void saveHistory(EventType type, ACCESSION accession, ACCESSION mergeInto, String reason,
                                List<ACCESSION_INACTIVE_ENTITY> entities) {
         OPERATION_ENTITY operation = supplier.get();
-        operation.fill(type, origin, destination, reason, entities);
+        operation.fill(type, accession, mergeInto, reason, entities);
         historyRepository.save(operation);
     }
 
     @Override
     public Optional<EventType> getLastEventType(ACCESSION accession) {
-        final OPERATION_ENTITY lastEvent = historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+        final OPERATION_ENTITY lastEvent = historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
         if (lastEvent != null) {
             return Optional.of(lastEvent.getEventType());
         }
@@ -70,12 +70,12 @@ public class BasicMongoDbInactiveAccessionService<
     }
 
     @Override
-    public IOperation<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
-        return historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+    public IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
+        return historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
     }
 
     @Override
-    public List<? extends IOperation<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
-        return historyRepository.findAllByAccessionIdOrigin(accession);
+    public List<? extends IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
+        return historyRepository.findAllByAccession(accession);
     }
 }

@@ -46,10 +46,10 @@ public abstract class OperationEntity<ACCESSION> {
     private Long id;
 
     @Column(nullable = false)
-    private ACCESSION accessionIdOrigin;
+    private ACCESSION accession;
 
     @Column
-    private ACCESSION accessionIdDestination;
+    private ACCESSION mergeInto;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
@@ -66,12 +66,12 @@ public abstract class OperationEntity<ACCESSION> {
         return id;
     }
 
-    public ACCESSION getAccessionIdOrigin() {
-        return accessionIdOrigin;
+    public ACCESSION getAccession() {
+        return accession;
     }
 
-    public ACCESSION getAccessionIdDestination() {
-        return accessionIdDestination;
+    public ACCESSION getMergeInto() {
+        return mergeInto;
     }
 
     public EventType getEventType() {
@@ -88,8 +88,8 @@ public abstract class OperationEntity<ACCESSION> {
 
     public void fill(EventType type, ACCESSION origin, ACCESSION destination, String reason) {
         this.eventType = type;
-        this.accessionIdOrigin = origin;
-        this.accessionIdDestination = destination;
+        this.accession = origin;
+        this.mergeInto = destination;
         this.reason = reason;
     }
 }

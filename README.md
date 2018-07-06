@@ -1,5 +1,5 @@
 # Accession Commons
-Generic library for accessioning any object type. It provides the core interfaces to generate hash-based and monotonically increasing accessions, which must be extended by each application to support a particular object type.
+Generic library for accessioning any object eventType. It provides the core interfaces to generate hash-based and monotonically increasing accessions, which must be extended by each application to support a particular object eventType.
 
 ## How does it work
 A set of objects must be passed to the accessioning service layer. This service will generate a summary with the relevant fields of the object, and then a hash value will be calculated based on it. This hash will be used as a key to check if the object has been previously accessioned; if it already exists in the system, the existing accession will be returned for that object, otherwise a new accession will be generated and stored in the database. Finally, the user will receive a mapping between accessions/objects.

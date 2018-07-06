@@ -38,7 +38,7 @@ public class HistoryEventDTO<ACCESSION, DTO> {
     private DTO data;
 
     public <MODEL> HistoryEventDTO(HistoryEvent<MODEL, ACCESSION> event, Function<MODEL, DTO> modelToDTO) {
-        this.type = event.getType();
+        this.type = event.getEventType();
         this.accession = event.getAccession();
         this.mergedInto = event.getMergedInto();
         this.localDateTime = event.getLocalDateTime();

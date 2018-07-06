@@ -67,9 +67,9 @@ public abstract class BasicInactiveAccessionService<
     }
 
     @Override
-    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination,
+    public void merge(ACCESSION accession, ACCESSION mergeInto,
                       List<ACCESSION_ENTITY> accession_entities, String reason) {
-        saveHistory(MERGED, accessionOrigin, accessionDestination, reason,
+        saveHistory(MERGED, accession, mergeInto, reason,
                 toInactiveEntities(accession_entities));
     }
 
@@ -78,6 +78,6 @@ public abstract class BasicInactiveAccessionService<
         saveHistory(PATCHED, accession, reason, null);
     }
 
-    protected abstract void saveHistory(EventType type, ACCESSION origin, ACCESSION destination,
+    protected abstract void saveHistory(EventType type, ACCESSION accession, ACCESSION mergeInto,
                                         String reason, List<ACCESSION_INACTIVE_ENTITY> entities);
 }

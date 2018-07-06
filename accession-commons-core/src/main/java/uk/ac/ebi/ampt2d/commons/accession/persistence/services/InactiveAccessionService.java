@@ -19,8 +19,8 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
 import org.springframework.transaction.annotation.Transactional;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -42,13 +42,12 @@ public interface InactiveAccessionService<
     void deprecate(ACCESSION accession, Collection<ACCESSION_ENTITY> entities, String reason);
 
     @Transactional
-    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, List<ACCESSION_ENTITY> entities,
-               String reason);
+    void merge(ACCESSION accessionOrigin, ACCESSION accession, List<ACCESSION_ENTITY> entities, String reason);
 
     Optional<EventType> getLastEventType(ACCESSION accession);
 
-    IOperation<MODEL, ACCESSION> getLastOperation(ACCESSION accession);
+    IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession);
 
-    List<? extends IOperation<MODEL, ACCESSION>> getOperations(ACCESSION accession);
+    List<? extends IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession);
 
 }

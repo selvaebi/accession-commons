@@ -15,24 +15,24 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence.models;
+package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * An entry of operations performed over accessioned objects that are considered no longer active.
+ * An entry of operations performed over accessioned objects
  *
  * @param <MODEL>
  * @param <ACCESSION>
  */
-public interface IOperation<MODEL, ACCESSION> {
+public interface IEvent<MODEL, ACCESSION> {
 
-    ACCESSION getAccessionIdOrigin();
+    ACCESSION getAccession();
 
-    ACCESSION getAccessionIdDestination();
+    ACCESSION getMergedInto();
 
     EventType getEventType();
 

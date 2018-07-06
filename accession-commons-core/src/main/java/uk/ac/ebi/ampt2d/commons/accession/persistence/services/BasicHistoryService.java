@@ -19,8 +19,8 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,43 +29,40 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class BasicHistoryService<
-        MODEL,
-        ACCESSION extends Serializable>
+public abstract class BasicHistoryService<MODEL, ACCESSION extends Serializable>
         implements HistoryService<MODEL, ACCESSION> {
 
     protected List<HistoryEvent<MODEL, ACCESSION>> generateHistory(
             List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> current,
-            List<? extends IOperation<MODEL, ACCESSION>> history) {
+            List<? extends IEvent<MODEL, ACCESSION>> history) {
         List<HistoryEvent<MODEL, ACCESSION>> events = new ArrayList<>();
         Map<Integer, IAccessionedObject<MODEL, ?, ACCESSION>> versionMap = mapVersions(current);
         sortOperationsNewToOld(history);
 
         int lastVersion = versionMap.keySet().size();
-        for (IOperation<MODEL, ACCESSION> operation : history) {
+        for (IEvent<MODEL, ACCESSION> operation : history) {
             HistoryEvent<MODEL, ACCESSION> newEvent;
             switch (operation.getEventType()) {
                 case DEPRECATED:
                     versionMap = mapVersions(operation.getInactiveObjects());
-                    newEvent = HistoryEvent.deprecated(operation.getAccessionIdOrigin(), operation.getCreatedDate());
+                    newEvent = HistoryEvent.deprecated(operation.getAccession(), operation.getCreatedDate());
                     lastVersion = versionMap.keySet().size();
                     break;
                 case MERGED:
                     versionMap = mapVersions(operation.getInactiveObjects());
-                    newEvent = HistoryEvent.merged(operation.getAccessionIdOrigin(),
-                            operation.getAccessionIdDestination(), operation.getCreatedDate());
+                    newEvent = HistoryEvent.merged(operation.getAccession(),
+                            operation.getMergedInto(), operation.getCreatedDate());
                     break;
                 case UPDATED:
-                    IAccessionedObject<MODEL, ?, ACCESSION> dataBeforeUpdate = operation.getInactiveObjects().get
-                            (0);
+                    IAccessionedObject<MODEL, ?, ACCESSION> dataBeforeUpdate = operation.getInactiveObjects().get(0);
                     int version = dataBeforeUpdate.getVersion();
                     MODEL updateData = versionMap.get(version).getModel();
-                    newEvent = HistoryEvent.updated(operation.getAccessionIdOrigin(), version, updateData,
+                    newEvent = HistoryEvent.updated(operation.getAccession(), version, updateData,
                             operation.getCreatedDate());
                     versionMap.put(version, dataBeforeUpdate);
                     break;
                 case PATCHED:
-                    newEvent = HistoryEvent.patch(operation.getAccessionIdOrigin(), lastVersion,
+                    newEvent = HistoryEvent.patch(operation.getAccession(), lastVersion,
                             versionMap.get(lastVersion).getModel(), operation.getCreatedDate());
                     versionMap.remove(versionMap.keySet().size());
                     if (lastVersion == 0) {
@@ -88,8 +85,8 @@ public abstract class BasicHistoryService<
         events.sort(Comparator.comparing(HistoryEvent::getLocalDateTime));
     }
 
-    private void sortOperationsNewToOld(List<? extends IOperation<MODEL, ACCESSION>> operations) {
-        operations.sort(Comparator.comparing(IOperation::getCreatedDate, Comparator.reverseOrder()));
+    private void sortOperationsNewToOld(List<? extends IEvent<MODEL, ACCESSION>> operations) {
+        operations.sort(Comparator.comparing(IEvent::getCreatedDate, Comparator.reverseOrder()));
 
     }
 

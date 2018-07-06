@@ -17,11 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
-public class HistoryEvent<MODEL, ACCESSION> {
+public class HistoryEvent<MODEL, ACCESSION> implements IEvent<MODEL, ACCESSION> {
 
-    private EventType type;
+    private EventType eventType;
 
     private ACCESSION accession;
 
@@ -33,9 +36,9 @@ public class HistoryEvent<MODEL, ACCESSION> {
 
     private MODEL data;
 
-    public HistoryEvent(EventType type, ACCESSION accession, Integer version, ACCESSION mergedInto,
+    public HistoryEvent(EventType eventType, ACCESSION accession, Integer version, ACCESSION mergedInto,
                         LocalDateTime localDateTime, MODEL data) {
-        this.type = type;
+        this.eventType = eventType;
         this.accession = accession;
         this.version = version;
         this.mergedInto = mergedInto;
@@ -43,10 +46,12 @@ public class HistoryEvent<MODEL, ACCESSION> {
         this.data = data;
     }
 
-    public EventType getType() {
-        return type;
+    @Override
+    public EventType getEventType() {
+        return eventType;
     }
 
+    @Override
     public ACCESSION getAccession() {
         return accession;
     }
@@ -57,6 +62,21 @@ public class HistoryEvent<MODEL, ACCESSION> {
 
     public ACCESSION getMergedInto() {
         return mergedInto;
+    }
+
+    @Override
+    public String getReason() {
+        return null;
+    }
+
+    @Override
+    public LocalDateTime getCreatedDate() {
+        return null;
+    }
+
+    @Override
+    public List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> getInactiveObjects() {
+        return null;
     }
 
     public LocalDateTime getLocalDateTime() {

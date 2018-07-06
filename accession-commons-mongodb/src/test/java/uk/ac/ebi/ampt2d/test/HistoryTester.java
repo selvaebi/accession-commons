@@ -62,7 +62,7 @@ public class HistoryTester {
     }
 
     public static Consumer<HistoryEvent<TestModel, String>> assertEventIs(EventType eventType) {
-        return event -> assertEquals(eventType, event.getType());
+        return event -> assertEquals(eventType, event.getEventType());
     }
 
     public static Consumer<HistoryEvent<TestModel, String>> assertAccession(String accession) {
@@ -95,7 +95,7 @@ public class HistoryTester {
 
     public static Consumer<HistoryEvent<TestModel, String>> assertEventIsUpdated(String value, int version) {
         return assertEventIs(EventType.UPDATED).andThen(assertNullMergedInto()).andThen(assertVersion(version))
-                .andThen(assertVersion(version)).andThen(assertEventContentIs(value));
+                .andThen(assertEventContentIs(value));
     }
 
     private static Consumer<HistoryEvent<TestModel, String>> assertEventContentIs(String value) {
@@ -104,7 +104,7 @@ public class HistoryTester {
 
     public static Consumer<HistoryEvent<TestModel, String>> assertEventIsPatch(String value, int version) {
         return assertEventIs(EventType.PATCHED).andThen(assertNullMergedInto()).andThen(assertVersion(version))
-                .andThen(assertVersion(version)).andThen(assertEventContentIs(value));
+                .andThen(assertEventContentIs(value));
     }
 
     public static Consumer<HistoryEvent<TestModel, String>> assertEventIsDeprecated() {

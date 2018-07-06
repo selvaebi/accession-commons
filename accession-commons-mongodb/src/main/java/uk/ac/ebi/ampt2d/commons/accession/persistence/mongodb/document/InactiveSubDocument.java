@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
  * document representing the operation that made it become inactive.
  *
  * @param <ACCESSION>
- * @see OperationDocument
+ * @see EventDocument
  */
 public abstract class InactiveSubDocument<MODEL, ACCESSION> implements IAccessionedObject<MODEL, String, ACCESSION> {
 

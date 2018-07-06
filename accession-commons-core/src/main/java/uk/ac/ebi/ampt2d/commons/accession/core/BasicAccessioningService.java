@@ -183,9 +183,9 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason)
+    public void merge(ACCESSION accessionOrigin, ACCESSION mergeInto, String reason)
             throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
-        dbService.merge(accessionOrigin, accessionDestination, reason);
+        dbService.merge(accessionOrigin, mergeInto, reason);
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

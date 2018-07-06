@@ -21,11 +21,11 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.InactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.OperationEntity;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.models.JpaOperation;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.models.JpaEvent;
 
 import java.io.Serializable;
 import java.util.List;
@@ -62,10 +62,10 @@ public class BasicJpaInactiveAccessionService<
     }
 
     @Override
-    protected void saveHistory(EventType type, ACCESSION origin, ACCESSION destination, String reason,
+    protected void saveHistory(EventType type, ACCESSION accession, ACCESSION mergeInto, String reason,
                                List<ACCESSION_INACTIVE_ENTITY> accessionInactiveEntities) {
         OPERATION_ENTITY operation = historyEntitySupplier.get();
-        operation.fill(type, origin, destination, reason);
+        operation.fill(type, accession, mergeInto, reason);
         final OPERATION_ENTITY savedOperation = historyRepository.save(operation);
         if(accessionInactiveEntities!=null) {
             accessionInactiveEntities.forEach(entity -> entity.setHistoryId(savedOperation.getId()));
@@ -76,7 +76,7 @@ public class BasicJpaInactiveAccessionService<
 
     @Override
     public Optional<EventType> getLastEventType(ACCESSION accession) {
-        final OPERATION_ENTITY lastEvent = historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+        final OPERATION_ENTITY lastEvent = historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
         if (lastEvent != null) {
             return Optional.of(lastEvent.getEventType());
         }
@@ -84,18 +84,18 @@ public class BasicJpaInactiveAccessionService<
     }
 
     @Override
-    public IOperation<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
-        OperationEntity<ACCESSION> lastOperation = historyRepository.findTopByAccessionIdOriginOrderByCreatedDateDesc(accession);
+    public IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
+        OperationEntity<ACCESSION> lastOperation = historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
         return toJpaOperation(lastOperation);
     }
 
-    private IOperation<MODEL, ACCESSION> toJpaOperation(OperationEntity<ACCESSION> lastOperation) {
-        return new JpaOperation(lastOperation, inactiveAccessionRepository.findAllByHistoryId(lastOperation.getId()));
+    private IEvent<MODEL, ACCESSION> toJpaOperation(OperationEntity<ACCESSION> lastOperation) {
+        return new JpaEvent(lastOperation, inactiveAccessionRepository.findAllByHistoryId(lastOperation.getId()));
     }
 
     @Override
-    public List<IOperation<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
-        final List<OPERATION_ENTITY> operations = historyRepository.findAllByAccessionIdOrigin(accession);
+    public List<IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
+        final List<OPERATION_ENTITY> operations = historyRepository.findAllByAccession(accession);
         return operations.stream().map(this::toJpaOperation).collect(Collectors.toList());
     }
 

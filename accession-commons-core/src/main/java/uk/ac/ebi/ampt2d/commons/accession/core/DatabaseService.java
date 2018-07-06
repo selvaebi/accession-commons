@@ -101,6 +101,6 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
             AccessionMergedException.class})
-    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason) throws AccessionMergedException,
+    void merge(ACCESSION accession, ACCESSION mergeInto, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException;
 }

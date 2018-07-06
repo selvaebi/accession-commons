@@ -35,7 +35,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service.BasicMongo
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
-import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestOperationRepository;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
@@ -59,7 +59,7 @@ public class MongoDbTestConfiguration {
         return new TestMongoDbInactiveAccessionService(
                 testOperationRepository,
                 TestInactiveSubDocument::new,
-                TestOperationDocument::new
+                TestEventDocument::new
         );
     }
 

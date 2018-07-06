@@ -22,19 +22,19 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service.BasicMongo
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
-import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TestMongoDbInactiveAccessionService extends BasicMongoDbInactiveAccessionService<TestModel, String,
         TestDocument,
-        TestInactiveSubDocument, TestOperationDocument> {
+        TestInactiveSubDocument, TestEventDocument> {
 
     public TestMongoDbInactiveAccessionService(
-            IHistoryRepository<String, TestOperationDocument, String> historyRepository,
+            IHistoryRepository<String, TestEventDocument, String> historyRepository,
             Function<TestDocument, TestInactiveSubDocument> toInactiveEntity,
-            Supplier<TestOperationDocument> supplier) {
+            Supplier<TestEventDocument> supplier) {
         super(historyRepository, toInactiveEntity, supplier);
     }
 

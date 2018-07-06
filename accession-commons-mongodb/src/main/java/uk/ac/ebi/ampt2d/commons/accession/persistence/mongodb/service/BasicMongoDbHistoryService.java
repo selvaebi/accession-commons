@@ -22,7 +22,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistE
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 
 import java.io.Serializable;
@@ -49,7 +49,7 @@ public class BasicMongoDbHistoryService<
     @Override
     public List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException {
         final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
-        final List<? extends IOperation<MODEL, ACCESSION>> operations =
+        final List<? extends IEvent<MODEL, ACCESSION>> operations =
                 inactiveAccessionService.getOperations(accession);
         if (current.isEmpty() && operations.isEmpty()) {
             throw new AccessionDoesNotExistException(accession.toString());

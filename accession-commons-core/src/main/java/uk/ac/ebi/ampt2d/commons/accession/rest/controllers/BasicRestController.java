@@ -107,11 +107,11 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
     @RequestMapping(value = "/{accession}/merge", method = RequestMethod.POST, produces = "application/json")
     public void merge(@PathVariable("accession") ACCESSION accessionOrigin,
-                      @RequestParam("accessionDestination") ACCESSION accessionDestination,
+                      @RequestParam("mergeInto") ACCESSION mergeInto,
                       @RequestParam(name = "reason", required = false, defaultValue = "Merge") String reason)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException, IllegalArgumentException {
-        Assert.isTrue(!accessionOrigin.toString().equals(accessionDestination), "Accessions cannot be self merged");
-        service.merge(accessionOrigin, accessionDestination, reason);
+        Assert.isTrue(!accessionOrigin.toString().equals(mergeInto), "Accessions cannot be self merged");
+        service.merge(accessionOrigin, mergeInto, reason);
     }
 
 }

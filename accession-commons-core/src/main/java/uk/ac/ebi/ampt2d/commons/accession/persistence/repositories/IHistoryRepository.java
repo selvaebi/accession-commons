@@ -27,8 +27,8 @@ import java.util.List;
 public interface IHistoryRepository<ACCESSION, OPERATION_ENTITY, ID extends Serializable>
         extends CrudRepository<OPERATION_ENTITY, ID> {
 
-    OPERATION_ENTITY findTopByAccessionIdOriginOrderByCreatedDateDesc(ACCESSION accession);
+    OPERATION_ENTITY findTopByAccessionOrderByCreatedDateDesc(ACCESSION accession);
 
-    List<OPERATION_ENTITY> findAllByAccessionIdOrigin(ACCESSION accession);
+    List<OPERATION_ENTITY> findAllByAccession(ACCESSION accession);
 
 }

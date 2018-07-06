@@ -277,7 +277,7 @@ public class BasicRestControllerTest {
 
     @Test
     public void testMergeWithSelf() throws Exception {
-        mockMvc.perform(post("/v1/test/{accession}/merge", "accession").param("accessionDestination", "accession"))
+        mockMvc.perform(post("/v1/test/{accession}/merge", "accession").param("mergeInto", "accession"))
                 .andExpect(status().is4xxClientError()).andExpect(jsonPath("$.message").value("Accessions cannot be" +
                 " self merged"));
     }
@@ -296,9 +296,9 @@ public class BasicRestControllerTest {
                 andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
     }
 
-    private ResultActions doMerge(String accessionOrigin, String accessionDestination) throws Exception {
-        return mockMvc.perform(post("/v1/test/{accession}/merge", accessionOrigin).param("accessionDestination",
-                accessionDestination));
+    private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {
+        return mockMvc.perform(post("/v1/test/{accession}/merge", accessionOrigin).param("mergeInto",
+                mergeInto));
     }
 
 }

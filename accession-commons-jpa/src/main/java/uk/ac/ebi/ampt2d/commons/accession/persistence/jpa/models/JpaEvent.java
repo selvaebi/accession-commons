@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.models;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.InactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.OperationEntity;
 
@@ -27,11 +27,11 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class JpaOperation<MODEL, ACCESSION extends Serializable> implements IOperation<MODEL, ACCESSION> {
+public class JpaEvent<MODEL, ACCESSION extends Serializable> implements IEvent<MODEL, ACCESSION> {
 
-    private ACCESSION accessionIdOrigin;
+    private ACCESSION accession;
 
-    private ACCESSION accessionIdDestination;
+    private ACCESSION mergeInto;
 
     private EventType eventType;
 
@@ -41,10 +41,10 @@ public class JpaOperation<MODEL, ACCESSION extends Serializable> implements IOpe
 
     private List<? extends InactiveAccessionEntity<MODEL, ACCESSION>> inactiveEntities;
 
-    public JpaOperation(OperationEntity<ACCESSION> lastOperation,
-                        List<? extends InactiveAccessionEntity<MODEL, ACCESSION>> inactiveEntities) {
-        this.accessionIdOrigin = lastOperation.getAccessionIdOrigin();
-        this.accessionIdDestination = lastOperation.getAccessionIdDestination();
+    public JpaEvent(OperationEntity<ACCESSION> lastOperation,
+                    List<? extends InactiveAccessionEntity<MODEL, ACCESSION>> inactiveEntities) {
+        this.accession = lastOperation.getAccession();
+        this.mergeInto = lastOperation.getMergeInto();
         this.eventType = lastOperation.getEventType();
         this.reason = lastOperation.getReason();
         this.createdDate = lastOperation.getCreatedDate();
@@ -52,13 +52,13 @@ public class JpaOperation<MODEL, ACCESSION extends Serializable> implements IOpe
     }
 
     @Override
-    public ACCESSION getAccessionIdOrigin() {
-        return accessionIdOrigin;
+    public ACCESSION getAccession() {
+        return accession;
     }
 
     @Override
-    public ACCESSION getAccessionIdDestination() {
-        return accessionIdDestination;
+    public ACCESSION getMergedInto() {
+        return mergeInto;
     }
 
     @Override

@@ -240,11 +240,11 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason)
+    public void merge(ACCESSION accession, ACCESSION mergeInto, String reason)
             throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
-        List<ACCESSION_ENTITY> accessionedElements = getAccession(accessionOrigin);
-        getAccession(accessionDestination);
-        inactiveAccessionService.merge(accessionOrigin, accessionDestination, accessionedElements, reason);
+        List<ACCESSION_ENTITY> accessionedElements = getAccession(accession);
+        getAccession(mergeInto);
+        inactiveAccessionService.merge(accession, mergeInto, accessionedElements, reason);
         repository.delete(accessionedElements);
     }
 
