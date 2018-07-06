@@ -30,8 +30,8 @@ import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicHistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.service.BasicMongoDbHistoryService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
@@ -74,7 +74,7 @@ public class MongoDbTestConfiguration {
 
     @Bean
     public HistoryService<TestModel, String> testMongoDbHistoryService() {
-        return new BasicMongoDbHistoryService<>(testRepository, testMongoDbInactiveAccessionService());
+        return new BasicHistoryService<>(testRepository, testMongoDbInactiveAccessionService());
     }
 
     @Bean

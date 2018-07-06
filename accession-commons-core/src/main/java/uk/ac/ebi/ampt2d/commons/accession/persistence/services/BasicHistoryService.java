@@ -18,9 +18,11 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,8 +31,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class BasicHistoryService<MODEL, ACCESSION extends Serializable>
+public class BasicHistoryService<
+        MODEL,
+        ACCESSION extends Serializable,
+        ACCESSION_ENTITY extends IAccessionedObject<MODEL, String, ACCESSION>>
         implements HistoryService<MODEL, ACCESSION> {
+
+    private IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> accessionRepository;
+
+    private InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService;
+
+    public BasicHistoryService(
+            IAccessionedObjectRepository<ACCESSION_ENTITY, ACCESSION> accessionRepository,
+            InactiveAccessionService<MODEL, ACCESSION, ACCESSION_ENTITY> inactiveAccessionService) {
+        super();
+        this.accessionRepository = accessionRepository;
+        this.inactiveAccessionService = inactiveAccessionService;
+    }
+
+    @Override
+    public List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException {
+        final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
+        final List<? extends IEvent<MODEL, ACCESSION>> operations =
+                inactiveAccessionService.getOperations(accession);
+        if (current.isEmpty() && operations.isEmpty()) {
+            throw new AccessionDoesNotExistException(accession.toString());
+        }
+        return generateHistory(current, operations);
+    }
 
     protected List<HistoryEvent<MODEL, ACCESSION>> generateHistory(
             List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> current,
