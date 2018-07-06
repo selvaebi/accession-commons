@@ -92,11 +92,11 @@ public class BasicSpringDataRepositoryDatabaseService<
     private void checkAccessionIsActive(List<ACCESSION_ENTITY> entities, ACCESSION accession)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         if (entities == null || entities.isEmpty()) {
-            checkAccessionMergedOrDeprecated(accession);
+            checkAccessionNotMergedOrDeprecated(accession);
         }
     }
 
-    private void checkAccessionMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
+    private void checkAccessionNotMergedOrDeprecated(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionMergedException, AccessionDeprecatedException {
         EventType eventType = inactiveAccessionService.getLastEventType(accession).orElseThrow(() -> new
                 AccessionDoesNotExistException(accession.toString()));
@@ -160,9 +160,9 @@ public class BasicSpringDataRepositoryDatabaseService<
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
         if (result == null) {
-            checkAccessionMergedOrDeprecated(accession);
+            checkAccessionNotMergedOrDeprecated(accession);
             //Accession does exist version does not.
-            throw new AccessionDoesNotExistException(accession.toString());
+            throw new AccessionDoesNotExistException(accession.toString(), version);
         }
         return result;
     }
