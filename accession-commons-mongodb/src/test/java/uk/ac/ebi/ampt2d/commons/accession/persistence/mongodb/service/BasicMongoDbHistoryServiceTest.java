@@ -107,6 +107,21 @@ public class BasicMongoDbHistoryServiceTest {
 
     @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
     @Test
+    public void testHistoryMultiplePatch() throws AccessionDoesNotExistException, AccessionCouldNotBeGeneratedException,
+            AccessionMergedException, AccessionDeprecatedException, HashAlreadyExistsException {
+        getAccessionTester()
+                .accession("test-3")
+                .patch("test-3-patch-2")
+                .patch("test-3-patch-3");
+        getHistoryTester("id-test-3")
+                .assertTotalEvents(3)
+                .assertEvent(0, assertEventIsCreated())
+                .assertEvent(1, assertEventIsPatch("test-3-patch-2", 2))
+                .assertEvent(2, assertEventIsPatch("test-3-patch-3", 3));
+    }
+
+    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
+    @Test
     public void testHistoryPatchAndUpdate() throws AccessionDoesNotExistException,
             AccessionCouldNotBeGeneratedException,
             AccessionMergedException, AccessionDeprecatedException, HashAlreadyExistsException {

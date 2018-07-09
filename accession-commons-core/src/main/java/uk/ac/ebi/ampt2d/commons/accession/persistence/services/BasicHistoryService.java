@@ -67,14 +67,12 @@ public class BasicHistoryService<
         Map<Integer, IAccessionedObject<MODEL, ?, ACCESSION>> versionMap = mapVersions(current);
         sortOperationsNewToOld(history);
 
-        int lastVersion = versionMap.keySet().size();
         for (IEvent<MODEL, ACCESSION> operation : history) {
             HistoryEvent<MODEL, ACCESSION> newEvent;
             switch (operation.getEventType()) {
                 case DEPRECATED:
                     versionMap = mapVersions(operation.getInactiveObjects());
                     newEvent = HistoryEvent.deprecated(operation.getAccession(), operation.getCreatedDate());
-                    lastVersion = versionMap.keySet().size();
                     break;
                 case MERGED:
                     versionMap = mapVersions(operation.getInactiveObjects());
@@ -90,9 +88,10 @@ public class BasicHistoryService<
                     versionMap.put(version, dataBeforeUpdate);
                     break;
                 case PATCHED:
+                    int lastVersion = versionMap.keySet().size();
                     newEvent = HistoryEvent.patch(operation.getAccession(), lastVersion,
                             versionMap.get(lastVersion).getModel(), operation.getCreatedDate());
-                    versionMap.remove(versionMap.keySet().size());
+                    versionMap.remove(lastVersion);
                     if (lastVersion == 0) {
                         throw new RuntimeException("Error parsing accession history");
                     }
