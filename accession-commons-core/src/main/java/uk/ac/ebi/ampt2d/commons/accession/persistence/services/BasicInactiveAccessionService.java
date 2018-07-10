@@ -68,9 +68,9 @@ public abstract class BasicInactiveAccessionService<
 
     @Override
     public void merge(ACCESSION accession, ACCESSION mergeInto,
-                      List<ACCESSION_ENTITY> accession_entities, String reason) {
+                      List<ACCESSION_ENTITY> accessionEntities, String reason) {
         saveHistory(MERGED, accession, mergeInto, reason,
-                toInactiveEntities(accession_entities));
+                toInactiveEntities(accessionEntities));
     }
 
     @Override

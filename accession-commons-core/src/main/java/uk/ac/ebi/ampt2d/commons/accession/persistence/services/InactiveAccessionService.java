@@ -46,8 +46,8 @@ public interface InactiveAccessionService<
 
     Optional<EventType> getLastEventType(ACCESSION accession);
 
-    IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession);
+    IEvent<MODEL, ACCESSION> getLastEvent(ACCESSION accession);
 
-    List<? extends IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession);
+    List<? extends IEvent<MODEL, ACCESSION>> getEvents(ACCESSION accession);
 
 }

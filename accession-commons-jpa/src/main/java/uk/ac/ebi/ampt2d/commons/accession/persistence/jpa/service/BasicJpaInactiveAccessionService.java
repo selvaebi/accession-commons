@@ -84,7 +84,7 @@ public class BasicJpaInactiveAccessionService<
     }
 
     @Override
-    public IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
+    public IEvent<MODEL, ACCESSION> getLastEvent(ACCESSION accession) {
         OperationEntity<ACCESSION> lastOperation = historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
         return toJpaOperation(lastOperation);
     }
@@ -94,7 +94,7 @@ public class BasicJpaInactiveAccessionService<
     }
 
     @Override
-    public List<IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
+    public List<IEvent<MODEL, ACCESSION>> getEvents(ACCESSION accession) {
         final List<OPERATION_ENTITY> operations = historyRepository.findAllByAccession(accession);
         return operations.stream().map(this::toJpaOperation).collect(Collectors.toList());
     }

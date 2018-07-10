@@ -113,7 +113,7 @@ public class BasicMongoDbInactiveAccessionServiceTest {
         private final IEvent<?, String> lastOperation;
 
         public LastOperationAsserts(String accession) {
-            this.lastOperation = service.getLastOperation(accession);
+            this.lastOperation = service.getLastEvent(accession);
         }
 
         public LastOperationAsserts assertDoesNotExist() {

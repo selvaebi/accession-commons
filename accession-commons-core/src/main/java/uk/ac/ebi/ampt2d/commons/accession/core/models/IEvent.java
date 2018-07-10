@@ -23,7 +23,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * An entry of operations performed over accessioned objects
+ * Definition of an event triggered when an operation is performed over an accessioned object.
+ * Some operations could make some objects become inactive.
  *
  * @param <MODEL>
  * @param <ACCESSION>

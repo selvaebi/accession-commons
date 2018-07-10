@@ -53,7 +53,7 @@ public class BasicHistoryService<
     public List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException {
         final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
         final List<? extends IEvent<MODEL, ACCESSION>> operations =
-                inactiveAccessionService.getOperations(accession);
+                inactiveAccessionService.getEvents(accession);
         if (current.isEmpty() && operations.isEmpty()) {
             throw new AccessionDoesNotExistException(accession.toString());
         }

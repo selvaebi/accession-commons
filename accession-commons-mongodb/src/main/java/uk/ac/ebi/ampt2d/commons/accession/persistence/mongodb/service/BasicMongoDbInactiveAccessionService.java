@@ -70,12 +70,12 @@ public class BasicMongoDbInactiveAccessionService<
     }
 
     @Override
-    public IEvent<MODEL, ACCESSION> getLastOperation(ACCESSION accession) {
+    public IEvent<MODEL, ACCESSION> getLastEvent(ACCESSION accession) {
         return historyRepository.findTopByAccessionOrderByCreatedDateDesc(accession);
     }
 
     @Override
-    public List<? extends IEvent<MODEL, ACCESSION>> getOperations(ACCESSION accession) {
+    public List<? extends IEvent<MODEL, ACCESSION>> getEvents(ACCESSION accession) {
         return historyRepository.findAllByAccession(accession);
     }
 }
