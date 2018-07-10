@@ -15,21 +15,32 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface IAccessionedObjectCustomRepository<ACCESSION, ENTITY extends IAccessionedObject<ACCESSION>> {
+/**
+ * Definition of an event triggered when an operation is performed over an accessioned object.
+ * Some operations could make some objects become inactive.
+ *
+ * @param <MODEL>
+ * @param <ACCESSION>
+ */
+public interface IEvent<MODEL, ACCESSION> {
 
-    /**
-     * Bulk insert of accessioned objects. All the hashes must be unique.
-     *
-     * @param entities
-     * @return
-     * @throws RuntimeException if any hash is not unique.
-     */
-    SaveResponse<ACCESSION> insert(List<ENTITY> entities);
+    ACCESSION getAccession();
+
+    ACCESSION getMergedInto();
+
+    EventType getEventType();
+
+    String getReason();
+
+    LocalDateTime getCreatedDate();
+
+    List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> getInactiveObjects();
 
 }

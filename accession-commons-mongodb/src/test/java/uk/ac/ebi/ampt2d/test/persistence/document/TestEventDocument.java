@@ -15,18 +15,13 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.test.persistence.document;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.mongodb.core.mapping.Document;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.EventDocument;
+import uk.ac.ebi.ampt2d.test.TestModel;
 
-import java.io.Serializable;
-import java.util.List;
+@Document
+public class TestEventDocument extends EventDocument<TestModel, String, TestInactiveSubDocument> {
 
-@NoRepositoryBean
-public interface InactiveAccessionRepository<ACCESSION, ENTITY> extends CrudRepository<ENTITY, Long> {
-
-    List<ENTITY> findAllByHistoryId(Long historyId);
-
-    List<ENTITY> findAllByAccessionAndVersion(ACCESSION accession, int version);
 }

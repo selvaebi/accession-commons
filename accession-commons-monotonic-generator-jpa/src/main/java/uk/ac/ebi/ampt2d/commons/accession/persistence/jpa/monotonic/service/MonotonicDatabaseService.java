@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
 
 import java.util.Collection;
 

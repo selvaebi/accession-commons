@@ -15,12 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
@@ -84,7 +84,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDeprecatedException.class, AccessionMergedException.class})
-    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, HASH hash, MODEL model)
+    AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, HASH hash, MODEL model, String reason)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException;
 
@@ -101,6 +101,6 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
             AccessionMergedException.class})
-    void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason) throws AccessionMergedException,
+    void merge(ACCESSION accession, ACCESSION mergeInto, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException;
 }

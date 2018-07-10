@@ -18,9 +18,9 @@
 package uk.ac.ebi.ampt2d.test.persistence.repository;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IHistoryRepository;
-import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IHistoryRepository;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
 
 @Repository
-public interface TestOperationRepository extends IHistoryRepository<String, TestOperationDocument, String> {
+public interface TestOperationRepository extends IHistoryRepository<String, TestEventDocument, String> {
 }

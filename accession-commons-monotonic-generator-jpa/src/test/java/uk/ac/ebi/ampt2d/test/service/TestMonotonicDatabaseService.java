@@ -17,11 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.test.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
@@ -36,9 +36,8 @@ public class TestMonotonicDatabaseService
     public TestMonotonicDatabaseService(
             IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,
             Function<AccessionWrapper<TestModel, String, Long>, TestMonotonicEntity> toEntityFunction,
-            Function<TestMonotonicEntity, TestModel> toModelFunction,
-            InactiveAccessionService<Long, TestMonotonicEntity> inactiveAccessionService) {
-        super(repository, toEntityFunction, toModelFunction, inactiveAccessionService);
+            InactiveAccessionService<TestModel, Long, TestMonotonicEntity> inactiveAccessionService) {
+        super(repository, toEntityFunction, inactiveAccessionService);
     }
 
     @Override

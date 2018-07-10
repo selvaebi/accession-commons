@@ -21,7 +21,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -30,10 +30,11 @@ import java.time.LocalDateTime;
  * Base class for accessioned objects to be serialized as MongoDB documents.
  * The derived classes must be annotated as Document.
  *
+ * @param <MODEL>
  * @param <ACCESSION>
  */
-public abstract class AccessionedDocument<ACCESSION extends Serializable>
-        implements IAccessionedObject<ACCESSION>, Persistable<String> {
+public abstract class AccessionedDocument<MODEL, ACCESSION extends Serializable>
+        implements IAccessionedObject<MODEL, String, ACCESSION>, Persistable<String> {
 
     @Id
     private String hashedMessage;

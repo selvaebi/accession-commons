@@ -25,8 +25,10 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistE
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.MissingUnsavedAccessionsException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +49,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         implements AccessioningService<MODEL, HASH, ACCESSION> {
 
     private final static Logger logger = LoggerFactory.getLogger(BasicAccessioningService.class);
+
+    private static final String PATCH_DEFAULT_REASON = "patch";
 
     private AccessionGenerator<MODEL, ACCESSION> accessionGenerator;
 
@@ -163,7 +167,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        return dbService.patch(accession, hashingFunction.apply(message), message);
+        return dbService.patch(accession, hashingFunction.apply(message), message, PATCH_DEFAULT_REASON);
     }
 
     @Override
@@ -179,9 +183,9 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public void merge(ACCESSION accessionOrigin, ACCESSION accessionDestination, String reason)
+    public void merge(ACCESSION accessionOrigin, ACCESSION mergeInto, String reason)
             throws AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
-        dbService.merge(accessionOrigin, accessionDestination, reason);
+        dbService.merge(accessionOrigin, mergeInto, reason);
     }
 
     protected AccessionGenerator<MODEL, ACCESSION> getAccessionGenerator() {

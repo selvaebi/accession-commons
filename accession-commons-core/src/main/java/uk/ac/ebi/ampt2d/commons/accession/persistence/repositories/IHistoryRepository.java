@@ -15,24 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 @NoRepositoryBean
-public interface IAccessionedObjectRepository<ENTITY extends IAccessionedObject<ACCESSION>,
-        ACCESSION extends Serializable> extends CrudRepository<ENTITY, String>,
-        IAccessionedObjectCustomRepository<ACCESSION, ENTITY> {
+public interface IHistoryRepository<ACCESSION, OPERATION_ENTITY, ID extends Serializable>
+        extends CrudRepository<OPERATION_ENTITY, ID> {
 
-    List<ENTITY> findByAccession(ACCESSION accession);
+    OPERATION_ENTITY findTopByAccessionOrderByCreatedDateDesc(ACCESSION accession);
 
-    List<ENTITY> findByAccessionIn(Collection<ACCESSION> accessions);
-
-    ENTITY findByAccessionAndVersion(ACCESSION accession, int version);
+    List<OPERATION_ENTITY> findAllByAccession(ACCESSION accession);
 
 }

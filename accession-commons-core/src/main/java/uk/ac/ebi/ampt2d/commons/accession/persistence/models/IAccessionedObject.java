@@ -15,18 +15,20 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.models;
 
 import java.time.LocalDateTime;
 
-public interface IAccessionedObject<ACCESSION> {
+public interface IAccessionedObject<MODEL, HASH, ACCESSION> {
 
     ACCESSION getAccession();
 
-    String getHashedMessage();
+    HASH getHashedMessage();
 
     LocalDateTime getCreatedDate();
 
     int getVersion();
+
+    MODEL getModel();
 
 }

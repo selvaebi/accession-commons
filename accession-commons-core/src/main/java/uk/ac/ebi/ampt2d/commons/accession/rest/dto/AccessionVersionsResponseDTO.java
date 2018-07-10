@@ -15,9 +15,9 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.rest;
+package uk.ac.ebi.ampt2d.commons.accession.rest.dto;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
 
 import java.util.Map;
 import java.util.function.Function;

@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.rest;
+package uk.ac.ebi.ampt2d.commons.accession.rest.controllers;
 
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +29,8 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedExc
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionResponseDTO;
+import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionVersionsResponseDTO;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -105,11 +107,11 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
 
     @RequestMapping(value = "/{accession}/merge", method = RequestMethod.POST, produces = "application/json")
     public void merge(@PathVariable("accession") ACCESSION accessionOrigin,
-                      @RequestParam("accessionDestination") ACCESSION accessionDestination,
+                      @RequestParam("mergeInto") ACCESSION mergeInto,
                       @RequestParam(name = "reason", required = false, defaultValue = "Merge") String reason)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException, IllegalArgumentException {
-        Assert.isTrue(!accessionOrigin.toString().equals(accessionDestination), "Accessions cannot be self merged");
-        service.merge(accessionOrigin, accessionDestination, reason);
+        Assert.isTrue(!accessionOrigin.toString().equals(mergeInto), "Accessions cannot be self merged");
+        service.merge(accessionOrigin, mergeInto, reason);
     }
 
 }

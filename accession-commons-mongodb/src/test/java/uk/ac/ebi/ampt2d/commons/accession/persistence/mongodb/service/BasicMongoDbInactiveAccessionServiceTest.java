@@ -28,11 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.test.configuration.MongoDbTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
-import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.rule.FixSpringMongoDbRule;
@@ -42,9 +42,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.DEPRECATED;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.MERGED_INTO;
-import static uk.ac.ebi.ampt2d.commons.accession.core.OperationType.UPDATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.DEPRECATED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.MERGED;
+import static uk.ac.ebi.ampt2d.commons.accession.core.models.EventType.UPDATED;
 import static uk.ac.ebi.ampt2d.test.persistence.document.TestDocument.document;
 
 @RunWith(SpringRunner.class)
@@ -52,6 +52,7 @@ import static uk.ac.ebi.ampt2d.test.persistence.document.TestDocument.document;
 public class BasicMongoDbInactiveAccessionServiceTest {
 
     private static final String DEFAULT_REASON = "default-test-reason";
+
     @Rule
     public MongoDbRule mongoDbRule = new FixSpringMongoDbRule(MongoDbConfigurationBuilder.mongoDb()
             .databaseName("accession-test").build());
@@ -109,10 +110,10 @@ public class BasicMongoDbInactiveAccessionServiceTest {
 
     private class LastOperationAsserts {
 
-        private final IOperation<String> lastOperation;
+        private final IEvent<?, String> lastOperation;
 
         public LastOperationAsserts(String accession) {
-            this.lastOperation = service.getLastOperation(accession);
+            this.lastOperation = service.getLastEvent(accession);
         }
 
         public LastOperationAsserts assertDoesNotExist() {
@@ -129,8 +130,8 @@ public class BasicMongoDbInactiveAccessionServiceTest {
             return isOfType(UPDATED);
         }
 
-        private LastOperationAsserts isOfType(OperationType type) {
-            assertEquals(type, lastOperation.getOperationType());
+        private LastOperationAsserts isOfType(EventType type) {
+            assertEquals(type, lastOperation.getEventType());
             return this;
         }
 
@@ -138,22 +139,23 @@ public class BasicMongoDbInactiveAccessionServiceTest {
             return isOfType(DEPRECATED);
         }
 
-        public LastOperationAsserts assertIsMerge(String origin, String destination, int totalElements) {
-            return isOfType(MERGED_INTO).assertOrigin(origin).assertDestination(destination).assertTotalStoredElements(totalElements);
+        public LastOperationAsserts assertIsMerge(String origin, String mergeInto, int totalElements) {
+            return isOfType(MERGED).assertOrigin(origin).assertMergeInto(mergeInto)
+                    .assertTotalStoredElements(totalElements);
         }
 
         private LastOperationAsserts assertOrigin(String origin) {
-            assertEquals(origin, lastOperation.getAccessionIdOrigin());
+            assertEquals(origin, lastOperation.getAccession());
             return this;
         }
 
-        private LastOperationAsserts assertDestination(String destination) {
-            assertEquals(destination, lastOperation.getAccessionIdDestination());
+        private LastOperationAsserts assertMergeInto(String destination) {
+            assertEquals(destination, lastOperation.getMergedInto());
             return this;
         }
 
         private LastOperationAsserts assertTotalStoredElements(int totalElements) {
-            assertEquals(totalElements, ((TestOperationDocument) lastOperation).getInactiveObjects().size());
+            assertEquals(totalElements, ((TestEventDocument) lastOperation).getInactiveObjects().size());
             return this;
         }
 

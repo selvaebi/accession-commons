@@ -15,26 +15,22 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.persistence;
+package uk.ac.ebi.ampt2d.commons.accession.core;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-/**
- * An entry of operations performed over accessioned objects that are considered no longer active.
- * @param <ACCESSION>
- */
-public interface IOperation<ACCESSION> {
+public interface HistoryService<MODEL, ACCESSION> {
 
-    ACCESSION getAccessionIdOrigin();
-
-    ACCESSION getAccessionIdDestination();
-
-    OperationType getOperationType();
-
-    String getReason();
-
-    LocalDateTime getCreatedDate();
+    /**
+     * Returns the history of an accession
+     *
+     * @param accession
+     * @return
+     * @throws AccessionDoesNotExistException
+     */
+    List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException;
 
 }

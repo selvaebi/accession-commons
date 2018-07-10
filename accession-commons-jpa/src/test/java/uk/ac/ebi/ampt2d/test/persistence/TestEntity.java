@@ -17,14 +17,14 @@
  */
 package uk.ac.ebi.ampt2d.test.persistence;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.AccessionedEntity;
 import uk.ac.ebi.ampt2d.test.TestModel;
 
 import javax.persistence.Entity;
 
 @Entity
-public class TestEntity extends AccessionedEntity<String> implements TestModel {
+public class TestEntity extends AccessionedEntity<TestModel, String> implements TestModel {
 
     private String something;
 
@@ -46,4 +46,8 @@ public class TestEntity extends AccessionedEntity<String> implements TestModel {
         return something;
     }
 
+    @Override
+    public TestModel getModel() {
+        return this;
+    }
 }

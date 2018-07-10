@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
 /**
  * Wrapper containing the object that has been accessioned, as well as additional information like the accession or a

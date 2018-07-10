@@ -22,13 +22,13 @@ package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
  */
 public class AccessionMergedException extends Exception {
 
-    private final Object accessionId;
+    private final String accessionId;
 
-    public AccessionMergedException(Object accessionId){
+    public AccessionMergedException(String accessionId) {
         this.accessionId = accessionId;
     }
 
-    public Object getAccessionId() {
+    public String getAccessionId() {
         return accessionId;
     }
 }

@@ -15,17 +15,25 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.commons.accession.core;
+package uk.ac.ebi.ampt2d.commons.accession.utils;
 
-public enum OperationType {
+import org.springframework.core.convert.converter.Converter;
 
-    // accession object has changed
-    UPDATED,
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-    // accession1 merged into accession2
-    MERGED_INTO,
+public class ListConverter<S, T> implements Converter<List<S>, List<T>> {
 
-    // accession is no longer valid
-    DEPRECATED;
+    private final Function<S, T> convertFunction;
+
+    public ListConverter(Function<S, T> convertFunction) {
+        this.convertFunction = convertFunction;
+    }
+
+    @Override
+    public List<T> convert(List<S> source) {
+        return source.stream().map(convertFunction).collect(Collectors.toList());
+    }
 
 }

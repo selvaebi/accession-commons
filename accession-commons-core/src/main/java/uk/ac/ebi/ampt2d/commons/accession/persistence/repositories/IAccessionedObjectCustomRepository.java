@@ -15,12 +15,23 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence.document;
+package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.OperationDocument;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 
-@Document
-public class TestOperationDocument extends OperationDocument<String, TestInactiveSubDocument> {
+import java.util.List;
+
+public interface IAccessionedObjectCustomRepository<ACCESSION,
+        ENTITY extends IAccessionedObject<?, String, ACCESSION>> {
+
+    /**
+     * Bulk insert of accessioned objects. All the hashes must be unique.
+     *
+     * @param entities
+     * @return
+     * @throws RuntimeException if any hash is not unique.
+     */
+    SaveResponse<ACCESSION> insert(List<ENTITY> entities);
 
 }
