@@ -44,10 +44,10 @@ public class MethodResponseTester<T> implements IMethodTester{
     }
 
     public void assertThrow(Class<? extends Throwable> exception) {
-        assertNotNull("No exception was thrown", exception);
+        assertNotNull("No exception was thrown", this.exception);
         assertThatThrownBy(() -> {
             throw this.exception;
-        }).isInstanceOf(Exception.class);
+        }).isInstanceOf(exception);
     }
 
     public T getData() {

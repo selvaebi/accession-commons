@@ -32,7 +32,7 @@ Feature: Accession modification
   same values.
     Given already accessioned A,B
     When user updates id-service-A patch 1 with B
-    Then user receives an unknown error
+    Then user receives a hash already exists exception
 
   Scenario: I want to update an object that does not exist
     When  user updates id-service-A patch 1 with AB

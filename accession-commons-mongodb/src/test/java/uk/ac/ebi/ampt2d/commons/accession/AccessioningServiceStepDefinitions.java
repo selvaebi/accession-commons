@@ -34,6 +34,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.test.configuration.MongoDbCucumberTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.rule.FixSpringMongoDbRule;
@@ -42,6 +43,8 @@ import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 
 @Ignore
 @RunWith(SpringRunner.class)
@@ -113,9 +116,9 @@ public class AccessioningServiceStepDefinitions {
         tester.merge(accessionA, accessionB, reason);
     }
 
-    @Then("^user receives an unknown error$")
+    @Then("^user receives a hash already exists exception$")
     public void weShouldHaveAUnknownError() {
-        tester.getLastMethodResponse().assertThrow(UnknownError.class);
+        tester.getLastMethodResponse().assertThrow(HashAlreadyExistsException.class);
     }
 
     @Then("^user operation finished correctly$")
@@ -150,5 +153,10 @@ public class AccessioningServiceStepDefinitions {
     @When("^user retrieves accessions: ([\\w-,]+)$")
     public void userRetrievesAccessionsIdServiceA(String accessionIds) {
         tester.getAccessions(accessionIds.split(","));
+    }
+
+    @Then("^user receives no data$")
+    public void userReceivesNoData() {
+        assertTrue(tester.getSingleVersionResults().getData().isEmpty(),"User received data");
     }
 }

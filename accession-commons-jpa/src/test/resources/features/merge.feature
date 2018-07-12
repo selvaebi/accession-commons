@@ -3,16 +3,16 @@ Feature: Accession merge
   Scenario: I want to merge an object but the destination object does not exist.
     Given already accessioned A
     When user merges id-service-A with id-service-B reason: because i say so
-    Then user receives an unknown error
+    Then user receives a hash already exists exception
 
   Scenario: I want to merge an object but the origin object does not exist.
     Given already accessioned B
     When user merges id-service-A with id-service-B reason: because i say so
-    Then user receives an unknown error
+    Then user receives a hash already exists exception
 
   Scenario: I want to merge an object but none of the two exist.
     When user merges id-service-A with id-service-B reason: because i say so
-    Then user receives an unknown error
+    Then user receives a hash already exists exception
 
   Scenario: I want to merge an object
     Given already accessioned A
