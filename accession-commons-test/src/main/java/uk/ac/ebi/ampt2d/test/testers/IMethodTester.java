@@ -17,10 +17,31 @@
  */
 package uk.ac.ebi.ampt2d.test.testers;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 public interface IMethodTester {
 
-    void assertNoException();
+    default void assertNoException() {
+        getException().ifPresent(e -> fail("Unexpected exception thrown '" + e.getClass().getName() + "'"));
+    }
 
-    void assertThrow(Class<? extends Throwable> exception);
+    default void assertThrow(Class<? extends Throwable> exceptionClass) {
+        Exception thrownException = getException().get();
+        assertNotNull("No exception was thrown", thrownException);
+        assertThatThrownBy(() -> {
+            throw thrownException;
+        }).isInstanceOf(exceptionClass);
+    }
+
+    /**
+     * Returns exception thrown in method execution if any.
+     *
+     * @return
+     */
+    Optional<Exception> getException();
 
 }

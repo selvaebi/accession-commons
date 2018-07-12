@@ -19,6 +19,8 @@ package uk.ac.ebi.ampt2d.test.testers;
 
 import uk.ac.ebi.ampt2d.test.utils.ThrowingSupplier;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -37,17 +39,9 @@ public class MethodResponseTester<T> implements IMethodTester{
         }
     }
 
-    public void assertNoException() {
-        if (exception != null) {
-            fail("Unexpected exception thrown '" + exception.getClass().getName() + "'");
-        }
-    }
-
-    public void assertThrow(Class<? extends Throwable> exception) {
-        assertNotNull("No exception was thrown", this.exception);
-        assertThatThrownBy(() -> {
-            throw this.exception;
-        }).isInstanceOf(exception);
+    @Override
+    public Optional<Exception> getException() {
+        return Optional.ofNullable(exception);
     }
 
     public T getData() {
