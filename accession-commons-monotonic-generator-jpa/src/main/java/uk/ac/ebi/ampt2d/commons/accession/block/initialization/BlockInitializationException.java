@@ -21,6 +21,7 @@ package uk.ac.ebi.ampt2d.commons.accession.block.initialization;
  * Exception thrown when block properties are not initialized or invalid.
  */
 public class BlockInitializationException extends RuntimeException {
+
     public BlockInitializationException(String message) {
         super(message);
     }

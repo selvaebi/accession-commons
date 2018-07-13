@@ -48,7 +48,7 @@ public class ContiguousIdBlockService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public ContiguousIdBlock reserveNewBlock(String categoryId, String instanceId) {
         ContiguousIdBlock lastBlock = repository.findFirstByCategoryIdOrderByLastValueDesc(categoryId);
-        BlockParameters blockParameters = getBlockInitialization(categoryId);
+        BlockParameters blockParameters = getBlockParameters(categoryId);
         if (lastBlock != null) {
             return repository.save(lastBlock.nextBlock(instanceId, blockParameters.getBlockSize(),
                     blockParameters.getNextBlockInterval()));
@@ -59,7 +59,7 @@ public class ContiguousIdBlockService {
         }
     }
 
-    private BlockParameters getBlockInitialization(String categoryId) {
+    private BlockParameters getBlockParameters(String categoryId) {
         return new BlockParameters(categoryBlockInitializations.get(categoryId));
     }
 

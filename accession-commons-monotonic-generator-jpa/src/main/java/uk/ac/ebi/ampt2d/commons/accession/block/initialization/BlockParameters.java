@@ -18,8 +18,9 @@
 package uk.ac.ebi.ampt2d.commons.accession.block.initialization;
 
 import java.util.Map;
+
 /**
- * Block Initialization Parameters Bean Class
+ * Initialization parameters for blocks of monotonic accession
  */
 public class BlockParameters {
 
@@ -28,17 +29,17 @@ public class BlockParameters {
     private long nextBlockInterval;
 
     public BlockParameters(Map<String, String> propertiesMap) {
-        this.blockStartValue = Long.parseLong(propertiesMap.get(BlockInitializationParams.BLOCK_START_VALUE));
-        this.blockSize = Long.parseLong(propertiesMap.get(BlockInitializationParams.BLOCK_SIZE));
-        this.nextBlockInterval = Long.parseLong(propertiesMap.get(BlockInitializationParams.NEXT_BLOCK_INTERVAL));
+        this.blockStartValue = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.BLOCK_START_VALUE));
+        this.blockSize = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.BLOCK_SIZE));
+        this.nextBlockInterval = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.NEXT_BLOCK_INTERVAL));
     }
 
     public static void checkIsBlockSizeValid(Map<String, String> blockInitializations) {
         try {
             if (blockInitializations == null
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParams.BLOCK_SIZE)) <= 0
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParams.NEXT_BLOCK_INTERVAL)) < 0
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParams.BLOCK_START_VALUE)) < 0)
+                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.BLOCK_SIZE)) <= 0
+                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.NEXT_BLOCK_INTERVAL)) < 0
+                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.BLOCK_START_VALUE)) < 0)
                 throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
         } catch (RuntimeException e) {
             throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
@@ -64,5 +65,12 @@ public class BlockParameters {
                 ", blockSize=" + blockSize +
                 ", nextBlockInterval=" + nextBlockInterval +
                 '}';
+    }
+
+    private static class BlockInitializationParameterNames {
+
+        public static String BLOCK_SIZE = "blockSize";
+        public static String BLOCK_START_VALUE = "blockStartValue";
+        public static String NEXT_BLOCK_INTERVAL = "nextBlockInterval";
     }
 }
