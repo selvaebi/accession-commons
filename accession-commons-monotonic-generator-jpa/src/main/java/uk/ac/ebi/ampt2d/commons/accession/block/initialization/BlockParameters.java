@@ -67,10 +67,10 @@ public class BlockParameters {
                 '}';
     }
 
-    private static class BlockInitializationParameterNames {
+    private interface BlockInitializationParameterNames {
 
-        public static String BLOCK_SIZE = "blockSize";
-        public static String BLOCK_START_VALUE = "blockStartValue";
-        public static String NEXT_BLOCK_INTERVAL = "nextBlockInterval";
+        String BLOCK_SIZE = "blockSize";
+        String BLOCK_START_VALUE = "blockStartValue";
+        String NEXT_BLOCK_INTERVAL = "nextBlockInterval";
     }
 }
