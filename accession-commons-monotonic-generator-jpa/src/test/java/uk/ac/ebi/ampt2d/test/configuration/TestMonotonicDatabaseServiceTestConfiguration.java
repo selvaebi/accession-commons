@@ -42,7 +42,6 @@ import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 @EnableJpaRepositories(basePackages = "uk.ac.ebi.ampt2d.test.persistence")
 public class TestMonotonicDatabaseServiceTestConfiguration {
 
-    private static final int BLOCK_SIZE = 1000;
     private static final String CATEGORY_ID = "category-id-monotonic-test";
     private static final String INSTANCE_ID = "instance-id-monotonic-test";
 
@@ -70,7 +69,6 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     @Bean
     public MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator() {
         return new MonotonicAccessionGenerator<>(
-                BLOCK_SIZE,
                 CATEGORY_ID,
                 INSTANCE_ID,
                 contiguousIdBlockService);

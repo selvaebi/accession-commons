@@ -17,10 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockInitializationException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -40,24 +41,26 @@ import java.util.Map;
  */
 public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MODEL, Long> {
 
-    private long blockSize;
-
+    private final BlockManager blockManager;
     private String categoryId;
-
     private String applicationInstanceId;
-
     private ContiguousIdBlockService blockService;
 
-    private final BlockManager blockManager;
-
-    public MonotonicAccessionGenerator(long blockSize, String categoryId, String applicationInstanceId,
+    public MonotonicAccessionGenerator(String categoryId,
+                                       String applicationInstanceId,
                                        ContiguousIdBlockService contiguousIdBlockService) {
-        this.blockSize = blockSize;
         this.categoryId = categoryId;
         this.applicationInstanceId = applicationInstanceId;
         this.blockService = contiguousIdBlockService;
         this.blockManager = new BlockManager();
+        checkBlockInitializations();
         loadIncompleteBlocks();
+    }
+
+    private void checkBlockInitializations() {
+        if (blockService.getBlockParameters(categoryId) == null) {
+            throw new BlockInitializationException("BlockParameters not initialized for the category");
+        }
     }
 
     private void loadIncompleteBlocks() {
@@ -69,7 +72,6 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
             blockManager.addBlock(block);
         }
     }
-
 
     /**
      * This function will recover the internal state of committed elements and will remove them from the available
@@ -107,15 +109,15 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
         while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
-                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId, blockSize), 10, 30);
+                ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId), 10, 30);
             } catch (ExponentialBackOffMaxRetriesRuntimeException e) {
                 // Ignore, max backoff have been reached, we will try again until we can reserve blocks
             }
         }
     }
 
-    private synchronized void reserveNewBlock(String categoryId, String instanceId, long size) {
-        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId, size));
+    private synchronized void reserveNewBlock(String categoryId, String instanceId) {
+        blockManager.addBlock(blockService.reserveNewBlock(categoryId, instanceId));
     }
 
     public synchronized void commit(long... accessions) throws AccessionIsNotPendingException {
