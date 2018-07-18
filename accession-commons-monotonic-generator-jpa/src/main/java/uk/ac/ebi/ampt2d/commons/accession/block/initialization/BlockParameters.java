@@ -37,17 +37,16 @@ public class BlockParameters {
             this.blockStartValue = Long.parseLong(blockInitializations.get(BLOCK_START_VALUE));
             this.blockSize = Long.parseLong(blockInitializations.get(BLOCK_SIZE));
             this.nextBlockInterval = Long.parseLong(blockInitializations.get(NEXT_BLOCK_INTERVAL));
-            if (!isBlockParametersValid())
+            if (!isBlockParametersValid()) {
                 throw new BlockInitializationException("BlockParameters are invalid");
+            }
         } catch (RuntimeException ex) {
             throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
         }
     }
 
     private boolean isBlockParametersValid() {
-        if (this.blockStartValue >= 0 && this.blockSize > 0 && this.nextBlockInterval >= 0)
-            return true;
-        return false;
+        return this.blockStartValue >= 0 && this.blockSize > 0 && this.nextBlockInterval >= 0;
     }
 
     public long getBlockStartValue() {

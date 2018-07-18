@@ -18,10 +18,10 @@
 package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
 import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockInitializationException;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionIsNotPendingException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -57,9 +57,10 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         loadIncompleteBlocks();
     }
 
-    private void checkBlockInitializations(){
-        if(blockService.getBlockParameters(categoryId)==null)
+    private void checkBlockInitializations() {
+        if (blockService.getBlockParameters(categoryId) == null) {
             throw new BlockInitializationException("BlockParameters not initialized for the category");
+        }
     }
 
     private void loadIncompleteBlocks() {
