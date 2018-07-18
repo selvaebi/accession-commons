@@ -68,7 +68,7 @@ public class HistoryTester {
     }
 
     public static Consumer<HistoryEvent<TestModel, String>> assertAccession(String accession) {
-        return event -> Assert.assertEquals(accession, event.getAccession());
+        return event -> assertEquals(accession, event.getAccession());
     }
 
     public static Consumer<HistoryEvent<TestModel, String>> assertNullMergedInto() {

@@ -80,8 +80,7 @@ public class MongoDbTestConfiguration {
     @Bean
     public AccessioningService<TestModel, String, String> testMongoDbAccessioningService() {
         return new BasicAccessioningService<>(
-                new SingleAccessionGenerator<>(o ->
-                        "id-" + o.getValue()),
+                new SingleAccessionGenerator<>(o -> "id-" + o.getValue()),
                 testMongoDbService(),
                 testModel -> testModel.getValue(),
                 new SHA1HashingFunction()

@@ -64,7 +64,7 @@ public class AccessioningServiceStepDefinitions {
     private AccessioningServiceTester tester;
 
     @Before
-    public void doSomethingBefore() {
+    public void setUp() {
         mongoDbRule.getDatabaseOperation().deleteAll();
     }
 
@@ -74,6 +74,10 @@ public class AccessioningServiceStepDefinitions {
         tester.getOrCreate(toModels(objects));
     }
 
+    private List<TestModel> toModels(String values) {
+        return Arrays.stream(values.split(",")).map(TestModel::of).collect(Collectors.toList());
+    }
+
     @Then("^user received accessions: ([\\w-,]+)$")
     public void iShouldReceiveAccessions(String objects) {
         final String[] accessions = objects.split(",");
@@ -81,21 +85,21 @@ public class AccessioningServiceStepDefinitions {
     }
 
     @When("^user sends patch (\\w+) for accession ([\\w-]+)$")
-    public void userSendsPatchInputForAccessionAccession(String patchData, String accession) {
+    public void userSendsPatchInputForAccession(String patchData, String accession) {
         tester.patch(accession, TestModel.of(patchData));
     }
 
-    @Then("^user should receive version list for ([\\w-]+) with (\\d+) version$")
-    public void userShouldReceivePatchForAccessionsWithVersion(String accession, int totalVersions) {
-        tester.getLastMultipleVersionResult().assertAccession(accession).assertTotalVersions(totalVersions);
+    @Then("^user should receive (\\d+) (?:patches|patch) for accession ([\\w-]+)")
+    public void userShouldReceivePatchesForAccession(int totalPatches, String accession) {
+        tester.getLastMultipleVersionResult().assertAccession(accession).assertTotalVersions(totalPatches);
     }
 
     @And("^patch must have versions increased$")
     public void patchMustHaveVersionsIncreased() {
-        tester.getLastMultipleVersionResult().assertVersionAreIncreased();
+        tester.getLastMultipleVersionResult().assertVersionsAreIncreased();
     }
 
-    @Then("^user receives accession does not exist$")
+    @Then("^user should receive 'accession does not exist'$")
     public void userReceivesAccessionDoesNotExistError() {
         tester.getLastMethodResponse().assertThrow(AccessionDoesNotExistException.class);
     }
@@ -106,27 +110,27 @@ public class AccessioningServiceStepDefinitions {
     }
 
 
-    @And("^hash of version (\\d+) should be ([\\w-]+)$")
-    public void hashOfVersionShouldBeHash(int version, String hash) {
+    @And("^hash of patch (\\d+) should be ([\\w-]+)$")
+    public void hashOfPatchShouldBeHash(int version, String hash) {
         tester.getLastMultipleVersionResult().assertHash(version, hash);
     }
 
-    @When("^user merges ([\\w-]+) with ([\\w-]+) reason: ([\\w ]+)$")
+    @When("^user merges ([\\w-]+) into ([\\w-]+) reason: ([\\w ]+)$")
     public void userMergesAWithB(String accessionA, String accessionB, String reason) {
         tester.merge(accessionA, accessionB, reason);
     }
 
-    @Then("^user receives a hash already exists exception$")
+    @Then("^user should receive 'hash already exists exception'$")
     public void weShouldHaveAUnknownError() {
         tester.getLastMethodResponse().assertThrow(HashAlreadyExistsException.class);
     }
 
-    @Then("^user operation finished correctly$")
+    @Then("^operation finished correctly$")
     public void lastProcessFinishedOk() {
         tester.getLastMethodResponse().assertNoException();
     }
 
-    @Then("^user receives an accession already merged error$")
+    @Then("^user should receive 'accession already merged exception'$")
     public void weShouldHaveAAccessionAlreadyMerged() {
         tester.getLastMethodResponse().assertThrow(AccessionMergedException.class);
     }
@@ -134,10 +138,6 @@ public class AccessioningServiceStepDefinitions {
     @When("^user retrieves objects: ([\\w-,]+)$")
     public void userRetrievesObjectA(String values) {
         tester.get(toModels(values));
-    }
-
-    private List<TestModel> toModels(String values) {
-        return Arrays.stream(values.split(",")).map(TestModel::of).collect(Collectors.toList());
     }
 
     @Then("^user receives (\\d+) elements$")
@@ -157,6 +157,6 @@ public class AccessioningServiceStepDefinitions {
 
     @Then("^user receives no data$")
     public void userReceivesNoData() {
-        assertTrue(tester.getSingleVersionResults().getData().isEmpty(),"User received data");
+        assertTrue(tester.getSingleVersionResults().getData().isEmpty(), "User received data");
     }
 }

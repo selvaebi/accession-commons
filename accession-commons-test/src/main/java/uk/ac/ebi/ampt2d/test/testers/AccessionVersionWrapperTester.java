@@ -42,7 +42,7 @@ public class AccessionVersionWrapperTester
         return this;
     }
 
-    public AccessionVersionWrapperTester assertVersionAreIncreased() {
+    public AccessionVersionWrapperTester assertVersionsAreIncreased() {
         final List<AccessionWrapper<TestModel, String, String>> wrappers =
                 new ArrayList<>(getData().getModelWrappers());
 

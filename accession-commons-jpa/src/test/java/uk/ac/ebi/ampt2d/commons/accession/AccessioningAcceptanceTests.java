@@ -32,6 +32,6 @@ import org.junit.runner.RunWith;
                 "pretty",
                 "html:target/cucumber"},
         tags = {"not @ignore"})
-public class AccessioningIntegrationTests {
+public class AccessioningAcceptanceTests {
 
 }

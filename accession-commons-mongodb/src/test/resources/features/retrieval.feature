@@ -22,7 +22,7 @@ Feature: Accession retrieval
 
   Scenario: I want to get a specific accession that doesn't exist in the system.
     When user retrieves accessions: id-service-A
-    Then user operation finished correctly
+    Then operation finished correctly
     And user receives no data
 
   Scenario: I want to retrieve an accession that exists in the system
