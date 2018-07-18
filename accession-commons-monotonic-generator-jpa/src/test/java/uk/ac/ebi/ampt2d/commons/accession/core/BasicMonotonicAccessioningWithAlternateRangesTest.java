@@ -60,27 +60,6 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
                         .getOrCreate(getObjectsForAccessionsInRange(1, 10));
     }
 
-    @Test(expected = BlockInitializationException.class)
-    public void testInvalidBlockSize() throws AccessionCouldNotBeGeneratedException {
-        List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
-                getAccessioningService("invalid-block-size-category", INSTANCE_ID)
-                        .getOrCreate(getObjectsForAccessionsInRange(1, 10));
-    }
-
-    @Test(expected = BlockInitializationException.class)
-    public void testInvalidBlockStartValue() throws AccessionCouldNotBeGeneratedException {
-        List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
-                getAccessioningService("invalid-block-start-value-category", INSTANCE_ID)
-                        .getOrCreate(getObjectsForAccessionsInRange(1, 10));
-    }
-
-    @Test(expected = BlockInitializationException.class)
-    public void testInvalidNextblockInterval() throws AccessionCouldNotBeGeneratedException {
-        List<AccessionWrapper<TestModel, String, Long>> evaAccessions =
-                getAccessioningService("invalid-next-block-interval-category", INSTANCE_ID)
-                        .getOrCreate(getObjectsForAccessionsInRange(1, 10));
-    }
-
     @Test
     public void testAlternateRangesWithDifferentGenerators() throws AccessionCouldNotBeGeneratedException {
         String categoryId = "eva_2";

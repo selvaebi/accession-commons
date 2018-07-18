@@ -25,6 +25,7 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,9 +33,9 @@ public class ContiguousIdBlockService {
 
     private ContiguousIdBlockRepository repository;
 
-    private HashMap<String, HashMap<String, String>> categoryBlockInitializations;
+    private Map<String, BlockParameters> categoryBlockInitializations;
 
-    public ContiguousIdBlockService(ContiguousIdBlockRepository repository, HashMap<String, HashMap<String, String>>
+    public ContiguousIdBlockService(ContiguousIdBlockRepository repository, Map<String, BlockParameters>
             categoryBlockInitializations) {
         this.repository = repository;
         this.categoryBlockInitializations = categoryBlockInitializations;
@@ -59,8 +60,8 @@ public class ContiguousIdBlockService {
         }
     }
 
-    private BlockParameters getBlockParameters(String categoryId) {
-        return new BlockParameters(categoryBlockInitializations.get(categoryId));
+    public BlockParameters getBlockParameters(String categoryId) {
+        return categoryBlockInitializations.get(categoryId);
     }
 
     @Transactional(readOnly = true)
@@ -70,9 +71,5 @@ public class ContiguousIdBlockService {
                 .findAllByCategoryIdAndApplicationInstanceIdOrderByLastValueAsc(categoryId, applicationInstanceId)) {
             return reservedBlocksOfThisInstance.filter(ContiguousIdBlock::isNotFull).collect(Collectors.toList());
         }
-    }
-
-    public void checkIsBlockInitializationsValid(String categoryId) {
-        BlockParameters.checkIsBlockSizeValid(categoryBlockInitializations.get(categoryId));
     }
 }

@@ -24,26 +24,30 @@ import java.util.Map;
  */
 public class BlockParameters {
 
+    private static final String BLOCK_SIZE = "blockSize";
+    private static final String BLOCK_START_VALUE = "blockStartValue";
+    private static final String NEXT_BLOCK_INTERVAL = "nextBlockInterval";
+
     private long blockStartValue;
     private long blockSize;
     private long nextBlockInterval;
 
-    public BlockParameters(Map<String, String> propertiesMap) {
-        this.blockStartValue = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.BLOCK_START_VALUE));
-        this.blockSize = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.BLOCK_SIZE));
-        this.nextBlockInterval = Long.parseLong(propertiesMap.get(BlockInitializationParameterNames.NEXT_BLOCK_INTERVAL));
-    }
-
-    public static void checkIsBlockSizeValid(Map<String, String> blockInitializations) {
+    public BlockParameters(Map<String, String> blockInitializations) {
         try {
-            if (blockInitializations == null
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.BLOCK_SIZE)) <= 0
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.NEXT_BLOCK_INTERVAL)) < 0
-                    || Long.parseLong(blockInitializations.get(BlockInitializationParameterNames.BLOCK_START_VALUE)) < 0)
-                throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
-        } catch (RuntimeException e) {
+            this.blockStartValue = Long.parseLong(blockInitializations.get(BLOCK_START_VALUE));
+            this.blockSize = Long.parseLong(blockInitializations.get(BLOCK_SIZE));
+            this.nextBlockInterval = Long.parseLong(blockInitializations.get(NEXT_BLOCK_INTERVAL));
+            if (!isBlockParametersValid())
+                throw new BlockInitializationException("BlockParameters are invalid");
+        } catch (RuntimeException ex) {
             throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
         }
+    }
+
+    private boolean isBlockParametersValid() {
+        if (this.blockStartValue >= 0 && this.blockSize > 0 && this.nextBlockInterval >= 0)
+            return true;
+        return false;
     }
 
     public long getBlockStartValue() {
@@ -65,12 +69,5 @@ public class BlockParameters {
                 ", blockSize=" + blockSize +
                 ", nextBlockInterval=" + nextBlockInterval +
                 '}';
-    }
-
-    private interface BlockInitializationParameterNames {
-
-        String BLOCK_SIZE = "blockSize";
-        String BLOCK_START_VALUE = "blockStartValue";
-        String NEXT_BLOCK_INTERVAL = "nextBlockInterval";
     }
 }

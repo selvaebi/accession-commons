@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.generators.monotonic;
 
+import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockInitializationException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
@@ -52,7 +53,13 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         this.applicationInstanceId = applicationInstanceId;
         this.blockService = contiguousIdBlockService;
         this.blockManager = new BlockManager();
+        checkBlockInitializations();
         loadIncompleteBlocks();
+    }
+
+    private void checkBlockInitializations(){
+        if(blockService.getBlockParameters(categoryId)==null)
+            throw new BlockInitializationException("BlockParameters not initialized for the category");
     }
 
     private void loadIncompleteBlocks() {
@@ -101,7 +108,6 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     private synchronized void reserveNewBlocksUntilSizeIs(int totalAccessionsToGenerate) {
         while (!blockManager.hasAvailableAccessions(totalAccessionsToGenerate)) {
             try {
-                blockService.checkIsBlockInitializationsValid(categoryId);
                 ExponentialBackOff.execute(() -> reserveNewBlock(categoryId, applicationInstanceId), 10, 30);
             } catch (ExponentialBackOffMaxRetriesRuntimeException e) {
                 // Ignore, max backoff have been reached, we will try again until we can reserve blocks
