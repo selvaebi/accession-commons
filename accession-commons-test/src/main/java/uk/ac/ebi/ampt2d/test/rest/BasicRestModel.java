@@ -15,14 +15,27 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.test.rest;
 
-public interface TestModel {
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
-    String getValue();
+import javax.validation.constraints.NotNull;
 
-    static TestModel of(String value) {
-        return () -> value;
+public class BasicRestModel implements TestModel {
+
+    @NotNull(message = "Please provide a value")
+    private String value;
+
+    public BasicRestModel() {
+    }
+
+    public BasicRestModel(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 
 }

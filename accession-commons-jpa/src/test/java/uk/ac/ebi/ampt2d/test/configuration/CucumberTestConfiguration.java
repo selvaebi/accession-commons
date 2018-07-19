@@ -25,16 +25,19 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableBasicRestControllerAdvice;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
@@ -42,11 +45,9 @@ import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
-import uk.ac.ebi.ampt2d.test.rest.TestController;
+import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
 
 @Configuration
-@EnableWebMvc
-@EnableBasicRestControllerAdvice
 @ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
 @EnableJpaAuditing
 @ComponentScan(basePackageClasses = BasicJpaAccessionedObjectCustomRepositoryImpl.class)
@@ -57,7 +58,7 @@ import uk.ac.ebi.ampt2d.test.rest.TestController;
 @AutoConfigureCache
 @AutoConfigureDataJpa
 @AutoConfigureTestEntityManager
-public class BasicRestControllerTestConfiguration {
+public class CucumberTestConfiguration {
 
     @Autowired
     private TestRepository repository;
@@ -67,11 +68,6 @@ public class BasicRestControllerTestConfiguration {
 
     @Autowired
     private TestInactiveAccessionRepository testInactiveAccessionRepository;
-
-    @Bean
-    public TestController testController() {
-        return new TestController(databaseService());
-    }
 
     @Bean
     public DatabaseService<TestModel, String, String> databaseService() {
@@ -90,6 +86,25 @@ public class BasicRestControllerTestConfiguration {
                 testInactiveAccessionRepository,
                 TestStringOperationEntity::new
         );
+    }
+
+    @Bean
+    public AccessioningService<TestModel, String, String> accessioningService() {
+        return new BasicAccessioningService<>(
+                SingleAccessionGenerator.ofHashAccessionGenerator(
+                        TestModel::getValue,
+                        s -> "id-service-" + s
+                ),
+                databaseService(),
+                TestModel::getValue,
+                new SHA1HashingFunction()
+        );
+    }
+
+    @Bean
+    @Scope("cucumber-glue")
+    public AccessioningServiceTester accessioningServiceTester() {
+        return new AccessioningServiceTester(accessioningService());
     }
 
 }

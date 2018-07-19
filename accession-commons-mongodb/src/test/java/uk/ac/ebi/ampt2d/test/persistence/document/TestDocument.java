@@ -20,7 +20,7 @@ package uk.ac.ebi.ampt2d.test.persistence.document;
 import org.springframework.data.mongodb.core.mapping.Document;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.AccessionedDocument;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 @Document
 public class TestDocument extends AccessionedDocument<TestModel, String> implements TestModel {

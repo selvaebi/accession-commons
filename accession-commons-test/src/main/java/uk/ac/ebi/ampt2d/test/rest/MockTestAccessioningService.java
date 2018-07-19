@@ -17,18 +17,23 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.rest.controllers.BasicRestController;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
-@RestController
-@RequestMapping(value = "/v1/test")
-public class TestController extends BasicRestController<BasicRestModel, TestModel, String, String> {
+/**
+ * Mock service, generates accessions using in-memory data structures
+ */
+public class MockTestAccessioningService extends BasicAccessioningService<TestModel, String, String> {
 
-    public TestController(DatabaseService<TestModel, String, String> databaseService) {
-        super(new MockTestAccessioningService(databaseService), model -> new BasicRestModel(model.getValue()));
+
+    public MockTestAccessioningService(DatabaseService<TestModel, String, String> databaseService) {
+        super(
+                new MockTestAccessionGenerator(),
+                databaseService,
+                testModel -> testModel.getValue(),
+                s -> "hash-" + s
+        );
     }
 
 }

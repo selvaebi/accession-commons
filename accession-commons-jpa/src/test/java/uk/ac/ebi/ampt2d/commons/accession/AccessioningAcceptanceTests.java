@@ -15,13 +15,23 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test.persistence.document;
+package uk.ac.ebi.ampt2d.commons.accession;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.EventDocument;
-import uk.ac.ebi.ampt2d.test.models.TestModel;
+import cucumber.api.CucumberOptions;
+import cucumber.api.junit.Cucumber;
+import org.junit.runner.RunWith;
 
-@Document
-public class TestEventDocument extends EventDocument<TestModel, String, TestInactiveSubDocument> {
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {
+                "src/test/resources/features/accession.feature",
+                "src/test/resources/features/modification.feature",
+                "src/test/resources/features/merge.feature",
+                "src/test/resources/features/retrieval.feature"},
+        plugin = {
+                "pretty",
+                "html:target/cucumber"},
+        tags = {"not @ignore"})
+public class AccessioningAcceptanceTests {
 
 }

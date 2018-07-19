@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -65,4 +66,14 @@ public class AccessionVersionsWrapper<MODEL, HASH, ACCESSION> {
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getModelWrappers() {
         return data;
     }
+
+    public Optional<AccessionWrapper<MODEL, HASH, ACCESSION>> getVersion(int version) {
+        for (AccessionWrapper<MODEL, HASH, ACCESSION> wrapper : data) {
+            if (wrapper.getVersion() == version) {
+                return Optional.of(wrapper);
+            }
+        }
+        return Optional.empty();
+    }
+
 }

@@ -19,6 +19,12 @@
     <dependencies>
         <dependency>
             <groupId>uk.ac.ebi.ampt2d</groupId>
+            <artifactId>accession-commons-test</artifactId>
+            <version>0.5-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.ampt2d</groupId>
             <artifactId>accession-commons-core</artifactId>
             <version>0.5-SNAPSHOT</version>
         </dependency>
@@ -31,6 +37,23 @@
             <artifactId>nosqlunit-mongodb</artifactId>
             <version>1.0.0-rc.5</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java8</artifactId>
+            <version>2.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>2.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>2.4.0</version>
         </dependency>
     </dependencies>
 

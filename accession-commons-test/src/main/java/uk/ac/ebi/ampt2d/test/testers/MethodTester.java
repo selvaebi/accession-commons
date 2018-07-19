@@ -15,14 +15,26 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.test.testers;
 
-public interface TestModel {
+import uk.ac.ebi.ampt2d.test.utils.VoidThrowingSupplier;
 
-    String getValue();
+import java.util.Optional;
 
-    static TestModel of(String value) {
-        return () -> value;
+public class MethodTester implements IMethodTester {
+
+    private Exception exception;
+
+    public MethodTester(VoidThrowingSupplier functionCall) {
+        try {
+            functionCall.get();
+        } catch (Exception e) {
+            this.exception = e;
+        }
     }
 
+    @Override
+    public Optional<Exception> getException() {
+        return Optional.ofNullable(exception);
+    }
 }

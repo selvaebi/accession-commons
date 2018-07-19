@@ -15,14 +15,12 @@
  * limitations under the License.
  *
  */
-package uk.ac.ebi.ampt2d.test;
+package uk.ac.ebi.ampt2d.test.utils;
 
-public interface TestModel {
+@FunctionalInterface
+public interface VoidThrowingSupplier {
 
-    String getValue();
-
-    static TestModel of(String value) {
-        return () -> value;
-    }
+    void get() throws Exception;
 
 }
+

@@ -17,26 +17,18 @@
  */
 package uk.ac.ebi.ampt2d.test.rest;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.rest.controllers.BasicRestController;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
-import uk.ac.ebi.ampt2d.test.TestModel;
+@RestController
+@RequestMapping(value = "/v1/test")
+public class TestController extends BasicRestController<BasicRestModel, TestModel, String, String> {
 
-import javax.validation.constraints.NotNull;
-
-public class BasicRestModel implements TestModel {
-
-    @NotNull(message = "Please provide a value")
-    private String value;
-
-    public BasicRestModel() {
-    }
-
-    public BasicRestModel(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String getValue() {
-        return value;
+    public TestController(DatabaseService<TestModel, String, String> databaseService) {
+        super(new MockTestAccessioningService(databaseService), model -> new BasicRestModel(model.getValue()));
     }
 
 }
