@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.rest.dto.HistoryEventDTO;
@@ -42,6 +43,12 @@ public class BasicAccessionHistoryController<DTO extends MODEL, MODEL, ACCESSION
     @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
     public List<HistoryEventDTO> get(@PathVariable ACCESSION accession) throws AccessionDoesNotExistException {
         return converter.convert(service.getHistory(accession));
+    }
+
+    @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
+    public ACCESSION getAccessionMergedInto(@PathVariable ACCESSION accession) throws
+            AccessionDoesNotExistException,AccessionDeprecatedException {
+        return service.getAccessionMergedInto(accession);
     }
 
 }

@@ -17,8 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.services;
 
+import org.springframework.util.Assert;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
@@ -58,6 +61,22 @@ public class BasicHistoryService<
             throw new AccessionDoesNotExistException(accession.toString());
         }
         return generateHistory(current, operations);
+    }
+
+    @Override
+    public ACCESSION getAccessionMergedInto(ACCESSION accession) throws AccessionDoesNotExistException,
+            AccessionDeprecatedException {
+        final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
+        Assert.isTrue(current.isEmpty(), "Accession " + accession + " is active,not merged yet");
+        final IEvent<MODEL, ACCESSION> operation = inactiveAccessionService.getLastEvent(accession);
+        if (operation == null) {
+            throw new AccessionDoesNotExistException("Accession " + accession + " hasn't been created historically");
+        }
+        if (operation.getEventType().equals(EventType.DEPRECATED)) {
+            throw new AccessionDeprecatedException("Accession is Deprecated");
+        }
+
+        return operation.getMergedInto();
     }
 
     protected List<HistoryEvent<MODEL, ACCESSION>> generateHistory(
