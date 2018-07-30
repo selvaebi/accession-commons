@@ -21,6 +21,7 @@ import org.springframework.util.Assert;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
@@ -64,7 +65,7 @@ public class BasicHistoryService<
     }
 
     @Override
-    public ACCESSION getAccessionMergedInto(ACCESSION accession) throws AccessionDoesNotExistException,
+    public AccessionWrapper<MODEL, String, ACCESSION> getMergedInto(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionDeprecatedException {
         final List<ACCESSION_ENTITY> current = accessionRepository.findByAccession(accession);
         Assert.isTrue(current.isEmpty(), "Accession " + accession + " is active,not merged yet");
@@ -76,7 +77,18 @@ public class BasicHistoryService<
             throw new AccessionDeprecatedException("Accession is Deprecated");
         }
 
-        return operation.getMergedInto();
+        List<ACCESSION_ENTITY> entities = accessionRepository.findByAccession(operation.getMergedInto());
+        if (entities == null || entities.isEmpty()) {
+            return getMergedInto(operation.getMergedInto());
+        }
+        return toAccessionWrapper(entities);
+    }
+
+    private AccessionWrapper<MODEL, String, ACCESSION> toAccessionWrapper(List<ACCESSION_ENTITY> entities) {
+        ACCESSION_ENTITY maxVersionEntity = entities.stream().
+                max(Comparator.comparing(entity -> entity.getVersion())).get();
+        return new AccessionWrapper<>(maxVersionEntity.getAccession(), maxVersionEntity.getHashedMessage(),
+                maxVersionEntity.getModel(), maxVersionEntity.getVersion());
     }
 
     protected List<HistoryEvent<MODEL, ACCESSION>> generateHistory(

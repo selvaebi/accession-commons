@@ -19,6 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 
 import java.util.List;
@@ -42,6 +43,6 @@ public interface HistoryService<MODEL, ACCESSION> {
      * @throws AccessionDoesNotExistException
      * @throws AccessionDeprecatedException
      */
-    ACCESSION getAccessionMergedInto(ACCESSION accession) throws AccessionDoesNotExistException,
+    AccessionWrapper<MODEL, String, ACCESSION> getMergedInto(ACCESSION accession) throws AccessionDoesNotExistException,
             AccessionDeprecatedException;
 }
