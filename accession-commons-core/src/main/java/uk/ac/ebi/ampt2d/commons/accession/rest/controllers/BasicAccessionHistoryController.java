@@ -46,7 +46,8 @@ public class BasicAccessionHistoryController<DTO extends MODEL, MODEL, ACCESSION
         return converter.convert(service.getHistory(accession));
     }
 
-    @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/getAccessionMergedInto/{accession}", method = RequestMethod.GET,
+            produces = "application/json")
     public AccessionWrapper<MODEL, String, ACCESSION> getAccessionMergedInto(@PathVariable ACCESSION accession) throws
             AccessionDoesNotExistException, AccessionDeprecatedException {
         return service.getMergedInto(accession);
