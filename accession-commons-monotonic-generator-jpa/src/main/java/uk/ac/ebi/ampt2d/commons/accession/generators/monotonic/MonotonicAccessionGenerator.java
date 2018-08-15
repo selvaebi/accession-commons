@@ -25,6 +25,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.AccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.utils.ExponentialBackOff;
 import uk.ac.ebi.ampt2d.commons.accession.utils.exceptions.ExponentialBackOffMaxRetriesRuntimeException;
 
@@ -42,34 +43,55 @@ import java.util.Map;
 public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MODEL, Long> {
 
     private final BlockManager blockManager;
-    private String categoryId;
-    private String applicationInstanceId;
-    private ContiguousIdBlockService blockService;
+    private final String categoryId;
+    private final String applicationInstanceId;
+    private final ContiguousIdBlockService blockService;
 
     public MonotonicAccessionGenerator(String categoryId,
                                        String applicationInstanceId,
-                                       ContiguousIdBlockService contiguousIdBlockService) {
-        this.categoryId = categoryId;
-        this.applicationInstanceId = applicationInstanceId;
-        this.blockService = contiguousIdBlockService;
-        this.blockManager = new BlockManager();
-        checkBlockInitializations();
-        loadIncompleteBlocks();
+                                       ContiguousIdBlockService contiguousIdBlockService,
+                                       MonotonicDatabaseService<MODEL, ?> databaseService) {
+        this(categoryId, applicationInstanceId, contiguousIdBlockService);
+        recoverState(databaseService.getAccessionsInRanges(getAvailableRanges()));
     }
 
-    private void checkBlockInitializations() {
-        if (blockService.getBlockParameters(categoryId) == null) {
-            throw new BlockInitializationException("BlockParameters not initialized for the category");
+    public MonotonicAccessionGenerator(String categoryId,
+                                       String applicationInstanceId,
+                                       ContiguousIdBlockService contiguousIdBlockService,
+                                       long[] initializedAccessions) {
+        this(categoryId, applicationInstanceId, contiguousIdBlockService);
+        if (initializedAccessions != null) {
+            recoverState(initializedAccessions);
         }
     }
 
-    private void loadIncompleteBlocks() {
+    //Package protected for testing without initialized Accessions
+    MonotonicAccessionGenerator(String categoryId,
+                                String applicationInstanceId,
+                                ContiguousIdBlockService contiguousIdBlockService) {
+        this.categoryId = categoryId;
+        this.applicationInstanceId = applicationInstanceId;
+        this.blockService = contiguousIdBlockService;
+        this.blockManager = initializeBlockManager(blockService, categoryId, applicationInstanceId);
+    }
+
+    private static BlockManager initializeBlockManager(ContiguousIdBlockService blockService, String categoryId,
+                                                       String applicationInstanceId) {
+        assertBlockParametersAreInitialized(blockService, categoryId);
+        BlockManager blockManager = new BlockManager();
         List<ContiguousIdBlock> uncompletedBlocks = blockService
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId,
                         applicationInstanceId);
         //Insert as available ranges
         for (ContiguousIdBlock block : uncompletedBlocks) {
             blockManager.addBlock(block);
+        }
+        return blockManager;
+    }
+
+    private static void assertBlockParametersAreInitialized(ContiguousIdBlockService blockService, String categoryId) {
+        if (blockService.getBlockParameters(categoryId) == null) {
+            throw new BlockInitializationException("BlockParameters not initialized for the category");
         }
     }
 
@@ -80,7 +102,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
      * @param committedElements
      * @throws AccessionIsNotPendingException
      */
-    public synchronized void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
+    private void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         blockManager.recoverState(committedElements);
     }
 

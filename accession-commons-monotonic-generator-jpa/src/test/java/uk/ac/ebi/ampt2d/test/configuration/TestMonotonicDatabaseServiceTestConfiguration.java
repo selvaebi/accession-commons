@@ -58,7 +58,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     private TestLongHistoryRepository historyRepository;
 
     @Bean
-    public TestMonotonicDatabaseService getService() {
+    public TestMonotonicDatabaseService getDatabaseService() {
         return new TestMonotonicDatabaseService(
                 repository,
                 TestMonotonicEntity::new,
@@ -71,7 +71,8 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
         return new MonotonicAccessionGenerator<>(
                 CATEGORY_ID,
                 INSTANCE_ID,
-                contiguousIdBlockService);
+                contiguousIdBlockService,
+                getDatabaseService());
     }
 
     @Bean

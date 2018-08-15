@@ -29,7 +29,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
-import uk.ac.ebi.ampt2d.commons.accession.service.BasicMonotonicAccessioningService;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
@@ -110,9 +109,9 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         return IntStream.range(startRange, endRange).mapToObj(i -> TestModel.of("Test-" + i)).collect(Collectors.toList());
     }
 
-    private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService(String categoryId,
-                                                                                        String instanceId) {
-        return new BasicMonotonicAccessioningService<>(
+    private AccessioningService<TestModel, String, Long> getAccessioningService(String categoryId,
+                                                                                String instanceId) {
+        return new BasicAccessioningService<>(
                 getGenerator(categoryId, instanceId),
                 databaseService,
                 TestModel::getValue,
@@ -121,7 +120,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     }
 
     private MonotonicAccessionGenerator<TestModel> getGenerator(String categoryId, String instanceId) {
-        return new MonotonicAccessionGenerator(categoryId, instanceId, contiguousIdBlockService);
+        return new MonotonicAccessionGenerator(categoryId, instanceId, contiguousIdBlockService, databaseService);
     }
 }
 
