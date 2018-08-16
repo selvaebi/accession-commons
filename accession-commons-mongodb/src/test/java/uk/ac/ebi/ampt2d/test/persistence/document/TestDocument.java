@@ -18,11 +18,12 @@
 package uk.ac.ebi.ampt2d.test.persistence.document;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.AccessionedDocument;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 @Document
-public class TestDocument extends AccessionedDocument<String> implements TestModel {
+public class TestDocument extends AccessionedDocument<TestModel, String> implements TestModel {
 
     private String value;
 
@@ -38,6 +39,10 @@ public class TestDocument extends AccessionedDocument<String> implements TestMod
     public TestDocument(String value, String hashedMessage, String accession, int version) {
         super(hashedMessage, accession, version);
         this.value = value;
+    }
+
+    public TestDocument(AccessionWrapper<TestModel, String, String> wrapper) {
+        this(wrapper.getData().getValue(), wrapper.getHash(), wrapper.getAccession(), wrapper.getVersion());
     }
 
     @Override
@@ -57,4 +62,8 @@ public class TestDocument extends AccessionedDocument<String> implements TestMod
         return new TestDocument("test-" + value, "h" + value, "a" + accessionNum);
     }
 
+    @Override
+    public TestModel getModel() {
+        return this;
+    }
 }

@@ -18,11 +18,12 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.InactiveAccessionEntity;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 import javax.persistence.Entity;
 
 @Entity
-public class TestMonotonicInactiveAccessionEntity extends InactiveAccessionEntity<Long> {
+public class TestMonotonicInactiveAccessionEntity extends InactiveAccessionEntity<TestModel, Long> implements TestModel {
 
     private String something;
 
@@ -33,5 +34,15 @@ public class TestMonotonicInactiveAccessionEntity extends InactiveAccessionEntit
     public TestMonotonicInactiveAccessionEntity(TestMonotonicEntity testEntity) {
         super(testEntity);
         this.something = testEntity.getValue();
+    }
+
+    @Override
+    public TestModel getModel() {
+        return this;
+    }
+
+    @Override
+    public String getValue() {
+        return something;
     }
 }

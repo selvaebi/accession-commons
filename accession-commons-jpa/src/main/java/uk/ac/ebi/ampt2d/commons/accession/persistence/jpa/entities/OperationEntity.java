@@ -19,8 +19,7 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import uk.ac.ebi.ampt2d.commons.accession.core.OperationType;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IOperation;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
 
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -40,21 +39,21 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION> {
+public abstract class OperationEntity<ACCESSION> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
-    private ACCESSION accessionIdOrigin;
+    private ACCESSION accession;
 
     @Column
-    private ACCESSION accessionIdDestination;
+    private ACCESSION mergeInto;
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private OperationType operationType;
+    private EventType eventType;
 
     @Column(nullable = false, length = 2000)
     private String reason;
@@ -67,35 +66,30 @@ public abstract class OperationEntity<ACCESSION> implements IOperation<ACCESSION
         return id;
     }
 
-    @Override
-    public ACCESSION getAccessionIdOrigin() {
-        return accessionIdOrigin;
+    public ACCESSION getAccession() {
+        return accession;
     }
 
-    @Override
-    public ACCESSION getAccessionIdDestination() {
-        return accessionIdDestination;
+    public ACCESSION getMergeInto() {
+        return mergeInto;
     }
 
-    @Override
-    public OperationType getOperationType() {
-        return operationType;
+    public EventType getEventType() {
+        return eventType;
     }
 
-    @Override
     public String getReason() {
         return reason;
     }
 
-    @Override
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
 
-    public void fill(OperationType type, ACCESSION origin, ACCESSION destination, String reason) {
-        this.operationType = type;
-        this.accessionIdOrigin = origin;
-        this.accessionIdDestination = destination;
+    public void fill(EventType type, ACCESSION origin, ACCESSION destination, String reason) {
+        this.eventType = type;
+        this.accession = origin;
+        this.mergeInto = destination;
         this.reason = reason;
     }
 }

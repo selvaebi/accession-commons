@@ -18,13 +18,13 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.InactiveAccessionEntity;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
 @Entity
-public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String> implements TestModel {
+public class TestInactiveAccessionEntity extends InactiveAccessionEntity<TestModel, String> implements TestModel {
 
     private String something;
 
@@ -42,11 +42,6 @@ public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String>
     }
 
     @Override
-    public String getAccession() {
-        return null;
-    }
-
-    @Override
     public String getHashedMessage() {
         return null;
     }
@@ -59,5 +54,10 @@ public class TestInactiveAccessionEntity extends InactiveAccessionEntity<String>
     @Override
     public int getVersion() {
         return 0;
+    }
+
+    @Override
+    public TestModel getModel() {
+        return this;
     }
 }

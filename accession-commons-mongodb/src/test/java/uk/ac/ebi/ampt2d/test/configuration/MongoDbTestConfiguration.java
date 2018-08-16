@@ -24,9 +24,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
+import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicHistoryService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestDocument;
+import uk.ac.ebi.ampt2d.test.persistence.document.TestEventDocument;
 import uk.ac.ebi.ampt2d.test.persistence.document.TestInactiveSubDocument;
-import uk.ac.ebi.ampt2d.test.persistence.document.TestOperationDocument;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestOperationRepository;
+import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
 
 @Configuration
@@ -38,6 +49,9 @@ import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionSer
 public class MongoDbTestConfiguration {
 
     @Autowired
+    private TestRepository testRepository;
+
+    @Autowired
     private TestOperationRepository testOperationRepository;
 
     @Bean
@@ -45,7 +59,31 @@ public class MongoDbTestConfiguration {
         return new TestMongoDbInactiveAccessionService(
                 testOperationRepository,
                 TestInactiveSubDocument::new,
-                TestOperationDocument::new
+                TestEventDocument::new
+        );
+    }
+
+    @Bean
+    public DatabaseService<TestModel, String, String> testMongoDbService() {
+        return new BasicSpringDataRepositoryDatabaseService<>(
+                testRepository,
+                TestDocument::new,
+                testMongoDbInactiveAccessionService()
+        );
+    }
+
+    @Bean
+    public HistoryService<TestModel, String> testMongoDbHistoryService() {
+        return new BasicHistoryService<>(testRepository, testMongoDbInactiveAccessionService());
+    }
+
+    @Bean
+    public AccessioningService<TestModel, String, String> testMongoDbAccessioningService() {
+        return new BasicAccessioningService<>(
+                new SingleAccessionGenerator<>(o -> "id-" + o.getValue()),
+                testMongoDbService(),
+                testModel -> testModel.getValue(),
+                new SHA1HashingFunction()
         );
     }
 

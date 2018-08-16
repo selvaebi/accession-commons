@@ -25,11 +25,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.service.BasicMonotonicAccessioningService;
-import uk.ac.ebi.ampt2d.test.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
@@ -159,7 +160,7 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(3, accessions2.size());
 
         TestTransaction.start();
-        for(AccessionWrapper<TestModel, String, Long> accession: accessions2){
+        for (AccessionWrapper<TestModel, String, Long> accession: accessions2) {
             repository.delete(accession.getHash());
         }
         TestTransaction.flagForCommit();

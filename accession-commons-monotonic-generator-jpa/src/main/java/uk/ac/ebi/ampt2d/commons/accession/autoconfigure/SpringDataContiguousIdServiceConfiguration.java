@@ -24,10 +24,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockParameters;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Basic configuration to inject a {@link ContiguousIdBlockService} and configure the appropriate spring data jpa
@@ -40,15 +43,16 @@ import java.util.HashMap;
 public class SpringDataContiguousIdServiceConfiguration {
 
     @Bean
-    @ConfigurationProperties(prefix = "accessioning.monotonic.init")
-    public HashMap<String, String> contiguousBlockInitializations() {
+    @ConfigurationProperties(prefix = "accessioning.monotonic")
+    public HashMap<String, HashMap<String, String>> contiguousBlockInitializations() {
         return new HashMap<>();
     }
 
     @Bean
     public ContiguousIdBlockService contiguousIdBlockService(@Autowired ContiguousIdBlockRepository
                                                                      contiguousIdBlockRepository) {
-        return new ContiguousIdBlockService(contiguousIdBlockRepository, contiguousBlockInitializations());
+        return new ContiguousIdBlockService(contiguousIdBlockRepository, contiguousBlockInitializations().entrySet()
+                .stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new BlockParameters(entry.getValue()))));
     }
 
 }

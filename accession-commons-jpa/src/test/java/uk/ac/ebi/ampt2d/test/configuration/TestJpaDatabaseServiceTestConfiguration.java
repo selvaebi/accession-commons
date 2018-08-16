@@ -19,6 +19,9 @@ package uk.ac.ebi.ampt2d.test.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,13 +31,13 @@ import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
@@ -50,6 +53,9 @@ import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 @EnableJpaRepositories(basePackages = {"uk.ac.ebi.ampt2d.test.persistence",
         "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories"
 })
+@AutoConfigureCache
+@AutoConfigureDataJpa
+@AutoConfigureTestEntityManager
 public class TestJpaDatabaseServiceTestConfiguration {
 
     @Autowired
@@ -66,13 +72,12 @@ public class TestJpaDatabaseServiceTestConfiguration {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
                 TestEntity::new,
-                TestModel.class::cast,
                 inactiveService()
         );
     }
 
     @Bean
-    public InactiveAccessionService<String, TestEntity> inactiveService() {
+    public InactiveAccessionService<TestModel, String, TestEntity> inactiveService() {
         return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
                 TestInactiveAccessionEntity::new,

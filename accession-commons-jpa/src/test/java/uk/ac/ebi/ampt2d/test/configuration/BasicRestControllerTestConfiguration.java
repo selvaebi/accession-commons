@@ -29,13 +29,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import uk.ac.ebi.ampt2d.commons.accession.autoconfigure.EnableBasicRestControllerAdvice;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.BasicSpringDataRepositoryDatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestInactiveAccessionRepository;
@@ -78,13 +78,12 @@ public class BasicRestControllerTestConfiguration {
         return new BasicSpringDataRepositoryDatabaseService<>(
                 repository,
                 TestEntity::new,
-                TestModel.class::cast,
                 inactiveService()
         );
     }
 
     @Bean
-    public InactiveAccessionService<String, TestEntity> inactiveService() {
+    public InactiveAccessionService<TestModel, String, TestEntity> inactiveService() {
         return new BasicJpaInactiveAccessionService<>(
                 historyRepository,
                 TestInactiveAccessionEntity::new,

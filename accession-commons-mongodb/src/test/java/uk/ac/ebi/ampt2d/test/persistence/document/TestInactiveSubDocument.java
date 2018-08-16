@@ -18,8 +18,9 @@
 package uk.ac.ebi.ampt2d.test.persistence.document;
 
 import uk.ac.ebi.ampt2d.commons.accession.persistence.mongodb.document.InactiveSubDocument;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 
-public class TestInactiveSubDocument extends InactiveSubDocument<String> {
+public class TestInactiveSubDocument extends InactiveSubDocument<TestModel, String> implements TestModel {
 
     private String value;
 
@@ -32,8 +33,13 @@ public class TestInactiveSubDocument extends InactiveSubDocument<String> {
         this.value = testDocument.getValue();
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
+    public TestModel getModel() {
+        return this;
+    }
 }

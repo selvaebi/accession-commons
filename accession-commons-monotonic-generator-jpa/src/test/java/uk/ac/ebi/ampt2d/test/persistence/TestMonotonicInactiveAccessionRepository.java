@@ -18,9 +18,9 @@
 package uk.ac.ebi.ampt2d.test.persistence;
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.InactiveAccessionRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.InactiveAccessionRepository;
 
 @Repository
-public interface TestMonotonicInactiveAccessionRepository
-        extends InactiveAccessionRepository<Long, TestMonotonicInactiveAccessionEntity> {
+public interface TestMonotonicInactiveAccessionRepository extends
+        InactiveAccessionRepository<TestMonotonicInactiveAccessionEntity> {
 }

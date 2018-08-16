@@ -17,7 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 
 import java.util.List;
 import java.util.Set;

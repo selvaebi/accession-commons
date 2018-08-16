@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
@@ -43,10 +43,8 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = {MonotonicAccessionGeneratorTestConfiguration.class})
 public class DecoratedAccessionGeneratorTest {
 
-    private static final int BLOCK_SIZE = 1000;
-    private static final String CATEGORY_ID = "DECORATOR_TEST";
+    private static final String CATEGORY_ID = "decorator-monotonic-test";
     private static final String INSTANCE_ID = "decorator-inst-01";
-
     @Autowired
     private ContiguousIdBlockRepository repository;
 
@@ -61,7 +59,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
-                .buildPrefixSuffixAccessionGenerator(getGenerator(), "prefix-", "-suffix", Long::parseLong);
+                .buildPrefixSuffixAccessionGenerator(getGenerator(CATEGORY_ID, INSTANCE_ID), "prefix-", "-suffix", Long::parseLong);
 
         List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
@@ -87,7 +85,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
-                .buildPrefixSuffixAccessionGenerator(getGenerator(), "prefix-", null, Long::parseLong);
+                .buildPrefixSuffixAccessionGenerator(getGenerator(CATEGORY_ID, INSTANCE_ID), "prefix-", null, Long::parseLong);
 
         List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
@@ -113,7 +111,7 @@ public class DecoratedAccessionGeneratorTest {
         objects.put("hash3", "string3");
 
         DecoratedAccessionGenerator<String, Long> generator = DecoratedAccessionGenerator
-                .buildPrefixSuffixAccessionGenerator(getGenerator(), null, "-suffix", Long::parseLong);
+                .buildPrefixSuffixAccessionGenerator(getGenerator(CATEGORY_ID, INSTANCE_ID), null, "-suffix", Long::parseLong);
 
         List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
         assertEquals(3, generated.size());
@@ -131,11 +129,34 @@ public class DecoratedAccessionGeneratorTest {
                 CATEGORY_ID, INSTANCE_ID).getLastCommitted());
     }
 
-    private MonotonicAccessionGenerator<String> getGenerator() throws Exception {
+    @Test
+    public void testAlternateRangesWithPrefixes() throws Exception {
+        String categoryId = "eva";
+        Map<String, String> objects = new LinkedHashMap<>();
+        objects.put("hash1", "service-test-1");
+        objects.put("hash2", "service-test-2");
+        objects.put("hash3", "service-test-3");
+        objects.put("hash4", "service-test-4");
+        objects.put("hash5", "service-test-5");
+        objects.put("hash6", "service-test-6");
+        DecoratedAccessionGenerator<String, Long> generator =
+                DecoratedAccessionGenerator.buildPrefixSuffixAccessionGenerator
+                        (getGenerator(categoryId, INSTANCE_ID), "RS", null, Long::parseLong);
+        List<AccessionWrapper<String, String, String>> generated = generator.generateAccessions(objects);
+        assertEquals(6, generated.size());
+        assertEquals("RS1", generated.get(0).getAccession());
+        assertEquals("RS2", generated.get(1).getAccession());
+        assertEquals("RS3", generated.get(2).getAccession());
+        assertEquals("RS4", generated.get(3).getAccession());
+        assertEquals("RS5", generated.get(4).getAccession());
+        assertEquals("RS11", generated.get(5).getAccession());
+    }
+
+    private MonotonicAccessionGenerator<String> getGenerator(String categoryId, String instanceId) throws Exception {
         assertEquals(0, repository.count());
 
-        MonotonicAccessionGenerator<String> generator = new MonotonicAccessionGenerator<>(BLOCK_SIZE, CATEGORY_ID,
-                INSTANCE_ID, service);
+        MonotonicAccessionGenerator<String> generator =
+                new MonotonicAccessionGenerator<>(categoryId, instanceId, service);
         return generator;
     }
 

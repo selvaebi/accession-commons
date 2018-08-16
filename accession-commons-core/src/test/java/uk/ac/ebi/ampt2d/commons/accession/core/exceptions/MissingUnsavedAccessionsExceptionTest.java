@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 import org.junit.Test;
-import uk.ac.ebi.ampt2d.commons.accession.core.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 
 import java.util.Arrays;
 import java.util.List;

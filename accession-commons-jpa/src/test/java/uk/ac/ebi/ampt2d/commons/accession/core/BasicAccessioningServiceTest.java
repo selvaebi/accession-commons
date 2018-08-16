@@ -29,8 +29,10 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedExc
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
-import uk.ac.ebi.ampt2d.test.TestModel;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.test.configuration.TestJpaDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 
 import java.util.Arrays;

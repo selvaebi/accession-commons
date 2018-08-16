@@ -73,8 +73,8 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         this.lastCommitted = firstValue - 1;
     }
 
-    public ContiguousIdBlock nextBlock(String instanceId, long size) {
-        return new ContiguousIdBlock(categoryId, instanceId, lastValue + 1, size);
+    public ContiguousIdBlock nextBlock(String instanceId, long size, long nextBlockInterval) {
+        return new ContiguousIdBlock(categoryId, instanceId, lastValue + 1 + nextBlockInterval, size);
     }
 
     public long getId() {

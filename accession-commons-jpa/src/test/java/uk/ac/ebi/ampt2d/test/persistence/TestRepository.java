@@ -19,7 +19,7 @@ package uk.ac.ebi.ampt2d.test.persistence;
 
 
 import org.springframework.stereotype.Repository;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
 
 @Repository
 public interface TestRepository extends IAccessionedObjectRepository<TestEntity, String> {

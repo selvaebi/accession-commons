@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>accession-commons-mongodb</artifactId>
-    <version>0.4.1</version>
+    <version>0.5</version>
     <packaging>jar</packaging>
 
     <parent>
         <artifactId>accession-commons</artifactId>
         <groupId>uk.ac.ebi.ampt2d</groupId>
-        <version>0.4.1</version>
+        <version>0.5</version>
     </parent>
 
     <properties>
@@ -19,8 +19,14 @@
     <dependencies>
         <dependency>
             <groupId>uk.ac.ebi.ampt2d</groupId>
+            <artifactId>accession-commons-test</artifactId>
+            <version>0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.ampt2d</groupId>
             <artifactId>accession-commons-core</artifactId>
-            <version>0.4.1</version>
+            <version>0.5</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -31,6 +37,23 @@
             <artifactId>nosqlunit-mongodb</artifactId>
             <version>1.0.0-rc.5</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java8</artifactId>
+            <version>2.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>2.4.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>2.4.0</version>
         </dependency>
     </dependencies>
 

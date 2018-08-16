@@ -24,8 +24,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
-import uk.ac.ebi.ampt2d.commons.accession.core.SaveResponse;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.entities.AccessionedEntity;
 
 import javax.persistence.EntityManager;
@@ -35,7 +35,7 @@ import java.util.Stack;
 
 public abstract class BasicJpaAccessionedObjectCustomRepositoryImpl<
         ACCESSION extends Serializable,
-        ENTITY extends AccessionedEntity<ACCESSION>>
+        ENTITY extends AccessionedEntity<?, ACCESSION>>
         implements IAccessionedObjectCustomRepository<ACCESSION, ENTITY> {
 
     private class Partition {
