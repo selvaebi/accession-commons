@@ -122,4 +122,11 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
                 s -> parseFunction.apply(s.substring(prefix.length())));
     }
 
+    public static <MODEL, HASH> DecoratedAccessioningService<MODEL, HASH, Long, String>
+    buildPrefixPaddedLongAccessionService(AccessioningService<MODEL, HASH, Long> service, String prefix,
+                                          String padFormat, Function<String, Long> parseFunction) {
+        return new DecoratedAccessioningService<>(service, accession -> prefix + String.format(padFormat, accession),
+                s -> parseFunction.apply(s.substring(prefix.length())));
+    }
+
 }
