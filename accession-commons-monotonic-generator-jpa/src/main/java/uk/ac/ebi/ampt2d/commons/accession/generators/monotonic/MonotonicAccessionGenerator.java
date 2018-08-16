@@ -91,7 +91,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
 
     private static void assertBlockParametersAreInitialized(ContiguousIdBlockService blockService, String categoryId) {
         if (blockService.getBlockParameters(categoryId) == null) {
-            throw new BlockInitializationException("BlockParameters not initialized for the category");
+            throw new BlockInitializationException("BlockParameters not initialized for category '" + categoryId + "'");
         }
     }
 
