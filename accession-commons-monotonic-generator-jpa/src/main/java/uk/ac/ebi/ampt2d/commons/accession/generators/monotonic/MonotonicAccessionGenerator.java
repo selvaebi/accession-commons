@@ -50,7 +50,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
     public MonotonicAccessionGenerator(String categoryId,
                                        String applicationInstanceId,
                                        ContiguousIdBlockService contiguousIdBlockService,
-                                       MonotonicDatabaseService<MODEL, ?> databaseService) {
+                                       MonotonicDatabaseService databaseService) {
         this(categoryId, applicationInstanceId, contiguousIdBlockService);
         recoverState(databaseService.getAccessionsInRanges(getAvailableRanges()));
     }
