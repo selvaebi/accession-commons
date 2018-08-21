@@ -26,6 +26,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     }
 
     private List<DB_ACCESSION> parse(List<ACCESSION> accessions) {
-        return accessions.stream().map(parsingFunction).collect(Collectors.toList());
+        return accessions.stream().map(parsingFunction).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     @Override
@@ -80,8 +81,13 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
         return decorate(service.getByAccessionAndVersion(parse(accession), version));
     }
 
-    private DB_ACCESSION parse(ACCESSION accession) {
-        return parsingFunction.apply(accession);
+    private DB_ACCESSION parse(ACCESSION accession) throws AccessionDoesNotExistException {
+        DB_ACCESSION dbAccession = parsingFunction.apply(accession);
+        if(dbAccession ==null){
+            throw new AccessionDoesNotExistException(accession);
+        }
+        return dbAccession;
+
     }
 
     @Override
@@ -119,7 +125,12 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     buildPrefixAccessionService(AccessioningService<MODEL, HASH, DB_ACCESSION> service, String prefix,
                                 Function<String, DB_ACCESSION> parseFunction) {
         return new DecoratedAccessioningService<>(service, accession -> prefix + accession,
-                s -> parseFunction.apply(s.substring(prefix.length())));
+                s -> {
+                    if (!Objects.equals(s.substring(0, prefix.length()), prefix)) {
+                        return null;
+                    }
+                    return parseFunction.apply(s.substring(prefix.length()));
+                });
     }
 
     public static <MODEL, HASH> DecoratedAccessioningService<MODEL, HASH, Long, String>

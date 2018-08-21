@@ -21,7 +21,8 @@ package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
  * Exception thrown when updating a existing accessioned element if the accession is unknown.
  */
 public class AccessionDoesNotExistException extends Exception {
-    public AccessionDoesNotExistException(String accession) {
+
+    public <ACCESSION> AccessionDoesNotExistException(ACCESSION accession) {
         super("Accession could not be found '" + accession + "'");
     }
 
