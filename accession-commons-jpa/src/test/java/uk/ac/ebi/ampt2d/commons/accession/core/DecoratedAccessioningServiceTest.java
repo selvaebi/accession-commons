@@ -93,6 +93,13 @@ public class DecoratedAccessioningServiceTest {
         getPrefixedService().getByAccessionAndVersion("service-service-test-1", 1);
     }
 
+    @Test(expected = AccessionDoesNotExistException.class)
+    public void assertGetByAccessionWrongPrefixShort() throws AccessionCouldNotBeGeneratedException,
+            AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
+        assertGetOrCreate();
+        getPrefixedService().getByAccessionAndVersion("s", 1);
+    }
+
     @Test
     public void assertGetByAccessionAndVersion() throws AccessionCouldNotBeGeneratedException, AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException {

@@ -57,7 +57,7 @@ public class BlockParameters {
             try {
                 Long value = Long.parseLong(variables.get(variable));
                 if (value < minValue) {
-                    errorBuffer.append(" Variable '" + variable + "' value should be greater or equal than '" + minValue + "'");
+                    errorBuffer.append(" Variable '" + variable + "' value should be greater than or equal to '" + minValue + "'");
                     return -1;
                 }
                 return value;

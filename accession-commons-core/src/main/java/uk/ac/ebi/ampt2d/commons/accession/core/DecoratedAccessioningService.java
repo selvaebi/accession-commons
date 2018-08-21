@@ -83,7 +83,7 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
 
     private DB_ACCESSION parse(ACCESSION accession) throws AccessionDoesNotExistException {
         DB_ACCESSION dbAccession = parsingFunction.apply(accession);
-        if(dbAccession ==null){
+        if (dbAccession == null) {
             throw new AccessionDoesNotExistException(accession);
         }
         return dbAccession;
@@ -126,7 +126,7 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
                                 Function<String, DB_ACCESSION> parseFunction) {
         return new DecoratedAccessioningService<>(service, accession -> prefix + accession,
                 s -> {
-                    if (!Objects.equals(s.substring(0, prefix.length()), prefix)) {
+                    if (s.length() <= prefix.length() || !Objects.equals(s.substring(0, prefix.length()), prefix)) {
                         return null;
                     }
                     return parseFunction.apply(s.substring(prefix.length()));
@@ -137,7 +137,12 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     buildPrefixPaddedLongAccessionService(AccessioningService<MODEL, HASH, Long> service, String prefix,
                                           String padFormat, Function<String, Long> parseFunction) {
         return new DecoratedAccessioningService<>(service, accession -> prefix + String.format(padFormat, accession),
-                s -> parseFunction.apply(s.substring(prefix.length())));
+                s -> {
+                    if (s.length() <= prefix.length() || !Objects.equals(s.substring(0, prefix.length()), prefix)) {
+                        return null;
+                    }
+                    return parseFunction.apply(s.substring(prefix.length()));
+                });
     }
 
 }
