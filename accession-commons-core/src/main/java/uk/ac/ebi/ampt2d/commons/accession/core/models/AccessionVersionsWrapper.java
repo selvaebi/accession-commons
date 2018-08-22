@@ -40,14 +40,6 @@ public class AccessionVersionsWrapper<MODEL, HASH, ACCESSION> {
      * @param models
      * @Throws IllegalArgumentException if model list is null, empty or multiple accessions are find on the models
      */
-    public AccessionVersionsWrapper(AccessionWrapper<MODEL, HASH, ACCESSION>... models) {
-        this(Arrays.asList(models));
-    }
-
-    /**
-     * @param models
-     * @Throws IllegalArgumentException if model list is null, empty or multiple accessions are find on the models
-     */
     public AccessionVersionsWrapper(List<AccessionWrapper<MODEL, HASH, ACCESSION>> models) {
         Assert.notEmpty(models, "One or more data objects required.");
         Set<ACCESSION> accessions = models.stream().map(AccessionWrapper::getAccession).collect(Collectors.toSet());

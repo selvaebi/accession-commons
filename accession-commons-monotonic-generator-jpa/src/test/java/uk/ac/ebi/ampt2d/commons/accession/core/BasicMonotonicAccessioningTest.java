@@ -28,7 +28,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGen
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.service.BasicMonotonicAccessioningService;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
@@ -55,7 +54,7 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testCreateAccessions() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -66,8 +65,8 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(3, accessions.size());
     }
 
-    private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService() {
-        return new BasicMonotonicAccessioningService<>(
+    private AccessioningService<TestModel, String, Long> getAccessioningService() {
+        return new BasicAccessioningService<>(
                 monotonicAccessionGenerator,
                 databaseService,
                 TestModel::getValue,
@@ -78,7 +77,7 @@ public class BasicMonotonicAccessioningTest {
     @Test
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
 
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -92,7 +91,7 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.get(
                 Arrays.asList(
@@ -105,7 +104,7 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testGetWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -126,7 +125,7 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -142,7 +141,7 @@ public class BasicMonotonicAccessioningTest {
 
     @Test
     public void testGetOrCreateWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
         TestTransaction.flagForCommit();
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
                 Arrays.asList(

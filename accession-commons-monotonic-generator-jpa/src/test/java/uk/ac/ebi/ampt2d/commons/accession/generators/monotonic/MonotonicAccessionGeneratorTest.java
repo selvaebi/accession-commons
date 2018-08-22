@@ -295,9 +295,7 @@ public class MonotonicAccessionGeneratorTest {
         // Now assume that the db layer has stored some elements and that the application has died and restarted.
 
         MonotonicAccessionGenerator generatorRecovering =
-                new MonotonicAccessionGenerator(CATEGORY_ID, INSTANCE_ID, service);
-
-        generatorRecovering.recoverState(new long[]{2, 3, 5});
+                new MonotonicAccessionGenerator(CATEGORY_ID, INSTANCE_ID, service, new long[]{2, 3, 5});
         ContiguousIdBlock block =
                 repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(CATEGORY_ID, INSTANCE_ID);
         assertEquals(-1, block.getLastCommitted());
@@ -314,9 +312,7 @@ public class MonotonicAccessionGeneratorTest {
         // Now assume that the db layer has stored some elements and that the application has died and restarted.
 
         MonotonicAccessionGenerator generatorRecovering = new MonotonicAccessionGenerator(
-                CATEGORY_ID, INSTANCE_ID, service);
-
-        generatorRecovering.recoverState(new long[]{2, 3, 5});
+                CATEGORY_ID, INSTANCE_ID, service, new long[]{2, 3, 5});
         ContiguousIdBlock block =
                 repository.findFirstByCategoryIdAndApplicationInstanceIdOrderByLastValueDesc(CATEGORY_ID, INSTANCE_ID);
         assertEquals(3, block.getLastCommitted());
@@ -416,8 +412,7 @@ public class MonotonicAccessionGeneratorTest {
         long[] accessions1 = generator.generateAccessions(NUM_OF_ACCESSIONS);
         // Now assume that the db layer has stored some elements and that the application has died and restarted.
         MonotonicAccessionGenerator generatorRecovering =
-                new MonotonicAccessionGenerator(CATEGORY_ID_2, INSTANCE_ID, service);
-        generatorRecovering.recoverState(new long[]{2, 3});
+                new MonotonicAccessionGenerator(CATEGORY_ID_2, INSTANCE_ID, service, new long[]{2, 3});
         long[] accessions2 = generatorRecovering.generateAccessions(NUM_OF_ACCESSIONS);
         assertEquals(1, accessions2[0]);
         assertEquals(4, accessions2[1]);

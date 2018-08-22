@@ -22,16 +22,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.service.BasicMonotonicAccessioningService;
-import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
@@ -58,7 +56,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testAccessionElements() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -71,8 +69,8 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
         accessions.stream().forEach(entry -> assertTrue(entry.getAccession() >= 100L));
     }
 
-    private BasicMonotonicAccessioningService<TestModel, String> getAccessioningService() {
-        return new BasicMonotonicAccessioningService<>(
+    private AccessioningService<TestModel, String, Long> getAccessioningService() {
+        return new BasicAccessioningService<>(
                 monotonicAccessionGenerator,
                 databaseService,
                 TestModel::getValue,
@@ -82,7 +80,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testGetOrCreateFiltersRepeated() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -97,7 +95,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
 
     @Test
     public void testGetAccessions() throws AccessionCouldNotBeGeneratedException {
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.get(Arrays.asList(
                 TestModel.of("service-test-1"),
@@ -115,7 +113,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
                 1,
                 "service-test-3"));
 
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.get(Arrays.asList(
                 TestModel.of("service-test-1"),
@@ -135,7 +133,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
                 "service-test-3"));
         TestTransaction.end();
 
-        BasicAccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
+        AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions = accessioningService.getOrCreate(
                 Arrays.asList(
@@ -148,7 +146,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
                 assertTrue(entry.getAccession() == 0L || entry.getAccession() >= 100L));
 
         TestTransaction.start();
-        for(AccessionWrapper<TestModel, String, Long> accession: accessions){
+        for (AccessionWrapper<TestModel, String, Long> accession : accessions) {
             repository.delete(accession.getHash());
         }
         TestTransaction.flagForCommit();

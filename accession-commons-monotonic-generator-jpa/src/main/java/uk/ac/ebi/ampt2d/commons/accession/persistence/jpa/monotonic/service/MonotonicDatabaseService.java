@@ -18,17 +18,13 @@
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service;
 
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
-import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
 
 import java.util.Collection;
 
 /**
- * Extension of the {@link DatabaseService} that allows getting all the existing accessions in a range of values.
- *
- * @param <MODEL>
- * @param <HASH>
+ * Extension for a database service that allows getting the existing accessions in a range of values.
  */
-public interface MonotonicDatabaseService<MODEL, HASH> extends DatabaseService<MODEL, HASH, Long> {
+public interface MonotonicDatabaseService {
 
     long[] getAccessionsInRanges(Collection<MonotonicRange> ranges);
 

@@ -29,32 +29,32 @@ public class BlockParametersTest {
     @Test(expected = BlockInitializationException.class)
     public void emptyBlockParameters() {
         Map<String, String> blockInitializations = null;
-        blockParameters = new BlockParameters(blockInitializations);
+        blockParameters = new BlockParameters("test", blockInitializations);
     }
 
     @Test(expected = BlockInitializationException.class)
     public void invalidBlockSize() {
-        blockParameters = new BlockParameters(getBlockInitialization("0", "0", "0"));
+        blockParameters = new BlockParameters("test", getBlockInitialization("0", "0", "0"));
     }
 
     @Test(expected = BlockInitializationException.class)
     public void invalidBlockStartValue() {
-        blockParameters = new BlockParameters(getBlockInitialization("1000", "-1", "0"));
+        blockParameters = new BlockParameters("test", getBlockInitialization("1000", "-1", "0"));
     }
 
     @Test(expected = BlockInitializationException.class)
     public void invalidNextBlockInterval() {
-        blockParameters = new BlockParameters(getBlockInitialization("1000", "0", "1a"));
+        blockParameters = new BlockParameters("test", getBlockInitialization("1000", "0", "1a"));
     }
 
     @Test(expected = BlockInitializationException.class)
     public void missingBlockParameters() {
-        blockParameters = new BlockParameters(getBlockInitialization("1000", "null", "0"));
+        blockParameters = new BlockParameters("test", getBlockInitialization("1000", "null", "0"));
     }
 
     @Test
     public void validBlockParameters() {
-        blockParameters = new BlockParameters(getBlockInitialization("1000", "0", "0"));
+        blockParameters = new BlockParameters("test", getBlockInitialization("1000", "0", "0"));
     }
 
     private Map<String, String> getBlockInitialization(String blockSize, String blockStartValue, String nextBlockInterval) {
