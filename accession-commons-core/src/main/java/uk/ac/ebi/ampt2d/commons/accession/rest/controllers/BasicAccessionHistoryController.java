@@ -17,6 +17,8 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest.controllers;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,9 +50,11 @@ public class BasicAccessionHistoryController<DTO extends MODEL, MODEL, ACCESSION
 
     @RequestMapping(value = "/getAccessionMergedInto/{accession}", method = RequestMethod.GET,
             produces = "application/json")
-    public AccessionWrapper<MODEL, String, ACCESSION> getAccessionMergedInto(@PathVariable ACCESSION accession) throws
-            AccessionDoesNotExistException, AccessionDeprecatedException {
-        return service.getMergedInto(accession);
+    public ResponseEntity<AccessionWrapper<MODEL, String, ACCESSION>> getAccessionMergedInto(@PathVariable ACCESSION
+                                                                                                     accession)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).body(service.getMergedInto(accession));
+
     }
 
 }
