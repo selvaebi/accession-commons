@@ -291,6 +291,25 @@ public class BasicRestControllerTest {
                 andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
     }
 
+    @Test
+    public void testMultipleMerge() throws Exception {
+        String accession1 = extractAccession(doAccession("merge-test-1"));
+        String accession2 = extractAccession(doAccession("merge-test-2"));
+        String accession3 = extractAccession(doAccession("merge-test-3"));
+        doMerge(accession1, accession2).andExpect(status().isOk());
+        doMerge(accession2, accession3).andExpect(status().isOk());
+        doGet(accession1,status().is3xxRedirection())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.accession").value(accession3));
+        doGet(accession2,status().is3xxRedirection())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$.accession").value(accession3));
+        doMerge(accession1, accession2).andExpect(status().isNotFound()).
+                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
+        doMerge(accession2, accession1).andExpect(status().isNotFound()).
+                andExpect(jsonPath("$.message").value(accession2 + " has been merged already"));
+    }
+
     private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {
         return mockMvc.perform(post("/v1/test/{accession}/merge", accessionOrigin).param("mergeInto",
                 mergeInto));

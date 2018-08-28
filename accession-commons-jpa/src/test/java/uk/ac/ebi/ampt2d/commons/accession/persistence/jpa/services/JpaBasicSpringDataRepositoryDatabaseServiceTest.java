@@ -391,6 +391,22 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         service.merge("a1", "a2", "reasons");
     }
 
+    @Test
+    public void testMultipleMergeAccession() throws AccessionDoesNotExistException,
+            AccessionDeprecatedException, AccessionMergedException {
+        service.save(Arrays.asList(new AccessionWrapper("a1", "h1", TestModel.of("something1"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a2", "h2", TestModel.of("something2"), 1)));
+        service.save(Arrays.asList(new AccessionWrapper("a3", "h3", TestModel.of("something3"), 1)));
+        assertTrue(findLastVersionByAccession("a1").isPresent());
+        assertTrue(findLastVersionByAccession("a2").isPresent());
+        assertTrue(findLastVersionByAccession("a3").isPresent());
+        service.merge("a1", "a2", "reasons");
+        service.merge("a2", "a3", "reasons");
+        assertEquals("a3",findLastVersionByAccession("a1").get().getAccession());
+        assertEquals("a3",findLastVersionByAccession("a2").get().getAccession());
+        assertEquals("a3",findLastVersionByAccession("a3").get().getAccession());
+    }
+
     private Optional<AccessionWrapper<TestModel, String, String>> findLastVersionByAccession(String accession) {
         Optional<AccessionWrapper<TestModel, String, String>> accessionWrapper = Optional.empty();
         try {
