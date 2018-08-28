@@ -38,8 +38,9 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -148,10 +149,9 @@ public class BasicAccessioningServiceTest {
         assertEquals(1, updatedAccession.getModelWrappers().get(0).getVersion());
         assertEquals("test-3b", updatedAccession.getModelWrappers().get(0).getData().getValue());
 
-
-        final List<AccessionWrapper<TestModel, String, String>> wrappedAccesions =
-                accessioningService.getByAccessions(Arrays.asList("id-service-test-3"));
-        assertEquals(1, wrappedAccesions.size());
+        final AccessionWrapper<TestModel, String, String> wrappedAccesion =
+                accessioningService.getByAccession("id-service-test-3");
+        assertNotNull(wrappedAccesion);
 
         //We only find the new object information, not the old one
         assertEquals(0, accessioningService.get(Arrays.asList(TestModel.of("test-3"))).size());
@@ -198,10 +198,15 @@ public class BasicAccessioningServiceTest {
         doDeprecateAndAssert("id-service-test-deprecate-version");
     }
 
-    private void doDeprecateAndAssert(String accession) throws AccessionMergedException, AccessionDoesNotExistException,
+    private void doDeprecateAndAssert(String accession) throws AccessionMergedException,
+            AccessionDoesNotExistException,
             AccessionDeprecatedException {
         accessioningService.deprecate(accession, "Reasons");
-        assertTrue(accessioningService.getByAccessions(Arrays.asList(accession)).isEmpty());
+        try {
+            accessioningService.getByAccession(accession);
+        } catch (Exception exception) {
+            assertTrue(exception instanceof AccessionDeprecatedException);
+        }
     }
 
     @Test(expected = AccessionDoesNotExistException.class)

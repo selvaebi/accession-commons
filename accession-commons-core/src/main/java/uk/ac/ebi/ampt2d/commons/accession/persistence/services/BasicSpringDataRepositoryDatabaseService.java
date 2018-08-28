@@ -25,6 +25,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsExcep
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
@@ -115,16 +116,17 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByAccession(List<ACCESSION> accessions) {
-        HashMap<ACCESSION, List<ACCESSION_ENTITY>> modelsByAccession = new HashMap<>();
-        repository.findByAccessionIn(accessions).iterator().forEachRemaining(
-                entity -> {
-                    modelsByAccession.putIfAbsent(entity.getAccession(), new ArrayList<>());
-                    modelsByAccession.get(entity.getAccession()).add(entity);
-                });
+    public AccessionWrapper<MODEL, String, ACCESSION> findLastVersionByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+        final List<ACCESSION_ENTITY> acessionEntities = repository.findByAccession(accession);
+        try {
+            checkAccessionIsActive(acessionEntities,accession);
+        }catch (AccessionMergedException accessionMergedException){
+            IEvent<MODEL, ACCESSION> operation = inactiveAccessionService.getLastEvent(accession);
+            return findLastVersionByAccession(operation.getMergedInto());
+        }
 
-        return modelsByAccession.values().stream().map(this::filterOldVersions).map(this::toModelWrapper)
-                .collect(Collectors.toList());
+        return toModelWrapper(filterOldVersions(acessionEntities));
     }
 
     private ACCESSION_ENTITY filterOldVersions(List<ACCESSION_ENTITY> accessionedElements) {

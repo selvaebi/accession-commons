@@ -17,15 +17,11 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.HistoryEvent;
 import uk.ac.ebi.ampt2d.commons.accession.rest.dto.HistoryEventDTO;
 import uk.ac.ebi.ampt2d.commons.accession.utils.ListConverter;
@@ -46,15 +42,6 @@ public class BasicAccessionHistoryController<DTO extends MODEL, MODEL, ACCESSION
     @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
     public List<HistoryEventDTO> get(@PathVariable ACCESSION accession) throws AccessionDoesNotExistException {
         return converter.convert(service.getHistory(accession));
-    }
-
-    @RequestMapping(value = "/getAccessionMergedInto/{accession}", method = RequestMethod.GET,
-            produces = "application/json")
-    public ResponseEntity<AccessionWrapper<MODEL, String, ACCESSION>> getAccessionMergedInto(@PathVariable ACCESSION
-                                                                                                     accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).body(service.getMergedInto(accession));
-
     }
 
 }

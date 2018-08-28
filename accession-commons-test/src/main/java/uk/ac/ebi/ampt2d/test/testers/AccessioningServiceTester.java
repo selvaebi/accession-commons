@@ -18,6 +18,7 @@
 package uk.ac.ebi.ampt2d.test.testers;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 
 import java.util.ArrayList;
@@ -94,7 +95,19 @@ public class AccessioningServiceTester {
     public AccessionWrapperCollectionTester getAccessions(String... accessionIds) {
         return addToCollection(singleVersionResults,
                 new AccessionWrapperCollectionTester(() ->
-                        accessioningService.getByAccessions(Arrays.asList(accessionIds))));
+                        getLatestVersionOfAccessions(accessionIds)));
+    }
+
+    private List<AccessionWrapper<TestModel, String, String>> getLatestVersionOfAccessions(String[] accessionIds) {
+        List<AccessionWrapper<TestModel, String, String>> accessionWrappers = new ArrayList<>();
+        try {
+            for (String accessionId : accessionIds) {
+                accessionWrappers.add(accessioningService.getByAccession(accessionId));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accessionWrappers;
     }
 
     private <T extends IMethodTester> T addToCollection(Collection<T> collection, T t) {

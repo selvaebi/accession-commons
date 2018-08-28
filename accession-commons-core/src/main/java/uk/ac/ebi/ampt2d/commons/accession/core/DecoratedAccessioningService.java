@@ -67,8 +67,9 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
-        return decorate(service.getByAccessions(parse(accessions)));
+    public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+        return decorate(service.getByAccession(parse(accession)));
     }
 
     private List<DB_ACCESSION> parse(List<ACCESSION> accessions) {

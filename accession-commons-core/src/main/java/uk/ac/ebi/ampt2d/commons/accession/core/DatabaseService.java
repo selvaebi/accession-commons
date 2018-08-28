@@ -18,13 +18,13 @@
 package uk.ac.ebi.ampt2d.commons.accession.core;
 
 import org.springframework.transaction.annotation.Transactional;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
+import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -59,12 +59,15 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
-     * Finds last version of all valid accessions with their possible data model representations.
+     * Finds last version of provided accession with its possible data model representations.
      *
-     * @param accessions valid accession id
-     * @return All valid accessions. No deprecated or merged ids will be returned.
+     * @param accession valid accession id
+     * @return valid accession. No deprecated ids will be returned.
+     * @throws AccessionDoesNotExistException when accession does not exist.
+     * @throws AccessionDeprecatedException   accession is no longer active.
      */
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByAccession(List<ACCESSION> accessions);
+    AccessionWrapper<MODEL, HASH, ACCESSION> findLastVersionByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionDeprecatedException;
 
     /**
      * Finds a specific version of accession and their data model representations.

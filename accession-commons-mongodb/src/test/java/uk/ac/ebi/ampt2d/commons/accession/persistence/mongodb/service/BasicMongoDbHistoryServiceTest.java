@@ -30,7 +30,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.test.configuration.MongoDbTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
@@ -38,7 +37,6 @@ import uk.ac.ebi.ampt2d.test.rule.FixSpringMongoDbRule;
 import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
 import uk.ac.ebi.ampt2d.test.testers.HistoryTester;
 
-import static org.junit.Assert.assertEquals;
 import static uk.ac.ebi.ampt2d.test.testers.HistoryTester.assertEventIsCreated;
 import static uk.ac.ebi.ampt2d.test.testers.HistoryTester.assertEventIsDeprecated;
 import static uk.ac.ebi.ampt2d.test.testers.HistoryTester.assertEventIsMerged;
@@ -177,55 +175,6 @@ public class BasicMongoDbHistoryServiceTest {
                 .assertEvent(3, assertEventIsUpdated("test-7-update-patch-2", 2))
                 .assertEvent(4, assertEventIsUpdated("test-7-update-b-patch-2", 2))
                 .assertEvent(5, assertEventIsDeprecated());
-    }
-
-    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
-    @Test
-    public void testGetMergedIntoAccession() throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        getAccessionTester()
-                .getOrCreate("test-7")
-                .getOrCreate("test-8")
-                .update("id-test-7", 1, "test-7-1")
-                .patch("id-test-7", "test-7-2")
-                .merge("id-test-7", "id-test-8", "merge");
-        assertEquals("id-test-8", historyService.getMergedInto("id-test-7").getAccession());
-    }
-
-    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
-    @Test
-    public void testMultipleMerges() throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        getAccessionTester()
-                .getOrCreate("test-7")
-                .getOrCreate("test-8")
-                .getOrCreate("test-9")
-                .patch("id-test-9","test-9-2")
-                .merge("id-test-7", "id-test-8", "merge")
-                .merge("id-test-8", "id-test-9", "merge");
-        assertEquals("id-test-9", historyService.getMergedInto("id-test-7").getAccession());
-        assertEquals(2, historyService.getMergedInto("id-test-7").getVersion());
-    }
-
-    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
-    @Test(expected = AccessionDoesNotExistException.class)
-    public void testNonExistingAccessionHistory() throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        historyService.getMergedInto("id-test-7");
-    }
-
-    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
-    @Test(expected = AccessionDeprecatedException.class)
-    public void testDeprecatedAccessionHistory() throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        getAccessionTester()
-                .getOrCreate("test-7")
-                .deprecate("id-test-7", "deprecate");
-        historyService.getMergedInto("id-test-7");
-    }
-
-    @UsingDataSet(loadStrategy = LoadStrategyEnum.DELETE_ALL)
-    @Test(expected = java.lang.IllegalArgumentException.class)
-    public void testNonMergedAccessionHistory() throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        getAccessionTester()
-                .getOrCreate("test-7");
-        historyService.getMergedInto("id-test-7");
     }
 
     private HistoryTester.HistoryAccessionTester getHistoryTester(String id) throws AccessionDoesNotExistException {
