@@ -38,21 +38,22 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * Finds last version of provided accession with its possible data model representations.
      *
      * @param accession
-     * @return latest version of provided accession
-     * @throws AccessionDoesNotExistException when either accession has never existed.
-     * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
+     * @return
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      */
     AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException;
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
-     * Finds last version of provided accession with its possible data model representations.
+     * Finds the provided accession with its possible data model representations.
      *
      * @param accession
      * @param version
      * @return accession with particular version
-     * @throws AccessionDoesNotExistException when either accession has never existed.
-     * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      */
     AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
@@ -64,7 +65,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @param accession
      * @param version
      * @param message
-     * @return Accession with updated information
+     * @return updated accession with all the patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated

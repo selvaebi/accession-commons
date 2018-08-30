@@ -153,7 +153,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+            throws AccessionDoesNotExistException, AccessionMergedException,AccessionDeprecatedException {
         return dbService.findLastVersionByAccession(accession);
     }
 

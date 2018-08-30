@@ -17,8 +17,6 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.rest.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,14 +66,9 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException {
-        AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> accessionResponseDTO =
-                new AccessionResponseDTO<>(service.getByAccession(accession), modelToDTO);
-        if (accession.equals(accessionResponseDTO.getAccession())) {
-            return ResponseEntity.status(HttpStatus.OK).body(accessionResponseDTO);
-        }
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).body(accessionResponseDTO);
+    public AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> get(@PathVariable ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        return new AccessionResponseDTO(service.getByAccession(accession), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.PATCH, produces = "application/json",

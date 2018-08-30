@@ -71,7 +71,8 @@ public class DecoratedAccessioningServiceTest {
 
     @Test
     public void assertGetByAccessions()
-            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException, AccessionDoesNotExistException {
+            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
+            AccessionMergedException, AccessionDoesNotExistException {
         assertGetOrCreate();
         AccessionWrapper<TestModel, String, String> accession = null;
         accession = getPrefixedService().getByAccession("prefix-id-service-service-test-1");
@@ -80,7 +81,8 @@ public class DecoratedAccessioningServiceTest {
 
     @Test(expected = AccessionDoesNotExistException.class)
     public void assertGetByAccessionsWrongPrefix()
-            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException, AccessionDoesNotExistException {
+            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
+            AccessionMergedException, AccessionDoesNotExistException {
         assertGetOrCreate();
         AccessionWrapper<TestModel, String, String> accession = null;
         getPrefixedService().getByAccession("service-service-test-1");

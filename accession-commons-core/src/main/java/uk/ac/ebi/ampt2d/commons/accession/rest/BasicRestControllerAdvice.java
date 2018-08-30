@@ -29,6 +29,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
@@ -41,6 +42,7 @@ import uk.ac.ebi.ampt2d.commons.accession.rest.dto.ErrorMessage;
 import uk.ac.ebi.ampt2d.commons.accession.rest.validation.CollectionValidator;
 
 import javax.validation.ValidationException;
+import java.net.URI;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +94,11 @@ public class BasicRestControllerAdvice {
     @ExceptionHandler(value = AccessionMergedException.class)
     public ResponseEntity<ErrorMessage> handleMergeExceptions(AccessionMergedException ex) {
         logger.error(ex.getMessage(), ex);
-        return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getAccessionId() + " has been merged already");
+        String originalRequestUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
+                        .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
+                        ex.getOriginAccessionId() + " has been merged already to " + ex.getDestinationAccessionId()));
     }
 
     @ExceptionHandler(value = {HashAlreadyExistsException.class})

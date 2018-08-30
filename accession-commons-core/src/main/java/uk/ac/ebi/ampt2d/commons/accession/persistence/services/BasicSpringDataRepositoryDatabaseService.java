@@ -25,7 +25,6 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsExcep
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.IEvent;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
@@ -34,7 +33,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -103,7 +101,8 @@ public class BasicSpringDataRepositoryDatabaseService<
                 AccessionDoesNotExistException(accession.toString()));
         switch (eventType) {
             case MERGED:
-                throw new AccessionMergedException(accession.toString());
+                throw new AccessionMergedException(accession.toString(),
+                        inactiveAccessionService.getLastEvent(accession).getMergedInto().toString());
             case DEPRECATED:
                 throw new AccessionDeprecatedException(accession.toString());
         }
@@ -117,15 +116,9 @@ public class BasicSpringDataRepositoryDatabaseService<
 
     @Override
     public AccessionWrapper<MODEL, String, ACCESSION> findLastVersionByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         final List<ACCESSION_ENTITY> acessionEntities = repository.findByAccession(accession);
-        try {
-            checkAccessionIsActive(acessionEntities,accession);
-        }catch (AccessionMergedException accessionMergedException){
-            IEvent<MODEL, ACCESSION> operation = inactiveAccessionService.getLastEvent(accession);
-            return findLastVersionByAccession(operation.getMergedInto());
-        }
-
+        checkAccessionIsActive(acessionEntities, accession);
         return toModelWrapper(filterOldVersions(acessionEntities));
     }
 
@@ -216,7 +209,6 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
         List<ACCESSION_ENTITY> accessionedElements = repository.findByAccession(accessionId);
         checkAccessionIsActive(accessionedElements, accessionId);
-
         return accessionedElements;
     }
 

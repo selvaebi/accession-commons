@@ -68,7 +68,7 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
 
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionDeprecatedException {
+            throws AccessionDoesNotExistException,AccessionMergedException, AccessionDeprecatedException {
         return decorate(service.getByAccession(parse(accession)));
     }
 

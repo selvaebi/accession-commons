@@ -22,8 +22,7 @@ Feature: Accession retrieval
 
   Scenario: I want to get a specific accession that doesn't exist in the system.
     When user retrieves accessions: id-service-A
-    Then operation finished correctly
-    And user receives no data
+    Then user should receive 'accession does not exist'
 
   Scenario: I want to retrieve an accession that exists in the system
     Given already accessioned A

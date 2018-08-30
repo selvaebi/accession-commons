@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -282,32 +283,12 @@ public class BasicRestControllerTest {
         String accession1 = extractAccession(doAccession("merge-test-1"));
         String accession2 = extractAccession(doAccession("merge-test-2"));
         doMerge(accession1, accession2).andExpect(status().isOk());
-        doGet(accession1,status().is3xxRedirection())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.accession").value(accession2));
-        doMerge(accession1, accession2).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
-        doMerge(accession2, accession1).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
-    }
-
-    @Test
-    public void testMultipleMerge() throws Exception {
-        String accession1 = extractAccession(doAccession("merge-test-1"));
-        String accession2 = extractAccession(doAccession("merge-test-2"));
-        String accession3 = extractAccession(doAccession("merge-test-3"));
-        doMerge(accession1, accession2).andExpect(status().isOk());
-        doMerge(accession2, accession3).andExpect(status().isOk());
-        doGet(accession1,status().is3xxRedirection())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.accession").value(accession3));
-        doGet(accession2,status().is3xxRedirection())
-                .andExpect(jsonPath("$").isNotEmpty())
-                .andExpect(jsonPath("$.accession").value(accession3));
-        doMerge(accession1, accession2).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
-        doMerge(accession2, accession1).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession2 + " has been merged already"));
+        doGet(accession1, status().is3xxRedirection()).andExpect(
+                (redirectedUrlPattern("**/v1/test/"+accession2)));
+        doMerge(accession1, accession2).andExpect(status().is3xxRedirection()).
+                andExpect(jsonPath("$.message").value(accession1 + " has been merged already to " + accession2));
+        doMerge(accession2, accession1).andExpect(status().is3xxRedirection()).
+                andExpect(jsonPath("$.message").value(accession1 + " has been merged already to " + accession2));
     }
 
     private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {
