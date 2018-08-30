@@ -112,7 +112,6 @@ public class BasicMonotonicAccessioningTest {
                 ));
         assertEquals(1, accessions1.size());
 
-
         List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.get(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
@@ -124,7 +123,7 @@ public class BasicMonotonicAccessioningTest {
     }
 
     @Test
-    public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+    public void testGetByAccessionsWithExistingEntries() throws Exception {
         AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
@@ -134,12 +133,7 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(1, accessions1.size());
 
         AccessionWrapper<TestModel, String, Long> accession2 = null;
-        try {
-            accession2 = accessioningService.getByAccession(
-                    accessions1.get(0).getAccession());
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        accession2 = accessioningService.getByAccession(accessions1.get(0).getAccession());
         assertEquals(accessions1.get(0).getAccession(), accession2.getAccession());
     }
 
@@ -163,7 +157,7 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(3, accessions2.size());
 
         TestTransaction.start();
-        for (AccessionWrapper<TestModel, String, Long> accession: accessions2) {
+        for (AccessionWrapper<TestModel, String, Long> accession : accessions2) {
             repository.delete(accession.getHash());
         }
         TestTransaction.flagForCommit();

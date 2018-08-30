@@ -18,6 +18,9 @@
 package uk.ac.ebi.ampt2d.test.testers;
 
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 
@@ -98,14 +101,11 @@ public class AccessioningServiceTester {
                         getLatestVersionOfAccessions(accessionIds)));
     }
 
-    private List<AccessionWrapper<TestModel, String, String>> getLatestVersionOfAccessions(String[] accessionIds) {
+    private List<AccessionWrapper<TestModel, String, String>> getLatestVersionOfAccessions(String[] accessionIds)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         List<AccessionWrapper<TestModel, String, String>> accessionWrappers = new ArrayList<>();
-        try {
-            for (String accessionId : accessionIds) {
-                accessionWrappers.add(accessioningService.getByAccession(accessionId));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String accessionId : accessionIds) {
+            accessionWrappers.add(accessioningService.getByAccession(accessionId));
         }
         return accessionWrappers;
     }

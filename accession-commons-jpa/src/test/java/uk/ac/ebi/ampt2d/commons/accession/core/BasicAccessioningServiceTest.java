@@ -199,11 +199,11 @@ public class BasicAccessioningServiceTest {
     }
 
     private void doDeprecateAndAssert(String accession) throws AccessionMergedException,
-            AccessionDoesNotExistException,
-            AccessionDeprecatedException {
+            AccessionDoesNotExistException,AccessionDeprecatedException {
         accessioningService.deprecate(accession, "Reasons");
         try {
             accessioningService.getByAccession(accession);
+            assertTrue(false);
         } catch (Exception exception) {
             assertTrue(exception instanceof AccessionDeprecatedException);
         }
