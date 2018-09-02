@@ -62,13 +62,13 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * Finds last version of provided accession with its possible data model representations.
      *
      * @param accession
-     * @return valid accession. No deprecated ids will be returned.
+     * @return valid accession. No deprecated or merged ids will be returned.
      * @throws AccessionDoesNotExistException
      * @throws AccessionMergedException
      * @throws AccessionDeprecatedException
      */
     AccessionWrapper<MODEL, HASH, ACCESSION> findLastVersionByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException, AccessionMergedException,AccessionDeprecatedException;
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
      * Finds a specific version of accession and their data model representations.

@@ -41,6 +41,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -199,11 +200,11 @@ public class BasicAccessioningServiceTest {
     }
 
     private void doDeprecateAndAssert(String accession) throws AccessionMergedException,
-            AccessionDoesNotExistException,AccessionDeprecatedException {
+            AccessionDoesNotExistException, AccessionDeprecatedException {
         accessioningService.deprecate(accession, "Reasons");
         try {
             accessioningService.getByAccession(accession);
-            assertTrue(false);
+            fail();
         } catch (Exception exception) {
             assertTrue(exception instanceof AccessionDeprecatedException);
         }

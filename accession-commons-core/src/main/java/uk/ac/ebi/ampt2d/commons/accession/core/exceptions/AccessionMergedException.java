@@ -26,6 +26,7 @@ public class AccessionMergedException extends Exception {
     private final String destinationAccessionId;
 
     public AccessionMergedException(String originAccessionId, String destinationAccessionId) {
+        super(originAccessionId + " has been already merged into " + destinationAccessionId);
         this.originAccessionId = originAccessionId;
         this.destinationAccessionId = destinationAccessionId;
     }

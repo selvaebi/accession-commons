@@ -49,6 +49,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -292,6 +293,13 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         final List<TestInactiveAccessionEntity> deprecated = inactiveRepository.findAllByHistoryId(entity.getId());
         assertEquals(1, deprecated.size());
         assertEquals("something2", deprecated.get(0).getValue());
+
+        try {
+            service.findLastVersionByAccession("a1");
+            fail();
+        } catch (Exception ex) {
+            assertTrue(ex instanceof AccessionDeprecatedException);
+        }
     }
 
     @Test
@@ -311,7 +319,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
         try {
             service.findLastVersionByAccession("a1");
-            assertTrue(false); // To make sure previous statement throws exception
+            fail();
         } catch (Exception ex) {
             assertTrue(ex instanceof AccessionDeprecatedException);
         }
@@ -346,7 +354,7 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
 
         try {
             service.findLastVersionByAccession("a1");
-            assertTrue(false); // To make sure previous statement throws exception
+            fail();
         } catch (Exception ex) {
             assertTrue(ex instanceof AccessionMergedException);
             assertEquals("a1", ((AccessionMergedException) ex).getOriginAccessionId());

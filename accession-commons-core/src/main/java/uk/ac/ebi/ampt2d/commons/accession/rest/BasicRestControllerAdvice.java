@@ -98,7 +98,7 @@ public class BasicRestControllerAdvice {
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
                 .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
                         .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
-                        ex.getOriginAccessionId() + " has been merged already to " + ex.getDestinationAccessionId()));
+                        ex.getMessage()));
     }
 
     @ExceptionHandler(value = {HashAlreadyExistsException.class})
