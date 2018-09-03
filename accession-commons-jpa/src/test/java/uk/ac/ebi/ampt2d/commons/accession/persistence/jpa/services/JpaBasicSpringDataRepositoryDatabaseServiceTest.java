@@ -17,7 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.services;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -48,8 +50,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -62,6 +62,9 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
             new AccessionWrapper("a2", "h2", TestModel.of("something2"));
     public static final AccessionWrapper<TestModel, String, String> TEST_MODEL_3 =
             new AccessionWrapper("a3", "h3", TestModel.of("something3"));
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     private DatabaseService<TestModel, String, String> service;
@@ -294,12 +297,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         assertEquals(1, deprecated.size());
         assertEquals("something2", deprecated.get(0).getValue());
 
-        try {
-            service.findLastVersionByAccession("a1");
-            fail();
-        } catch (Exception ex) {
-            assertTrue(ex instanceof AccessionDeprecatedException);
-        }
+        expectedException.expect(AccessionDeprecatedException.class);
+        service.findLastVersionByAccession("a1");
     }
 
     @Test
@@ -317,12 +316,8 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         final List<TestInactiveAccessionEntity> deprecated = inactiveRepository.findAllByHistoryId(entity.getId());
         assertEquals(2, deprecated.size());
 
-        try {
-            service.findLastVersionByAccession("a1");
-            fail();
-        } catch (Exception ex) {
-            assertTrue(ex instanceof AccessionDeprecatedException);
-        }
+        expectedException.expect(AccessionDeprecatedException.class);
+        service.findLastVersionByAccession("a1");
     }
 
     @Test
@@ -352,14 +347,9 @@ public class JpaBasicSpringDataRepositoryDatabaseServiceTest {
         assertEquals(1, repository.count());
         assertEquals(1, historyRepository.count());
 
-        try {
-            service.findLastVersionByAccession("a1");
-            fail();
-        } catch (Exception ex) {
-            assertTrue(ex instanceof AccessionMergedException);
-            assertEquals("a1", ((AccessionMergedException) ex).getOriginAccessionId());
-            assertEquals("a2", ((AccessionMergedException) ex).getDestinationAccessionId());
-        }
+        expectedException.expect(AccessionMergedException.class);
+        expectedException.expectMessage("a1 has been already merged into a2");
+        service.findLastVersionByAccession("a1");
     }
 
     @Test(expected = AccessionDoesNotExistException.class)

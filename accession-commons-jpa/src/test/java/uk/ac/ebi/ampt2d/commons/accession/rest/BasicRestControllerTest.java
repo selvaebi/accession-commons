@@ -284,7 +284,7 @@ public class BasicRestControllerTest {
         String accession2 = extractAccession(doAccession("merge-test-2"));
         doMerge(accession1, accession2).andExpect(status().isOk());
         doGet(accession1, status().is3xxRedirection()).andExpect(
-                (redirectedUrlPattern("**/v1/test/" + accession2)));
+                redirectedUrlPattern("**/v1/test/" + accession2));
         doMerge(accession1, accession2).andExpect(status().is3xxRedirection()).
                 andExpect(jsonPath("$.message").value(accession1 + " has been already merged into " + accession2));
         doMerge(accession2, accession1).andExpect(status().is3xxRedirection()).
