@@ -25,6 +25,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
@@ -123,7 +126,8 @@ public class BasicMonotonicAccessioningTest {
     }
 
     @Test
-    public void testGetByAccessionsWithExistingEntries() throws Exception {
+    public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException,
+            AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
