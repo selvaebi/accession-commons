@@ -152,8 +152,9 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions) {
-        return dbService.findAllByAccession(accessions);
+    public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException,AccessionDeprecatedException {
+        return dbService.findLastVersionByAccession(accession);
     }
 
     @Override

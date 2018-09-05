@@ -25,6 +25,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.transaction.TestTransaction;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
@@ -112,7 +115,6 @@ public class BasicMonotonicAccessioningTest {
                 ));
         assertEquals(1, accessions1.size());
 
-
         List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.get(
                 Arrays.asList(
                         TestModel.of("service-test-1"),
@@ -124,7 +126,8 @@ public class BasicMonotonicAccessioningTest {
     }
 
     @Test
-    public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException {
+    public void testGetByAccessionsWithExistingEntries() throws AccessionCouldNotBeGeneratedException,
+            AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
         AccessioningService<TestModel, String, Long> accessioningService = getAccessioningService();
 
         List<AccessionWrapper<TestModel, String, Long>> accessions1 = accessioningService.getOrCreate(
@@ -133,10 +136,9 @@ public class BasicMonotonicAccessioningTest {
                 ));
         assertEquals(1, accessions1.size());
 
-
-        List<AccessionWrapper<TestModel, String, Long>> accessions2 = accessioningService.getByAccessions(
-                Arrays.asList(accessions1.get(0).getAccession()));
-        assertEquals(1, accessions2.size());
+        AccessionWrapper<TestModel, String, Long> accession2 =
+                accessioningService.getByAccession(accessions1.get(0).getAccession());
+        assertEquals(accessions1.get(0).getAccession(), accession2.getAccession());
     }
 
     @Test
@@ -159,7 +161,7 @@ public class BasicMonotonicAccessioningTest {
         assertEquals(3, accessions2.size());
 
         TestTransaction.start();
-        for (AccessionWrapper<TestModel, String, Long> accession: accessions2) {
+        for (AccessionWrapper<TestModel, String, Long> accession : accessions2) {
             repository.delete(accession.getHash());
         }
         TestTransaction.flagForCommit();

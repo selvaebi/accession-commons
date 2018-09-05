@@ -33,7 +33,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -102,7 +101,8 @@ public class BasicSpringDataRepositoryDatabaseService<
                 AccessionDoesNotExistException(accession.toString()));
         switch (eventType) {
             case MERGED:
-                throw new AccessionMergedException(accession.toString());
+                throw new AccessionMergedException(accession.toString(),
+                        inactiveAccessionService.getLastEvent(accession).getMergedInto().toString());
             case DEPRECATED:
                 throw new AccessionDeprecatedException(accession.toString());
         }
@@ -115,16 +115,11 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     @Override
-    public List<AccessionWrapper<MODEL, String, ACCESSION>> findAllByAccession(List<ACCESSION> accessions) {
-        HashMap<ACCESSION, List<ACCESSION_ENTITY>> modelsByAccession = new HashMap<>();
-        repository.findByAccessionIn(accessions).iterator().forEachRemaining(
-                entity -> {
-                    modelsByAccession.putIfAbsent(entity.getAccession(), new ArrayList<>());
-                    modelsByAccession.get(entity.getAccession()).add(entity);
-                });
-
-        return modelsByAccession.values().stream().map(this::filterOldVersions).map(this::toModelWrapper)
-                .collect(Collectors.toList());
+    public AccessionWrapper<MODEL, String, ACCESSION> findLastVersionByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        final List<ACCESSION_ENTITY> acessionEntities = repository.findByAccession(accession);
+        checkAccessionIsActive(acessionEntities, accession);
+        return toModelWrapper(filterOldVersions(acessionEntities));
     }
 
     private ACCESSION_ENTITY filterOldVersions(List<ACCESSION_ENTITY> accessionedElements) {
@@ -214,7 +209,6 @@ public class BasicSpringDataRepositoryDatabaseService<
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
         List<ACCESSION_ENTITY> accessionedElements = repository.findByAccession(accessionId);
         checkAccessionIsActive(accessionedElements, accessionId);
-
         return accessionedElements;
     }
 

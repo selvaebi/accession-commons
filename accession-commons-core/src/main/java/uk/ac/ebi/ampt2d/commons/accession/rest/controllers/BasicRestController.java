@@ -65,11 +65,10 @@ public class BasicRestController<DTO extends MODEL, MODEL, HASH, ACCESSION> {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/{accessions}", method = RequestMethod.GET, produces = "application/json")
-    public List<AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION>> get(@PathVariable List<ACCESSION> accessions) {
-        return service.getByAccessions(accessions).stream()
-                .map(accessionModel -> new AccessionResponseDTO<>(accessionModel, modelToDTO))
-                .collect(Collectors.toList());
+    @RequestMapping(value = "/{accession}", method = RequestMethod.GET, produces = "application/json")
+    public AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> get(@PathVariable ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        return new AccessionResponseDTO(service.getByAccession(accession), modelToDTO);
     }
 
     @RequestMapping(value = "/{accession}", method = RequestMethod.PATCH, produces = "application/json",

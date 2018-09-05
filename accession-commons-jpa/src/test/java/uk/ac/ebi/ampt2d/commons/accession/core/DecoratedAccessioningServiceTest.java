@@ -70,24 +70,24 @@ public class DecoratedAccessioningServiceTest {
     }
 
     @Test
-    public void assertGetByAccessions() throws AccessionCouldNotBeGeneratedException {
+    public void assertGetByAccession()
+            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
+            AccessionMergedException, AccessionDoesNotExistException {
         assertGetOrCreate();
-        List<AccessionWrapper<TestModel, String, String>> accessions =
-                getPrefixedService().getByAccessions(Arrays.asList("prefix-id-service-service-test-1"));
-        assertEquals(1, accessions.size());
-        assertEquals("prefix-id-service-service-test-1", accessions.get(0).getAccession());
-    }
-
-    @Test
-    public void assertGetByAccessionsWrongPrefix() throws AccessionCouldNotBeGeneratedException {
-        assertGetOrCreate();
-        List<AccessionWrapper<TestModel, String, String>> accessions =
-                getPrefixedService().getByAccessions(Arrays.asList("service-service-test-1"));
-        assertEquals(0, accessions.size());
+        AccessionWrapper<TestModel, String, String> accession = getPrefixedService().getByAccession("prefix-id-service-service-test-1");
+        assertEquals("prefix-id-service-service-test-1", accession.getAccession());
     }
 
     @Test(expected = AccessionDoesNotExistException.class)
-    public void assertGetByAccessionWrongPrefix() throws AccessionCouldNotBeGeneratedException,
+    public void assertGetByAccessionWrongPrefix()
+            throws AccessionCouldNotBeGeneratedException, AccessionDeprecatedException,
+            AccessionMergedException, AccessionDoesNotExistException {
+        assertGetOrCreate();
+        getPrefixedService().getByAccession("service-service-test-1");
+    }
+
+    @Test(expected = AccessionDoesNotExistException.class)
+    public void assertGetByAccessionAndVersionWrongPrefix() throws AccessionCouldNotBeGeneratedException,
             AccessionMergedException, AccessionDoesNotExistException, AccessionDeprecatedException {
         assertGetOrCreate();
         getPrefixedService().getByAccessionAndVersion("service-service-test-1", 1);
