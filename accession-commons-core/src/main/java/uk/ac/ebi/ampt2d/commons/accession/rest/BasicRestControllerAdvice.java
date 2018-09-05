@@ -98,8 +98,8 @@ public class BasicRestControllerAdvice {
     @ExceptionHandler(value = AccessionMergedException.class)
     public ResponseEntity<ErrorMessage> handleMergeExceptions(AccessionMergedException ex) {
         logger.error(ex.getMessage(), ex);
-        String originalRequestUrl = httpServletRequest.getRequestURL().toString();
         if (httpServletRequest.getMethod().equals(HttpMethod.GET.name())) {
+            String originalRequestUrl = httpServletRequest.getRequestURL().toString();
             return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
                     .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
                             .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
