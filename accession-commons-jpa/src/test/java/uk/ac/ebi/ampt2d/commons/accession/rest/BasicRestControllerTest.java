@@ -285,10 +285,20 @@ public class BasicRestControllerTest {
         doMerge(accession1, accession2).andExpect(status().isOk());
         doGet(accession1, status().is3xxRedirection()).andExpect(
                 redirectedUrlPattern("**/v1/test/" + accession2));
-        doMerge(accession1, accession2).andExpect(status().is3xxRedirection()).
+        doMerge(accession1, accession2).andExpect(status().isNotFound()).
                 andExpect(jsonPath("$.message").value(accession1 + " has been already merged into " + accession2));
-        doMerge(accession2, accession1).andExpect(status().is3xxRedirection()).
+        doMerge(accession2, accession1).andExpect(status().isNotFound()).
                 andExpect(jsonPath("$.message").value(accession1 + " has been already merged into " + accession2));
+    }
+
+    @Test
+    public void testDeprecateAfterMerge() throws Exception {
+        String accession1 = extractAccession(doAccession("merge-test-1"));
+        String accession2 = extractAccession(doAccession("merge-test-2"));
+        doMerge(accession1, accession2).andExpect(status().isOk());
+        mockMvc.perform(delete("/v1/test/" + accession1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.message")
+                .value(accession1 + " has been already merged into " + accession2));
     }
 
     private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {

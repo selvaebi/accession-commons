@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGeneratedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
@@ -41,6 +41,7 @@ import uk.ac.ebi.ampt2d.commons.accession.rest.controllers.BasicRestController;
 import uk.ac.ebi.ampt2d.commons.accession.rest.dto.ErrorMessage;
 import uk.ac.ebi.ampt2d.commons.accession.rest.validation.CollectionValidator;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.util.stream.Collectors;
@@ -53,6 +54,9 @@ import java.util.stream.Collectors;
 public class BasicRestControllerAdvice {
 
     private static final Logger logger = LoggerFactory.getLogger(BasicRestControllerAdvice.class);
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     @Autowired
     private CollectionValidator collectionValidator;
@@ -94,11 +98,15 @@ public class BasicRestControllerAdvice {
     @ExceptionHandler(value = AccessionMergedException.class)
     public ResponseEntity<ErrorMessage> handleMergeExceptions(AccessionMergedException ex) {
         logger.error(ex.getMessage(), ex);
-        String originalRequestUrl = ServletUriComponentsBuilder.fromCurrentRequestUri().toUriString();
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
-                        .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
-                        ex.getMessage()));
+        String originalRequestUrl = httpServletRequest.getRequestURL().toString();
+        if (httpServletRequest.getMethod().equals(HttpMethod.GET.name())) {
+            return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
+                    .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
+                            .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
+                            ex.getMessage()));
+        }
+        return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
+
     }
 
     @ExceptionHandler(value = {HashAlreadyExistsException.class})
