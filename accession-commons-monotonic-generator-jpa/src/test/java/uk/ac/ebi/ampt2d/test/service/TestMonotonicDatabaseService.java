@@ -31,7 +31,7 @@ import java.util.function.Function;
 
 public class TestMonotonicDatabaseService
         extends BasicSpringDataRepositoryDatabaseService<TestModel, Long, TestMonotonicEntity>
-        implements MonotonicDatabaseService<TestModel, String> {
+        implements MonotonicDatabaseService {
 
     public TestMonotonicDatabaseService(
             IAccessionedObjectRepository<TestMonotonicEntity, Long> repository,

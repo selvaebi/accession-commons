@@ -46,8 +46,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -72,7 +72,7 @@ public class BasicRestControllerTest {
 
     @Test
     public void testNoContentIfAccessioningDoesNotExist() throws Exception {
-        doGet("notExistingId").andExpect(content().string("[]"));
+        doGet("notExistingId", status().isNotFound());
     }
 
     private ResultActions doGet(String accession) throws Exception {
@@ -222,9 +222,7 @@ public class BasicRestControllerTest {
         doUpdate(accession, 1, "get-accession-test-1b");
 
         doGet(accession)
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder("get-accession-test-1b")));
+                .andExpect(jsonPath("$.data.value").value("get-accession-test-1b"));
     }
 
     @Test
@@ -250,9 +248,7 @@ public class BasicRestControllerTest {
     public void testDeprecate() throws Exception {
         String accession = extractAccession(doAccession("deprecate-test-1"));
         doDeprecate(accession);
-        doGet(accession)
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(0)));
+        doGet(accession, status().isGone());
         doGetVersion(accession, 1, status().isGone());
     }
 
@@ -287,13 +283,22 @@ public class BasicRestControllerTest {
         String accession1 = extractAccession(doAccession("merge-test-1"));
         String accession2 = extractAccession(doAccession("merge-test-2"));
         doMerge(accession1, accession2).andExpect(status().isOk());
-        doGet(accession1)
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(0)));
+        doGet(accession1, status().is3xxRedirection()).andExpect(
+                redirectedUrlPattern("**/v1/test/" + accession2));
         doMerge(accession1, accession2).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
+                andExpect(jsonPath("$.message").value(accession1 + " has been already merged into " + accession2));
         doMerge(accession2, accession1).andExpect(status().isNotFound()).
-                andExpect(jsonPath("$.message").value(accession1 + " has been merged already"));
+                andExpect(jsonPath("$.message").value(accession1 + " has been already merged into " + accession2));
+    }
+
+    @Test
+    public void testDeprecateAfterMerge() throws Exception {
+        String accession1 = extractAccession(doAccession("merge-test-1"));
+        String accession2 = extractAccession(doAccession("merge-test-2"));
+        doMerge(accession1, accession2).andExpect(status().isOk());
+        mockMvc.perform(delete("/v1/test/" + accession1).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.message")
+                .value(accession1 + " has been already merged into " + accession2));
     }
 
     private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {

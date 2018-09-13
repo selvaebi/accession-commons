@@ -32,21 +32,40 @@ public class BlockParameters {
     private long blockSize;
     private long nextBlockInterval;
 
-    public BlockParameters(Map<String, String> blockInitializations) {
-        try {
-            this.blockStartValue = Long.parseLong(blockInitializations.get(BLOCK_START_VALUE));
-            this.blockSize = Long.parseLong(blockInitializations.get(BLOCK_SIZE));
-            this.nextBlockInterval = Long.parseLong(blockInitializations.get(NEXT_BLOCK_INTERVAL));
-            if (!isBlockParametersValid()) {
-                throw new BlockInitializationException("BlockParameters are invalid");
-            }
-        } catch (RuntimeException ex) {
-            throw new BlockInitializationException("BlockParameters not initialized for the category or invalid");
+    public BlockParameters(String categoryId, Map<String, String> blockInitializations) {
+        StringBuilder errorBuffer = new StringBuilder();
+        blockStartValue = parseVariable(errorBuffer, BLOCK_START_VALUE, blockInitializations, 0);
+        blockSize = parseVariable(errorBuffer, BLOCK_SIZE, blockInitializations, 1);
+        nextBlockInterval = parseVariable(errorBuffer, NEXT_BLOCK_INTERVAL, blockInitializations, 0);
+
+        if (errorBuffer.length() > 0) {
+            throw new BlockInitializationException("Error while parsing parameters for category '" + categoryId + "' " +
+                    "error: '" + errorBuffer.toString() + "'");
         }
     }
 
-    private boolean isBlockParametersValid() {
-        return this.blockStartValue >= 0 && this.blockSize > 0 && this.nextBlockInterval >= 0;
+    private long parseVariable(StringBuilder errorBuffer, String variable,
+                               Map<String, String> variables, int minValue) {
+        if (variables == null){
+            errorBuffer.append("No parameters found");
+            return -1;
+        }
+        if (!variables.containsKey(variable)) {
+            errorBuffer.append(" Variable '" + variable + "' is missing.");
+            return -1;
+        } else {
+            try {
+                Long value = Long.parseLong(variables.get(variable));
+                if (value < minValue) {
+                    errorBuffer.append(" Variable '" + variable + "' value should be greater than or equal to '" + minValue + "'");
+                    return -1;
+                }
+                return value;
+            } catch (NumberFormatException e) {
+                errorBuffer.append(" Variable '" + variable + "' could not be parsed correctly.");
+                return -1;
+            }
+        }
     }
 
     public long getBlockStartValue() {

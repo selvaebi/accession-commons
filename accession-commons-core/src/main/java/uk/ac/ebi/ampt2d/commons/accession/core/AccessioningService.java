@@ -35,15 +35,29 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
     /**
-     * Finds last version of all valid accessions with their possible data model representations.
+     * Finds last version of provided accession with its possible data model representations.
      *
-     * @param accessions
+     * @param accession
      * @return
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      */
-    List<AccessionWrapper<MODEL, HASH, ACCESSION>> getByAccessions(List<ACCESSION> accessions);
+    AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
-    AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accessions, int version)
-    throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
+    /**
+     * Finds the provided accession with its possible data model representations.
+     *
+     * @param accession
+     * @param version
+     * @return accession with particular version
+     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
+     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     */
+    AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
      * Updates a specific patch version of an accessioned object. It does not create a new version / patch
@@ -51,7 +65,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      * @param accession
      * @param version
      * @param message
-     * @return Accession with complete patch information
+     * @return updated accession with all the patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
@@ -81,7 +95,6 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
      *
      * @param accession
      * @param reason
-     * @return Accession with complete patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession

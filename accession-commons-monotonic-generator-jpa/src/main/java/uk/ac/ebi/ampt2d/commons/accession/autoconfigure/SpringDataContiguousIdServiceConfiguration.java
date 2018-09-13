@@ -52,7 +52,8 @@ public class SpringDataContiguousIdServiceConfiguration {
     public ContiguousIdBlockService contiguousIdBlockService(@Autowired ContiguousIdBlockRepository
                                                                      contiguousIdBlockRepository) {
         return new ContiguousIdBlockService(contiguousIdBlockRepository, contiguousBlockInitializations().entrySet()
-                .stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new BlockParameters(entry.getValue()))));
+                .stream().collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> new BlockParameters(entry.getKey(), entry.getValue()))));
     }
 
 }

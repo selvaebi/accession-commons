@@ -22,13 +22,20 @@ package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
  */
 public class AccessionMergedException extends Exception {
 
-    private final String accessionId;
+    private final String originAccessionId;
+    private final String destinationAccessionId;
 
-    public AccessionMergedException(String accessionId) {
-        this.accessionId = accessionId;
+    public AccessionMergedException(String originAccessionId, String destinationAccessionId) {
+        super(originAccessionId + " has been already merged into " + destinationAccessionId);
+        this.originAccessionId = originAccessionId;
+        this.destinationAccessionId = destinationAccessionId;
     }
 
-    public String getAccessionId() {
-        return accessionId;
+    public String getOriginAccessionId() {
+        return originAccessionId;
+    }
+
+    public String getDestinationAccessionId() {
+        return destinationAccessionId;
     }
 }
