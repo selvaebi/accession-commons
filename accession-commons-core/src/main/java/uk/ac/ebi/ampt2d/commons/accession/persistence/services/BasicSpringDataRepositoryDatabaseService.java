@@ -76,7 +76,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         return wrappedAccessions;
     }
 
-    private AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ENTITY entity) {
+    protected AccessionWrapper<MODEL, String, ACCESSION> toModelWrapper(ACCESSION_ENTITY entity) {
         return new AccessionWrapper<>(entity.getAccession(), entity.getHashedMessage(), entity.getModel(),
                 entity.getVersion());
     }
