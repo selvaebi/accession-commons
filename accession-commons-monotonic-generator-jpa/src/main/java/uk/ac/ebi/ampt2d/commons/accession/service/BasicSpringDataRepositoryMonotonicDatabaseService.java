@@ -17,15 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.service;
 
-import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
-import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionVersionsWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.EventType;
-import uk.ac.ebi.ampt2d.commons.accession.core.models.SaveResponse;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
@@ -33,14 +25,10 @@ import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedO
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Basic implementation of {@link MonotonicDatabaseService} that requires a Spring Data repository that extends
@@ -76,6 +64,18 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
 
     @Override
     public long[] getAccessionsInRanges(Collection<MonotonicRange> ranges) {
-        return new long[0];
+        List<Long> accessionsInRanges = new ArrayList<>();
+        for (MonotonicRange range : ranges) {
+            repository
+                    .findByAccessionGreaterThanEqualAndAccessionLessThanEqual(range.getStart(), range.getEnd())
+                    .stream()
+                    .map(IAccessionedObject::getAccession)
+                    .forEach(accessionsInRanges::add);
+        }
+        long[] accessionArray = new long[]{accessionsInRanges.size()};
+        for (int i = 0; i < accessionsInRanges.size(); i++) {
+            accessionArray[i] = accessionsInRanges.get(i);
+        }
+        return accessionArray;
     }
 }

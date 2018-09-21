@@ -26,6 +26,7 @@ import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfi
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -34,6 +35,12 @@ import static org.junit.Assert.assertEquals;
 @DataJpaTest
 @ContextConfiguration(classes = {TestMonotonicDatabaseServiceTestConfiguration.class})
 public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
+
+    private static final long ACCESSION_1 = 10L;
+
+    private static final long ACCESSION_3 = 120L;
+
+    private static final long ACCESSION_2 = 20L;
 
     @Autowired
     private TestMonotonicRepository repository;
@@ -47,6 +54,35 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
         long[] accessionsInRanges = service.getAccessionsInRanges(
                 Collections.singletonList(new MonotonicRange(0L, 100L)));
         assertEquals(1, accessionsInRanges.length);
-        assertEquals(10, accessionsInRanges[0]);
+        assertEquals(ACCESSION_1, accessionsInRanges[0]);
+    }
+
+    @Test
+    public void recoverUnconfirmedAccessionsSeveralEntities() {
+        repository.insert(Arrays.asList(
+                new TestMonotonicEntity(10L, "message", 1, "value 1"),
+                new TestMonotonicEntity(20L, "message", 1, "value 2")
+        ));
+        long[] accessionsInRanges = service.getAccessionsInRanges(
+                Collections.singletonList(new MonotonicRange(0L, 100L)));
+        assertEquals(2, accessionsInRanges.length);
+        assertEquals(ACCESSION_1, accessionsInRanges[0]);
+        assertEquals(ACCESSION_2, accessionsInRanges[1]);
+    }
+
+    @Test
+    public void recoverUnconfirmedAccessionsSeveralBlocks() {
+        repository.insert(Arrays.asList(
+                new TestMonotonicEntity(10L, "message", 1, "value 1"),
+                new TestMonotonicEntity(120L, "message", 1, "value 2")
+        ));
+        long[] accessionsInRanges = service.getAccessionsInRanges(
+                Arrays.asList(
+                        new MonotonicRange(0L, 100L),
+                        new MonotonicRange(100L, 200L)
+                ));
+        assertEquals(2, accessionsInRanges.length);
+        assertEquals(ACCESSION_1, accessionsInRanges[0]);
+        assertEquals(ACCESSION_3, accessionsInRanges[1]);
     }
 }

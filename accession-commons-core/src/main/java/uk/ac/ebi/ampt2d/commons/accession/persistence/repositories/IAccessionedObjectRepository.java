@@ -36,6 +36,8 @@ public interface IAccessionedObjectRepository<
 
     List<ENTITY> findByAccessionIn(Collection<ACCESSION> accessions);
 
+    List<ENTITY> findByAccessionGreaterThanEqualAndAccessionLessThanEqual(ACCESSION start, ACCESSION end);
+
     ENTITY findByAccessionAndVersion(ACCESSION accession, int version);
 
 }
