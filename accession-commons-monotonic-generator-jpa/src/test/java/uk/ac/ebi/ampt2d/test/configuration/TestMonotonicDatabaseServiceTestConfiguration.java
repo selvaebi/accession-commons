@@ -27,6 +27,7 @@ import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessio
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
+import uk.ac.ebi.ampt2d.commons.accession.service.BasicSpringDataRepositoryMonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestLongOperationEntity;
@@ -64,6 +65,14 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
                 TestMonotonicEntity::new,
                 inactiveService()
         );
+    }
+
+    @Bean
+    public BasicSpringDataRepositoryMonotonicDatabaseService getBasicService() {
+        return new BasicSpringDataRepositoryMonotonicDatabaseService<>(
+                repository,
+                TestMonotonicEntity::new,
+                inactiveService());
     }
 
     @Bean
