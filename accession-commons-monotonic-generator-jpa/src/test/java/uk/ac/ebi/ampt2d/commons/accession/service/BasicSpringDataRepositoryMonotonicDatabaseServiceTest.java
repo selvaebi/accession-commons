@@ -46,7 +46,9 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
 
     private static final long ACCESSION_4 = 400000L;
 
-    private static final long ACCESSION_5 = 1000020L;
+    private static final long ACCESSION_5 = 990000L;
+
+    private static final long ACCESSION_6 = 1000001L;
 
     private static final long START_RANGE_1 = 0L;
 
@@ -58,7 +60,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
 
     private static final long START_BIG_RANGE_3 = 200L;
 
-    private static final long END_BIG_RANGE_3 = 1000199L;
+    private static final long END_BIG_RANGE_3 = 1000000L;
 
     @Autowired
     private TestMonotonicRepository repository;
@@ -119,7 +121,10 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
         repository.insert(Arrays.asList(
                 new TestMonotonicEntity(ACCESSION_1, "message 1", 1, "value 1"),
                 new TestMonotonicEntity(ACCESSION_4, "message 2", 1, "value 2"),
-                new TestMonotonicEntity(ACCESSION_5, "message 3", 1, "value 3")
+                new TestMonotonicEntity(ACCESSION_5, "message 3", 1, "value 3"),
+                
+                // note this accession falls out of every range
+                new TestMonotonicEntity(ACCESSION_6, "message 4", 1, "value 4")
         ));
         long[] accessionsInRanges = service.getAccessionsInRanges(
                 Arrays.asList(
