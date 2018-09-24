@@ -46,6 +46,8 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
         extends BasicSpringDataRepositoryDatabaseService<MODEL, Long, ACCESSION_ENTITY>
         implements MonotonicDatabaseService<MODEL, String> {
 
+    private static final long MAX_RANGE_SIZE = 10000L;
+
     private final IAccessionedObjectRepository<ACCESSION_ENTITY, Long> repository;
 
     public BasicSpringDataRepositoryMonotonicDatabaseService(
@@ -59,17 +61,29 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
     @Override
     public long[] getAccessionsInRanges(Collection<MonotonicRange> ranges) {
         List<Long> accessionsInRanges = new ArrayList<>();
-        for (MonotonicRange range : ranges) {
-            repository
-                    .findByAccessionGreaterThanEqualAndAccessionLessThanEqual(range.getStart(), range.getEnd())
-                    .stream()
-                    .map(IAccessionedObject::getAccession)
-                    .forEach(accessionsInRanges::add);
+        for (MonotonicRange potentiallyBigRange : ranges) {
+            for (MonotonicRange range : ensureRangeMaxSize(potentiallyBigRange, MAX_RANGE_SIZE)) {
+                repository
+                        .findByAccessionGreaterThanEqualAndAccessionLessThanEqual(range.getStart(), range.getEnd())
+                        .stream()
+                        .map(IAccessionedObject::getAccession)
+                        .forEach(accessionsInRanges::add);
+            }
         }
         long[] accessionArray = new long[accessionsInRanges.size()];
         for (int i = 0; i < accessionsInRanges.size(); i++) {
             accessionArray[i] = accessionsInRanges.get(i);
         }
         return accessionArray;
+    }
+
+    private List<MonotonicRange> ensureRangeMaxSize(MonotonicRange range, long maxRangeSize) {
+        List<MonotonicRange> ranges = new ArrayList<>();
+        while (range.getTotalOfValues() > maxRangeSize) {
+            ranges.add(new MonotonicRange(range.getStart(), range.getStart() + maxRangeSize - 1));
+            range = new MonotonicRange(range.getStart() + maxRangeSize, range.getEnd());
+        }
+        ranges.add(range);
+        return ranges;
     }
 }
