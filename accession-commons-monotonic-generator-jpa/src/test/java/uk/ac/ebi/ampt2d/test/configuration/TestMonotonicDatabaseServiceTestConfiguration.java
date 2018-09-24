@@ -35,7 +35,6 @@ import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicInactiveAccessionRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
-import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 @Configuration
 @EnableSpringDataContiguousIdService
@@ -59,16 +58,7 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     private TestLongHistoryRepository historyRepository;
 
     @Bean
-    public TestMonotonicDatabaseService getDatabaseService() {
-        return new TestMonotonicDatabaseService(
-                repository,
-                TestMonotonicEntity::new,
-                inactiveService()
-        );
-    }
-
-    @Bean
-    public BasicSpringDataRepositoryMonotonicDatabaseService getBasicService() {
+    public BasicSpringDataRepositoryMonotonicDatabaseService getDatabaseService() {
         return new BasicSpringDataRepositoryMonotonicDatabaseService<>(
                 repository,
                 TestMonotonicEntity::new,

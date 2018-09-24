@@ -48,18 +48,12 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
 
     private final IAccessionedObjectRepository<ACCESSION_ENTITY, Long> repository;
 
-    private final Function<AccessionWrapper<MODEL, String, Long>, ACCESSION_ENTITY> toEntityFunction;
-
-    private final InactiveAccessionService<MODEL, Long, ACCESSION_ENTITY> inactiveAccessionService;
-
     public BasicSpringDataRepositoryMonotonicDatabaseService(
             IAccessionedObjectRepository<ACCESSION_ENTITY, Long> repository,
             Function<AccessionWrapper<MODEL, String, Long>, ACCESSION_ENTITY> toEntityFunction,
             InactiveAccessionService<MODEL, Long, ACCESSION_ENTITY> inactiveAccessionService) {
         super(repository, toEntityFunction, inactiveAccessionService);
         this.repository = repository;
-        this.toEntityFunction = toEntityFunction;
-        this.inactiveAccessionService = inactiveAccessionService;
     }
 
     @Override
