@@ -72,7 +72,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
                     .map(IAccessionedObject::getAccession)
                     .forEach(accessionsInRanges::add);
         }
-        long[] accessionArray = new long[]{accessionsInRanges.size()};
+        long[] accessionArray = new long[accessionsInRanges.size()];
         for (int i = 0; i < accessionsInRanges.size(); i++) {
             accessionArray[i] = accessionsInRanges.get(i);
         }
