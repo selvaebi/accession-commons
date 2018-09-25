@@ -20,6 +20,7 @@ package uk.ac.ebi.ampt2d.commons.accession.service;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.AccessionProjection;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectRepository;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
@@ -46,7 +47,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
         extends BasicSpringDataRepositoryDatabaseService<MODEL, Long, ACCESSION_ENTITY>
         implements MonotonicDatabaseService<MODEL, String> {
 
-    private static final long MAX_RANGE_SIZE = 10000L;
+    private static final long MAX_RANGE_SIZE = 100000L;
 
     private final IAccessionedObjectRepository<ACCESSION_ENTITY, Long> repository;
 
@@ -60,19 +61,17 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
 
     @Override
     public long[] getAccessionsInRanges(Collection<MonotonicRange> ranges) {
-        List<Long> accessionsInRanges = new ArrayList<>();
+        List<AccessionProjection<Long>> accessionsInRanges = new ArrayList<>();
         for (MonotonicRange potentiallyBigRange : ranges) {
             for (MonotonicRange range : ensureRangeMaxSize(potentiallyBigRange, MAX_RANGE_SIZE)) {
-                repository
-                        .findByAccessionGreaterThanEqualAndAccessionLessThanEqual(range.getStart(), range.getEnd())
-                        .stream()
-                        .map(IAccessionedObject::getAccession)
-                        .forEach(accessionsInRanges::add);
+                accessionsInRanges.addAll(
+                        repository.findByAccessionGreaterThanEqualAndAccessionLessThanEqual(range.getStart(),
+                                                                                            range.getEnd()));
             }
         }
         long[] accessionArray = new long[accessionsInRanges.size()];
         for (int i = 0; i < accessionsInRanges.size(); i++) {
-            accessionArray[i] = accessionsInRanges.get(i);
+            accessionArray[i] = accessionsInRanges.get(i).getAccession();
         }
         return accessionArray;
     }
