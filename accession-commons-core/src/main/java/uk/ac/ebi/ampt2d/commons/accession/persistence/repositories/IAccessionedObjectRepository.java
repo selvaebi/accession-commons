@@ -19,8 +19,8 @@ package uk.ac.ebi.ampt2d.commons.accession.persistence.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.models.AccessionProjection;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.models.IAccessionedObject;
-import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -36,7 +36,8 @@ public interface IAccessionedObjectRepository<
 
     List<ENTITY> findByAccessionIn(Collection<ACCESSION> accessions);
 
-    List<ENTITY> findByAccessionGreaterThanEqualAndAccessionLessThanEqual(ACCESSION start, ACCESSION end);
+    List<AccessionProjection<ACCESSION>> findByAccessionGreaterThanEqualAndAccessionLessThanEqual(ACCESSION start,
+                                                                                                  ACCESSION end);
 
     ENTITY findByAccessionAndVersion(ACCESSION accession, int version);
 
