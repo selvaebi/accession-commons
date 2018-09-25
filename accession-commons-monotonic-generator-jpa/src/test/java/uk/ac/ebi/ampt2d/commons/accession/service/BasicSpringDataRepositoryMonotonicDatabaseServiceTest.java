@@ -24,7 +24,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
+import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 
@@ -66,7 +68,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
     private TestMonotonicRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryMonotonicDatabaseService service;
+    private MonotonicDatabaseService<TestModel, String> service;
 
     @Before
     public void setUp() throws Exception {
@@ -122,7 +124,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
                 new TestMonotonicEntity(ACCESSION_1, "message 1", 1, "value 1"),
                 new TestMonotonicEntity(ACCESSION_4, "message 2", 1, "value 2"),
                 new TestMonotonicEntity(ACCESSION_5, "message 3", 1, "value 3"),
-                
+
                 // note this accession falls out of every range
                 new TestMonotonicEntity(ACCESSION_6, "message 4", 1, "value 4")
         ));

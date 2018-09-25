@@ -29,10 +29,9 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.ContiguousIdBlockService;
-import uk.ac.ebi.ampt2d.commons.accession.service.BasicSpringDataRepositoryMonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +48,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     private static final String INSTANCE_ID = "test-instance";
 
     @Autowired
-    private BasicSpringDataRepositoryMonotonicDatabaseService<TestModel, TestMonotonicEntity> databaseService;
+    private MonotonicDatabaseService<TestModel, String> databaseService;
     @Autowired
     private ContiguousIdBlockService contiguousIdBlockService;
 

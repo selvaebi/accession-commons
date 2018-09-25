@@ -31,10 +31,9 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedExcepti
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.commons.accession.service.BasicSpringDataRepositoryMonotonicDatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
 import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
-import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
 
 import java.util.Arrays;
@@ -51,7 +50,7 @@ public class BasicMonotonicAccessioningTest {
     private TestMonotonicRepository repository;
 
     @Autowired
-    private BasicSpringDataRepositoryMonotonicDatabaseService<TestModel, TestMonotonicEntity> databaseService;
+    private MonotonicDatabaseService<TestModel, String> databaseService;
 
     @Autowired
     private MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator;
