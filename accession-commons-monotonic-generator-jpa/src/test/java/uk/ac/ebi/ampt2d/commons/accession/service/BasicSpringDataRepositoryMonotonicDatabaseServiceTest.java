@@ -68,7 +68,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseServiceTest {
     private TestMonotonicRepository repository;
 
     @Autowired
-    private MonotonicDatabaseService<TestModel, String> service;
+    private MonotonicDatabaseService service;
 
     @Before
     public void setUp() throws Exception {

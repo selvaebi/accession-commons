@@ -58,11 +58,12 @@ public class TestMonotonicDatabaseServiceTestConfiguration {
     private TestLongHistoryRepository historyRepository;
 
     @Bean
-    public BasicSpringDataRepositoryMonotonicDatabaseService getDatabaseService() {
+    public BasicSpringDataRepositoryMonotonicDatabaseService<TestModel, TestMonotonicEntity> getDatabaseService() {
         return new BasicSpringDataRepositoryMonotonicDatabaseService<>(
                 repository,
                 TestMonotonicEntity::new,
-                inactiveService());
+                inactiveService()
+        );
     }
 
     @Bean

@@ -17,6 +17,7 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.service;
 
+import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicRange;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.service.MonotonicDatabaseService;
@@ -45,7 +46,7 @@ public class BasicSpringDataRepositoryMonotonicDatabaseService<
         MODEL,
         ACCESSION_ENTITY extends IAccessionedObject<MODEL, String, Long>>
         extends BasicSpringDataRepositoryDatabaseService<MODEL, Long, ACCESSION_ENTITY>
-        implements MonotonicDatabaseService<MODEL, String> {
+        implements MonotonicDatabaseService {
 
     private static final long MAX_RANGE_SIZE = 100000L;
 
