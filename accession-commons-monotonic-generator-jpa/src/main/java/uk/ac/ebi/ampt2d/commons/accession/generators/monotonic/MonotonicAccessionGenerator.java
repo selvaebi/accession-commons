@@ -161,7 +161,7 @@ public class MonotonicAccessionGenerator<MODEL> implements AccessionGenerator<MO
         int i = 0;
         List<AccessionWrapper<MODEL, HASH, Long>> accessionedModels = new ArrayList<>();
         for (Map.Entry<HASH, ? extends MODEL> entry : messages.entrySet()) {
-            accessionedModels.add(new AccessionWrapper(accessions[i], entry.getKey(), entry.getValue()));
+            accessionedModels.add(new AccessionWrapper<>(accessions[i], entry.getKey(), entry.getValue()));
             i++;
         }
 

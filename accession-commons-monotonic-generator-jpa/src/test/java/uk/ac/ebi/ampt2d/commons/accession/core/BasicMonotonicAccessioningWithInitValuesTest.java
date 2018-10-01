@@ -28,11 +28,10 @@ import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionCouldNotBeGen
 import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import uk.ac.ebi.ampt2d.commons.accession.generators.monotonic.MonotonicAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
-import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
+import uk.ac.ebi.ampt2d.test.configuration.TestMonotonicDatabaseServiceTestConfiguration;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicEntity;
 import uk.ac.ebi.ampt2d.test.persistence.TestMonotonicRepository;
-import uk.ac.ebi.ampt2d.test.service.TestMonotonicDatabaseService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +48,7 @@ public class BasicMonotonicAccessioningWithInitValuesTest {
     private TestMonotonicRepository repository;
 
     @Autowired
-    private TestMonotonicDatabaseService databaseService;
+    private DatabaseService<TestModel, String, Long> databaseService;
 
     @Autowired
     private MonotonicAccessionGenerator<TestModel> monotonicAccessionGenerator;
