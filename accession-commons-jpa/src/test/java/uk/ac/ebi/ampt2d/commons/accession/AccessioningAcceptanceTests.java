@@ -27,7 +27,9 @@ import org.junit.runner.RunWith;
                 "src/test/resources/features/accession.feature",
                 "src/test/resources/features/modification.feature",
                 "src/test/resources/features/merge.feature",
-                "src/test/resources/features/retrieval.feature"},
+                "src/test/resources/features/retrieval.feature",
+                "src/test/resources/features/deprecation.feature",
+                "src/test/resources/features/history.feature"},
         plugin = {
                 "pretty",
                 "html:target/cucumber"},

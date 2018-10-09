@@ -41,6 +41,7 @@ import uk.ac.ebi.ampt2d.test.persistence.repository.TestOperationRepository;
 import uk.ac.ebi.ampt2d.test.persistence.repository.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.service.TestMongoDbInactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
+import uk.ac.ebi.ampt2d.test.testers.HistoryServiceTester;
 
 @Configuration
 @EntityScan(basePackages = {"uk.ac.ebi.ampt2d.test.persistence.document"})
@@ -96,4 +97,9 @@ public class MongoDbCucumberTestConfiguration {
         return new AccessioningServiceTester(testMongoDbAccessioningService());
     }
 
+    @Bean
+    @Scope("cucumber-glue")
+    public HistoryServiceTester historyServiceTester() {
+        return new HistoryServiceTester(testMongoDbHistoryService());
+    }
 }

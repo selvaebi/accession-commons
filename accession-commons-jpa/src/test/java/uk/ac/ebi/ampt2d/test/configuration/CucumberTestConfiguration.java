@@ -31,11 +31,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import uk.ac.ebi.ampt2d.commons.accession.core.AccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.BasicAccessioningService;
 import uk.ac.ebi.ampt2d.commons.accession.core.DatabaseService;
+import uk.ac.ebi.ampt2d.commons.accession.core.HistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.generators.SingleAccessionGenerator;
 import uk.ac.ebi.ampt2d.commons.accession.hashing.SHA1HashingFunction;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.repositories.BasicJpaAccessionedObjectCustomRepositoryImpl;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.service.BasicJpaInactiveAccessionService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.repositories.IAccessionedObjectCustomRepository;
+import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicHistoryService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.BasicSpringDataRepositoryDatabaseService;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.services.InactiveAccessionService;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
@@ -46,6 +48,7 @@ import uk.ac.ebi.ampt2d.test.persistence.TestRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringHistoryRepository;
 import uk.ac.ebi.ampt2d.test.persistence.TestStringOperationEntity;
 import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
+import uk.ac.ebi.ampt2d.test.testers.HistoryServiceTester;
 
 @Configuration
 @ComponentScan(basePackageClasses = IAccessionedObjectCustomRepository.class)
@@ -102,9 +105,20 @@ public class CucumberTestConfiguration {
     }
 
     @Bean
+    public HistoryService<TestModel, String> testJpaHistoryService() {
+        return new BasicHistoryService<>(repository, inactiveService());
+    }
+
+    @Bean
     @Scope("cucumber-glue")
     public AccessioningServiceTester accessioningServiceTester() {
         return new AccessioningServiceTester(accessioningService());
+    }
+
+    @Bean
+    @Scope("cucumber-glue")
+    public HistoryServiceTester historyServiceTester() {
+        return new HistoryServiceTester(testJpaHistoryService());
     }
 
 }

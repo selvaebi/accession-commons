@@ -27,12 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDeprecatedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionDoesNotExistException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.AccessionMergedException;
 import uk.ac.ebi.ampt2d.commons.accession.core.exceptions.HashAlreadyExistsException;
 import uk.ac.ebi.ampt2d.test.configuration.CucumberTestConfiguration;
 import uk.ac.ebi.ampt2d.test.models.TestModel;
 import uk.ac.ebi.ampt2d.test.testers.AccessioningServiceTester;
+import uk.ac.ebi.ampt2d.test.testers.HistoryServiceTester;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,6 +50,9 @@ public class AccessioningServiceStepDefinitions {
 
     @Autowired
     private AccessioningServiceTester tester;
+
+    @Autowired
+    private HistoryServiceTester historyServiceTester;
 
     @Given("^already accessioned ([\\w-,]+)$")
     @When("^user submits ([\\w-,]+) to accessioning service$")
@@ -139,5 +144,35 @@ public class AccessioningServiceStepDefinitions {
     @Then("^user receives no data$")
     public void userReceivesNoData() {
         assertTrue(tester.getSingleVersionResults().getData().isEmpty(),"User received data");
+    }
+
+    @When("^user deprecates ([\\w-]+) reason: ([\\w ]+)$")
+    public void userDeprecatesAccession(String accession, String reason) throws Throwable {
+        tester.deprecate(accession, reason);
+    }
+
+    @Then("^user should receive 'accession has been deprecated exception'$")
+    public void userShouldReceiveAccessionHasBeenDeprecatedException() {
+        tester.getLastMethodResponse().assertThrow(AccessionDeprecatedException.class);
+    }
+
+    @When("^user search history of ([\\w-,]+)$")
+    public void userSearchHistoryOfAccession(String accession){
+        historyServiceTester.getHistory(accession);
+    }
+
+    @Then("^user receives accession does not exist exception$")
+    public void userReceivesAccessionDoesNotExistException() throws Throwable {
+        historyServiceTester.getLastMethodResponse().assertThrow(AccessionDoesNotExistException.class);
+    }
+
+    @Then("^search returns total number of events as (\\d+)$")
+    public void searchReturnsEvents(int noOfEvents) throws Throwable {
+        historyServiceTester.assertSearchReturnEvents(noOfEvents);
+    }
+
+    @And("^user should receive history events in order :([^ ]+)$")
+    public void userShouldReceiveHistoryEventsOfAccessionInOrder(String events) throws Throwable {
+        historyServiceTester.assertEventsInOrder(events);
     }
 }
