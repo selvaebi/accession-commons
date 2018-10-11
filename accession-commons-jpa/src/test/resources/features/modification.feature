@@ -38,3 +38,14 @@ Feature: Accession modification
     When  user updates id-service-A patch 1 with AB
     Then user should receive 'accession does not exist'
 
+  Scenario: I want to update an object but the object has been deprecated
+    Given already accessioned A
+    And user deprecates id-service-A reason: because i say so
+    When user updates id-service-A patch 1 with AA
+    Then user should receive 'accession has been deprecated exception'
+
+  Scenario: I want to patch an object but the object has been deprecated
+    Given already accessioned A
+    And user deprecates id-service-A reason: because i say so
+    When user sends patch AAB for accession id-service-A
+    Then user should receive 'accession has been deprecated exception'

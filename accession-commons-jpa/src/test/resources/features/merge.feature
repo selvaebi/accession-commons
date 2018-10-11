@@ -35,3 +35,10 @@ Feature: Accession merge
     When user merges id-service-A into id-service-B reason: because i say so
     When user merges id-service-B into id-service-C reason: because i say so
     Then operation finished correctly
+
+  Scenario: I want to merge an object but the object has been deprecated
+    Given already accessioned A
+    And already accessioned B
+    And user deprecates id-service-A reason: because i say so
+    When user merges id-service-A into id-service-B reason: because i say so
+    Then user should receive 'accession has been deprecated exception'

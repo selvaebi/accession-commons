@@ -8,6 +8,8 @@ Feature: Accession deprecation
     Given already accessioned A
     When user deprecates id-service-A reason: because i say so
     Then operation finished correctly
+    When user retrieves accessions: id-service-A
+    Then user should receive 'accession has been deprecated exception'
 
   Scenario: I want to deprecate an object but the object has been already merged.
     Given already accessioned A
@@ -15,6 +17,22 @@ Feature: Accession deprecation
     And user merges id-service-A into id-service-B reason: because i say so
     When user deprecates id-service-A reason: because i say so
     Then user should receive 'accession already merged exception'
+
+  Scenario: I want to deprecate an object that has been updated.
+    Given already accessioned A
+    And user updates id-service-A patch 1 with AA
+    When user deprecates id-service-A reason: because i say so
+    Then operation finished correctly
+    When user retrieves accessions: id-service-A
+    Then user should receive 'accession has been deprecated exception'
+
+  Scenario: I want to deprecate an object that has been patched.
+    Given already accessioned A
+    And user sends patch AAB for accession id-service-A
+    When user deprecates id-service-A reason: because i say so
+    Then operation finished correctly
+    When user retrieves accessions: id-service-A
+    Then user should receive 'accession has been deprecated exception'
 
   Scenario: I want to deprecate an object but the object has been already deprecated.
     Given already accessioned A
