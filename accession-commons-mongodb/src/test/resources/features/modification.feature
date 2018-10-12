@@ -1,6 +1,6 @@
 Feature: Accession modification
 
-  Scenario Outline: I want to create a new patch of an existing object, in order to register improvements made to it
+  Scenario Outline: User wants to create a new patch of an existing object, in order to register improvements made to it
   without losing access to the old information.
     Given already accessioned <objects>
     When user sends patch <input> for accession <accession>
@@ -12,11 +12,11 @@ Feature: Accession modification
       | B       | BB    | id-service-B |
       | A,B,C,E | AA    | id-service-A |
 
-  Scenario: I want to create a new patch of a non existing object
+  Scenario: User wants to create a new patch of a non existing object
     When user sends patch AA for accession id-service-A
     Then user should receive 'accession does not exist'
 
-  Scenario Outline: I want to update the fields that identify uniquely an object,
+  Scenario Outline: User wants to update the fields that identify uniquely an object,
   without losing access to the old information.
     Given already accessioned <objects>
     When user updates <accession> patch <patch> with <input>
@@ -28,24 +28,24 @@ Feature: Accession modification
       | B       | BB    | id-service-B | 1     | 71C9DB717578B9EE49A59E69375C16C0627DFFEF |
       | A,B,C,E | AA    | id-service-A | 1     | 801C34269F74ED383FC97DE33604B8A905ADB635 |
 
-  Scenario: I want to update the fields that identify uniquely an object, but another object already has the same
+  Scenario: User wants to update the fields that identify uniquely an object, but another object already has the same
   values.
     Given already accessioned A,B
     When user updates id-service-A patch 1 with B
     Then user should receive 'hash already exists exception'
 
-  Scenario: I want to update an object that does not exist
+  Scenario: User wants to update an object that does not exist
     When  user updates id-service-A patch 1 with AB
     Then user should receive 'accession does not exist'
 
-  Scenario: I want to update an object but the object has been deprecated
+  Scenario: User wants to update an object but the object has been deprecated
     Given already accessioned A
-    And user deprecates id-service-A reason: because i say so
+    And user deprecates id-service-A reason: because user says so
     When user updates id-service-A patch 1 with AA
     Then user should receive 'accession has been deprecated exception'
 
-  Scenario: I want to patch an object but the object has been deprecated
+  Scenario: User wants to patch an object but the object has been deprecated
     Given already accessioned A
-    And user deprecates id-service-A reason: because i say so
+    And user deprecates id-service-A reason: because user says so
     When user sends patch AAB for accession id-service-A
     Then user should receive 'accession has been deprecated exception'

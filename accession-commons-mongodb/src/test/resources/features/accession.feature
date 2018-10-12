@@ -1,6 +1,6 @@
 Feature: Accession generation
 
-  Scenario Outline: I want to receive unique accession for my newly submitted / created objects, so they are
+  Scenario Outline: User wants to receive unique accession for their newly submitted / created objects, so they are
   identifiable in the system.
     When user submits <input> to accessioning service
     Then user received accessions: <accessions>
@@ -10,7 +10,7 @@ Feature: Accession generation
       | B,C   | id-service-B,id-service-C              |
       | D,E,F | id-service-D,id-service-E,id-service-F |
 
-  Scenario Outline: I want to receive accessions for a mix of new and pre-existing objects.
+  Scenario Outline: User wants to receive accessions for a mix of new and pre-existing objects.
     Given already accessioned <objects>
     When user submits <input> to accessioning service
     Then user received accessions: <accessions>
@@ -22,7 +22,7 @@ Feature: Accession generation
       | A,B,C,E | D,E,F | id-service-D,id-service-E,id-service-F |
 
   @ignore
-  Scenario: I want to generate accession in a space, based on clustering accessions from another existing space.
+  Scenario: User wants to generate accession in a space, based on clustering accessions from another existing space.
     When user provides a list of ss accessions
     Then user receives a rs list of accessions
     And all rs must have at least one ss accessioned
