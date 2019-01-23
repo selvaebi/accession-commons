@@ -43,9 +43,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -67,33 +69,6 @@ public class BasicRestControllerForDecoratedAccessionTest {
 
     @Autowired
     private JacksonTester<List<AccessionResponseDTO<BasicRestModel, BasicRestModel, String, String>>> jsonAccessions;
-
-    @Test
-    public void testAccessionOk() throws Exception {
-        String accession1 = extractAccession(doAccession("simpleTest"));
-        Assert.assertEquals("EGA00000000100", accession1);
-    }
-
-    private ResultActions doAccession(ResultMatcher resultMatcher, String... values) throws Exception {
-        final BasicRestModel[] restModels = Arrays.stream(values).map(s -> new BasicRestModel(s))
-                .toArray(size -> new BasicRestModel[size]);
-        return mockMvc.perform(post("/v1/test")
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .content(jsonModelList.write(Arrays.asList(restModels)).getJson()))
-                .andExpect(resultMatcher);
-    }
-
-    private MvcResult doAccession(String... values) throws Exception {
-        return doAccession(status().isOk(), values)
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(values.length)))
-                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder(values)))
-                .andReturn();
-    }
-
-    private String extractAccession(MvcResult mvcResult) throws java.io.IOException {
-        return jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0).getAccession();
-    }
 
     @Test
     public void testAllOperationsAfterMerge() throws Exception {
@@ -128,6 +103,32 @@ public class BasicRestControllerForDecoratedAccessionTest {
                 .content(jsonModel.write(new BasicRestModel("patch-test-3")).getJson()))
                 .andExpect(status().isNotFound()).andExpect(jsonPath("$.message")
                 .value(accession2 + " has been already merged into " + accession3));
+
+        //test get after merge
+        mockMvc.perform(get("/v1/test/" + accession2))
+                .andExpect(status().isMovedPermanently())
+                .andExpect(redirectedUrl("http://localhost/v1/test/"+accession3));
+    }
+
+    private ResultActions doAccession(ResultMatcher resultMatcher, String... values) throws Exception {
+        final BasicRestModel[] restModels = Arrays.stream(values).map(s -> new BasicRestModel(s))
+                .toArray(size -> new BasicRestModel[size]);
+        return mockMvc.perform(post("/v1/test")
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+                .content(jsonModelList.write(Arrays.asList(restModels)).getJson()))
+                .andExpect(resultMatcher);
+    }
+
+    private MvcResult doAccession(String... values) throws Exception {
+        return doAccession(status().isOk(), values)
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(values.length)))
+                .andExpect(jsonPath("$[*].data.value", containsInAnyOrder(values)))
+                .andReturn();
+    }
+
+    private String extractAccession(MvcResult mvcResult) throws java.io.IOException {
+        return jsonAccessions.parseObject(mvcResult.getResponse().getContentAsString()).get(0).getAccession();
     }
 
     private ResultActions doMerge(String accessionOrigin, String mergeInto) throws Exception {

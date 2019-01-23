@@ -62,11 +62,8 @@ import uk.ac.ebi.ampt2d.test.rest.TestControllerForDecoratedAccession;
 @AutoConfigureDataJpa
 public class TestBasicRestControllerForDecoratedAccession {
     private static final String CATEGORY_ID = "category-id-monotonic-test";
-
     private static final String INSTANCE_ID = "instance-id-monotonic-test";
-
     private static final String PREFIX = "EGA";
-
     private static final String PAD_FORMAT = "%011d";
 
     @Autowired
