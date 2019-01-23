@@ -68,8 +68,12 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
 
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccession(ACCESSION accession)
-            throws AccessionDoesNotExistException,AccessionMergedException, AccessionDeprecatedException {
-        return decorate(service.getByAccession(parse(accession)));
+            throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
+        try {
+            return decorate(service.getByAccession(parse(accession)));
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     private List<DB_ACCESSION> parse(List<ACCESSION> accessions) {
@@ -79,7 +83,11 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     @Override
     public AccessionWrapper<MODEL, HASH, ACCESSION> getByAccessionAndVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException {
-        return decorate(service.getByAccessionAndVersion(parse(accession), version));
+        try {
+            return decorate(service.getByAccessionAndVersion(parse(accession), version));
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     private DB_ACCESSION parse(ACCESSION accession) throws AccessionDoesNotExistException {
@@ -95,7 +103,11 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> update(ACCESSION accession, int version, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        return decorate(service.update(parse(accession), version, message));
+        try {
+            return decorate(service.update(parse(accession), version, message));
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     private AccessionVersionsWrapper<MODEL, HASH, ACCESSION> decorate(
@@ -107,19 +119,31 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
     public AccessionVersionsWrapper<MODEL, HASH, ACCESSION> patch(ACCESSION accession, MODEL message)
             throws AccessionDoesNotExistException, HashAlreadyExistsException, AccessionDeprecatedException,
             AccessionMergedException {
-        return decorate(service.patch(parse(accession), message));
+        try {
+            return decorate(service.patch(parse(accession), message));
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     @Override
     public void deprecate(ACCESSION accession, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException {
-        service.deprecate(parse(accession), reason);
+        try {
+            service.deprecate(parse(accession), reason);
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     @Override
     public void merge(ACCESSION accessionOrigin, ACCESSION mergeInto, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException {
-        service.merge(parse(accessionOrigin), parse(mergeInto), reason);
+        try {
+            service.merge(parse(accessionOrigin), parse(mergeInto), reason);
+        } catch (AccessionMergedException accessionMergedException) {
+            throw AccessionMergedExceptionWithDecoratedAccessions(accessionMergedException);
+        }
     }
 
     public static <MODEL, HASH, DB_ACCESSION> DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, String>
@@ -144,6 +168,16 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
                     }
                     return parseFunction.apply(s.substring(prefix.length()));
                 });
+    }
+
+
+
+    public AccessionMergedException AccessionMergedExceptionWithDecoratedAccessions(AccessionMergedException accessionMergedException) {
+        return new AccessionMergedException(
+                decoratingFunction.apply((DB_ACCESSION)
+                        Long.valueOf(accessionMergedException.getOriginAccessionId())).toString(),
+                decoratingFunction.apply((DB_ACCESSION)
+                        Long.valueOf(accessionMergedException.getDestinationAccessionId())).toString());
     }
 
 }
