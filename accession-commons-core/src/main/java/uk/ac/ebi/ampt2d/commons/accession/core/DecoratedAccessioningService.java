@@ -170,14 +170,15 @@ public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
                 });
     }
 
-
-
     public AccessionMergedException AccessionMergedExceptionWithDecoratedAccessions(AccessionMergedException accessionMergedException) {
-        return new AccessionMergedException(
-                decoratingFunction.apply((DB_ACCESSION)
-                        Long.valueOf(accessionMergedException.getOriginAccessionId())).toString(),
-                decoratingFunction.apply((DB_ACCESSION)
-                        Long.valueOf(accessionMergedException.getDestinationAccessionId())).toString());
+        if (decoratingFunction != null) {
+            return new AccessionMergedException(
+                    decoratingFunction.apply((DB_ACCESSION)
+                            Long.valueOf(accessionMergedException.getOriginAccessionId())).toString(),
+                    decoratingFunction.apply((DB_ACCESSION)
+                            Long.valueOf(accessionMergedException.getDestinationAccessionId())).toString());
+        }
+        return accessionMergedException;
     }
 
 }
