@@ -34,7 +34,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import uk.ac.ebi.ampt2d.commons.accession.rest.dto.AccessionResponseDTO;
-import uk.ac.ebi.ampt2d.test.configuration.TestBasicRestControllerForDecoratedAccession;
+import uk.ac.ebi.ampt2d.test.configuration.BasicRestControllerForDecoratedAccessionTestConfiguration;
 import uk.ac.ebi.ampt2d.test.rest.BasicRestModel;
 
 import java.util.Arrays;
@@ -55,8 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
 @AutoConfigureTestDatabase
-@ContextConfiguration(classes = {TestBasicRestControllerForDecoratedAccession.class})
-public class BasicRestControllerForDecoratedAccessionTest {
+@ContextConfiguration(classes = {BasicRestControllerForDecoratedAccessionTestConfiguration.class})
+public class DecoratedAccessionMergedExceptionTest {
 
     @Autowired
     private MockMvc mockMvc;

@@ -60,7 +60,7 @@ import uk.ac.ebi.ampt2d.test.rest.TestControllerForDecoratedAccession;
         "uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories"
 })
 @AutoConfigureDataJpa
-public class TestBasicRestControllerForDecoratedAccession {
+public class BasicRestControllerForDecoratedAccessionTestConfiguration {
     private static final String CATEGORY_ID = "category-id-monotonic-test";
     private static final String INSTANCE_ID = "instance-id-monotonic-test";
     private static final String PREFIX = "EGA";
