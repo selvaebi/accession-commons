@@ -100,13 +100,22 @@ public class BasicRestControllerAdvice {
         logger.error(ex.getMessage(), ex);
         if (httpServletRequest.getMethod().equals(HttpMethod.GET.name())) {
             String originalRequestUrl = httpServletRequest.getRequestURL().toString();
+            String newUrl = replaceAccession(originalRequestUrl, ex.getOriginAccessionId(),
+                                             ex.getDestinationAccessionId());
+
             return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                    .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
-                            .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
-                            ex.getMessage()));
+                                 .location(URI.create(newUrl))
+                                 .body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex, ex.getMessage()));
         }
         return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
+    }
 
+    private String replaceAccession(String originalRequestUrl, String originAccession, String destinationAccession) {
+        int lastAccessionOccurrenceStart = originalRequestUrl.lastIndexOf(originAccession);
+        int lastAccessionOccurrenceEnd = lastAccessionOccurrenceStart + originAccession.length();
+        return originalRequestUrl.substring(0, lastAccessionOccurrenceStart)
+               + destinationAccession
+               + originalRequestUrl.substring(lastAccessionOccurrenceEnd);
     }
 
     @ExceptionHandler(value = {HashAlreadyExistsException.class})
