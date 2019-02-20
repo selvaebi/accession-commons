@@ -100,10 +100,15 @@ public class BasicRestControllerAdvice {
         logger.error(ex.getMessage(), ex);
         if (httpServletRequest.getMethod().equals(HttpMethod.GET.name())) {
             String originalRequestUrl = httpServletRequest.getRequestURL().toString();
+            int lastAccessionOccurrenceStart = originalRequestUrl.lastIndexOf(ex.getOriginAccessionId());
+            int lastAccessionOccurrenceEnd = lastAccessionOccurrenceStart + ex.getOriginAccessionId().length();
+            String newUrl = originalRequestUrl.substring(0, lastAccessionOccurrenceStart)
+                            + ex.getDestinationAccessionId()
+                            + originalRequestUrl.substring(lastAccessionOccurrenceEnd);
+
             return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY)
-                    .location(URI.create(originalRequestUrl.replace(ex.getOriginAccessionId(), ex
-                            .getDestinationAccessionId()))).body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex,
-                            ex.getMessage()));
+                                 .location(URI.create(newUrl))
+                                 .body(new ErrorMessage(HttpStatus.MOVED_PERMANENTLY, ex, ex.getMessage()));
         }
         return buildResponseEntity(HttpStatus.NOT_FOUND, ex, ex.getMessage());
 
