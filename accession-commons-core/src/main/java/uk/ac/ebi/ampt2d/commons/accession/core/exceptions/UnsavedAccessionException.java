@@ -17,6 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+/**
+ * Exception thrown when the element is neither present in saved accessions nor save failed accessions
+ */
 public class UnsavedAccessionException extends RuntimeException {
 
     public <ACCESSION> UnsavedAccessionException(ACCESSION accession) {

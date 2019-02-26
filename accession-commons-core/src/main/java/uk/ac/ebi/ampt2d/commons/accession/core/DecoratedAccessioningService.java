@@ -30,6 +30,15 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Provides accession for objects with decoration
+ *
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <HASH> Hash key used for accessioning
+ * @param <DB_ACCESSION> Specifies decoration object for accession
+ * @param <ACCESSION> Accession ID of the object
+ */
+
 public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
         implements AccessioningService<MODEL, HASH, ACCESSION> {
 

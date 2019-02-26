@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 /**
  * A service that provides accessions for objects
  *
- * @param <MODEL>
- * @param <ACCESSION>
- * @param <HASH>
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <HASH> Hash key used for accessioning
+ * @param <ACCESSION> Accession ID of the object
  */
 public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializable>
         implements AccessioningService<MODEL, HASH, ACCESSION> {

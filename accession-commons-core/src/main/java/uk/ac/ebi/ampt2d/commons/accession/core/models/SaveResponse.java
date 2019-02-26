@@ -23,6 +23,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Handles state of the accession after persisting in DB layer
+ * @param <ACCESSION> Accession ID used
+ */
+
 public class SaveResponse<ACCESSION> {
 
     private final Set<ACCESSION> savedAccessions;

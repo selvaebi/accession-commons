@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
  * {@link IAccessionedObjectRepository}, a function to generate the entities from the triple model/hash/accession, a function
  * to get the accession from the entity and a function to get the hashed representation of the message from the entity.
  *
- * @param <MODEL>
- * @param <ACCESSION_ENTITY>
- * @param <ACCESSION>
+ * @param <MODEL> Specifies the type of the accession model
+ * @param <ACCESSION_ENTITY> Entry of the accession
+ * @param <ACCESSION> Accession ID used
  */
 public class BasicSpringDataRepositoryDatabaseService<
         MODEL,

@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
  * Base class for accession generators that don't suffer performance penalty if they don't generate the accessions
  * in batches
  *
- * @param <MODEL>
- * @param <ACCESSION>
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <ACCESSION> Accession ID used
  */
 public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGenerator<MODEL, ACCESSION> {
 

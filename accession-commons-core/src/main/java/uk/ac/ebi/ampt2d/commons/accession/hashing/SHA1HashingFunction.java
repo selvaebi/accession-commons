@@ -25,6 +25,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
 
+/**
+ * Using SHA1 algorithm hashing technique to generate unique accession for the object
+ */
+
 public class SHA1HashingFunction implements Function<String, String> {
 
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(SHA1HashingFunction.class);

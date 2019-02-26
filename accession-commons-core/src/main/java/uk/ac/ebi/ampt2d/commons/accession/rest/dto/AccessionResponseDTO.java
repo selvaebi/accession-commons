@@ -25,10 +25,10 @@ import java.util.function.Function;
  * Response containing the object that has been accessioned, as well as additional information like the accession or a
  * flag indicating whether the accession is active. To be used at the REST API layer.
  *
- * @param <DTO>
- * @param <MODEL>
- * @param <HASH>
- * @param <ACCESSION>
+ * @param <DTO> Data Transfer Object accession model
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <HASH> Hash key used for accessioning service
+ * @param <ACCESSION> Accession ID of the object
  */
 public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 

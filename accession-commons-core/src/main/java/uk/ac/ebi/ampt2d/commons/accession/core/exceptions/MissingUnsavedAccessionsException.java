@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Exception thrown when an element can't be retrieved from the database
+ */
 public class MissingUnsavedAccessionsException extends RuntimeException {
 
     private List<AccessionWrapper<?, ?, ?>> missingUnsavedAccessions;

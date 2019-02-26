@@ -21,9 +21,9 @@ package uk.ac.ebi.ampt2d.commons.accession.core.models;
  * Wrapper containing the object that has been accessioned, as well as additional information like the accession or a
  * flag indicating whether the accession is active. To be used in the service layer.
  *
- * @param <MODEL>
- * @param <HASH>
- * @param <ACCESSION>
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <HASH> Hash key used for accessioning
+ * @param <ACCESSION> Accession ID of the object
  */
 public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 

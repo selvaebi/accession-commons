@@ -26,21 +26,39 @@ import java.util.List;
  * Definition of an event triggered when an operation is performed over an accessioned object.
  * Some operations could make some objects become inactive.
  *
- * @param <MODEL>
- * @param <ACCESSION>
+ * @param <MODEL> Specifies the type of the Accession model
+ * @param <ACCESSION> Accession id used
  */
 public interface IEvent<MODEL, ACCESSION> {
 
+    /**
+     * @return Accession id of the original object
+     */
     ACCESSION getAccession();
 
+    /**
+     * @return Accession id of the target object to which original object accession will be merged
+     */
     ACCESSION getMergedInto();
 
+    /**
+     * @return Type of the event like creation, deletion... executed on the accessioned object
+     */
     EventType getEventType();
 
+    /**
+     * @return Information why the object is going through the event; Ex: merging with another accession
+     */
     String getReason();
 
+    /**
+     * @return Get the time at which the event occurred
+     */
     LocalDateTime getCreatedDate();
 
+    /**
+     * @return List of the objects which are in inactive state because of event
+     */
     List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> getInactiveObjects();
 
 }

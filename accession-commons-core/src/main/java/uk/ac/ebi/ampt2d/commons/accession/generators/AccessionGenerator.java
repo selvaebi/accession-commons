@@ -46,7 +46,7 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * This method returns to the accession generator the result of the database insert operation in case any operation
      * needs to be performed at the generator level.
      *
-     * @param response
+     * @param response DB response
      */
     void postSave(SaveResponse<ACCESSION> response);
 }
