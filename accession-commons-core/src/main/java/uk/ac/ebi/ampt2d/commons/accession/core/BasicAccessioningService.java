@@ -39,11 +39,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A service that provides accessions for objects
+ * Service for retrieval and modifications of object accessions.
  *
- * @param <MODEL> Specifies the type of the Accession model
- * @param <HASH> Hash key used for accessioning
- * @param <ACCESSION> Accession ID of the object
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
+ * @param <ACCESSION> Type of the accessions that identify a particular model
  */
 public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializable>
         implements AccessioningService<MODEL, HASH, ACCESSION> {
@@ -68,11 +68,11 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     /**
-     * Get accessions for a list of messages. It looks for the object's accessions in a repository, and if they don't
-     * exist, generate new ones, storing them in the repository
+     * Find the accessions associated with a list of objects.
+     * Searches object's accession in the repository, and if it does not exist, new accession is generated and stored in repository
      *
-     * @param messages
-     * @return
+     * @param messages List of messages to be accessioned
+     * @return Wrappers containing the objects that have been accessioned
      */
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
@@ -82,9 +82,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
 
     /**
      * Digest messages, hash them and map them. If Two messages have the same hash keep the first one.
-     *
-     * @param messages
-     * @return
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
         return messages.stream().collect(Collectors.toMap(hashingFunction, e -> e, (r, o) -> r));
@@ -96,9 +93,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * due to constraint exceptions. This should only happen when elements have been already stored by another
      * application instance / thread with a different id.
      * See {@link #getPreexistingAccessions(List)} } for more details.
-     *
-     * @param accessions
-     * @return
      */
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveAccessions(List<AccessionWrapper<MODEL, HASH, ACCESSION>> accessions) {
         SaveResponse<ACCESSION> response = dbService.save(accessions);
@@ -123,9 +117,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * We try to recover all elements that could not be saved to return their accession to the user. This is only
      * expected when another application instance or thread has saved that element already with a different id. If
      * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessionsException} to alert the system.
-     *
-     * @param saveFailedAccessions
-     * @return
      */
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {

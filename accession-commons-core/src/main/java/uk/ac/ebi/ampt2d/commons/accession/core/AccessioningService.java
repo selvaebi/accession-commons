@@ -28,37 +28,37 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import java.util.List;
 
 /**
- * Service that provides various accessioning features for objects
+ * Service for retrieval and modifications of object accessions.
  *
- * @param <MODEL> Specifies the type of the Accession model
- * @param <HASH> Hash key used for accessioning
- * @param <ACCESSION> Accession ID of the object
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
+ * @param <ACCESSION> Type of the accessions that identify a particular model
  */
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
     /**
-     * Get accessions for a list of messages. It looks for the object's accessions in a repository, and if they don't
-     * exist, generate new ones, storing them in the repository
+     * Find the accessions associated with a list of objects.
+     * Searches object's accession in the repository, and if it does not exist, new accession is generated and stored in repository
      *
      * @param messages List of messages to be accessioned
-     * @return Wrapper containing the object that has been accessioned
+     * @return Wrappers containing the objects that have been accessioned
      * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
      */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
     /**
-     * Get accessions for a list of objects by generating Hash
+     * Find the accessions associated with a list of objects
      *
      * @param accessionedObjects List of objects to be accessioned
-     * @return Wrapper containing the object that has been accessioned
+     * @return Wrappers containing the objects that have been accessioned
      */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
     /**
      * Finds last version of provided accession with its possible data model representations.
      *
-     * @param accession Accession ID of the object
+     * @param accession Type of the accessions that identify a particular model
      * @return Wrapper containing the object that has been accessioned
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
@@ -70,9 +70,9 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     /**
      * Finds the provided accession with its possible data model representations.
      *
-     * @param accession Accession ID of the object
+     * @param accession Type of the accessions that identify a particular model
      * @param version Version number of the accessioned object
-     * @return accession with particular version
+     * @return Wrapper containing the object that has been accessioned
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
@@ -83,7 +83,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     /**
      * Updates a specific patch version of an accessioned object. It does not create a new version / patch
      *
-     * @param accession Accession ID of the object
+     * @param accession Type of the accessions that identify a particular model
      * @param version Version number of the accessioned object
      * @param message Type of the Accession model
      * @return updated accession with all the patch information
@@ -99,7 +99,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     /**
      * Creates a new patch version of an accession.
      *
-     * @param accession Accession ID of the object
+     * @param accession Type of the accessions that identify a particular model
      * @param message Type of the Accession model
      * @return Accession with complete patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
@@ -114,7 +114,7 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
     /**
      * Deprecates an accession
      *
-     * @param accession Accession ID of the object
+     * @param accession Type of the accessions that identify a particular model
      * @param reason comment or the necessity of deprecation
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated

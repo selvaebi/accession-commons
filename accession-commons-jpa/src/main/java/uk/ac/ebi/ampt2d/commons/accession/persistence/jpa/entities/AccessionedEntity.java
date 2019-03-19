@@ -33,7 +33,8 @@ import java.time.LocalDateTime;
  * Base class for accessioned objects to be serialized as relational entities.
  * The derived classes must be annotated as Entity.
  *
- * @param <ACCESSION>
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accessions that identify a particular model
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

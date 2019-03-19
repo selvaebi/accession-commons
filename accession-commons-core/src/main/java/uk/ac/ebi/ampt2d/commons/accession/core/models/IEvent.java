@@ -26,8 +26,8 @@ import java.util.List;
  * Definition of an event triggered when an operation is performed over an accessioned object.
  * Some operations could make some objects become inactive.
  *
- * @param <MODEL> Specifies the type of the Accession model
- * @param <ACCESSION> Accession id used
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accessions that identify a particular model
  */
 public interface IEvent<MODEL, ACCESSION> {
 

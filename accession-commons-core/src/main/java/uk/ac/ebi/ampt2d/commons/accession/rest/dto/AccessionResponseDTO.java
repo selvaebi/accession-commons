@@ -26,9 +26,9 @@ import java.util.function.Function;
  * flag indicating whether the accession is active. To be used at the REST API layer.
  *
  * @param <DTO> Data Transfer Object accession model
- * @param <MODEL> Specifies the type of the Accession model
- * @param <HASH> Hash key used for accessioning service
- * @param <ACCESSION> Accession ID of the object
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
+ * @param <ACCESSION> Type of the accessions that identify a particular model
  */
 public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 

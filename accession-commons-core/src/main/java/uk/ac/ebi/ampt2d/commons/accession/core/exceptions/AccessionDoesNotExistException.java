@@ -18,7 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 /**
- * Exception thrown when updating a existing accessioned element if the accession is unknown.
+ * Exception thrown when updating an existing accessioned element if the accession is unknown.
  */
 public class AccessionDoesNotExistException extends Exception {
 
