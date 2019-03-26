@@ -27,8 +27,8 @@ import java.util.function.Function;
  *
  * @param <DTO> Data Transfer Object accession model
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 

@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
  * Provides accession for objects with decoration
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
- * @param <DB_ACCESSION> Specifies decoration object for accession
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <DB_ACCESSION> Type of Accession stored in database
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 
 public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>

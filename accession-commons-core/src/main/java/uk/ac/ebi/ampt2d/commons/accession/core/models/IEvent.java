@@ -27,17 +27,17 @@ import java.util.List;
  * Some operations could make some objects become inactive.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public interface IEvent<MODEL, ACCESSION> {
 
     /**
-     * @return Accession id of the original object
+     * @return Accession of the original object
      */
     ACCESSION getAccession();
 
     /**
-     * @return Accession id of the target object to which original object accession will be merged
+     * @return Accession of the target object to which original object accession will be merged
      */
     ACCESSION getMergedInto();
 

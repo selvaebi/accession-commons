@@ -26,7 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
 
 /**
- * Using SHA1 algorithm hashing technique to generate unique accession for the object
+ * Implementation of the SHA1 hashing function, in order to generate a unique hash from a given string
  */
 
 public class SHA1HashingFunction implements Function<String, String> {

@@ -34,8 +34,8 @@ import java.util.List;
  * accession.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
@@ -43,17 +43,16 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * Finds all valid accessioned model data that has a hashed message in the collection @param hashes.
      *
      * @param hashes Hash value of objects
-     * @return Wrappers containing the objects that have been accessioned
+     * @return Wrappers containing the objects and their associated accession and hash
      */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);
 
     /**
      * @param accession Accession of the object
      * @return Active accession with versioning data.
-     * @throws AccessionDoesNotExistException when accession does not exist.
-     * @throws AccessionMergedException       when accession has been merged with another one, its accession id is included
-     *                                        in the exception.
-     * @throws AccessionDeprecatedException   accession is no longer active.
+     * @throws AccessionDoesNotExistException when the accession has never existed
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
+     * @throws AccessionDeprecatedException when the accession exists but has been deprecated
      */
     AccessionVersionsWrapper<MODEL, HASH, ACCESSION> findByAccession(ACCESSION accession) throws
             AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
@@ -62,10 +61,10 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * Finds last version of provided accession with its possible data model representations.
      *
      * @param accession Accession of the object
-     * @return Wrapper containing the object that has been accessioned.
-     * @throws AccessionDoesNotExistException
-     * @throws AccessionMergedException
-     * @throws AccessionDeprecatedException
+     * @return Wrapper containing the object and associated accession and hash
+     * @throws AccessionDoesNotExistException when the accession has never existed
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
+     * @throws AccessionDeprecatedException when the accession exists but has been deprecated
      */
     AccessionWrapper<MODEL, HASH, ACCESSION> findLastVersionByAccession(ACCESSION accession)
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
@@ -76,17 +75,16 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param accession Accession of the object
      * @param version Version number of the accessioned object
      * @return Wrapper containing the accessioned object
-     * @throws AccessionDoesNotExistException when accession does not exist.
-     * @throws AccessionMergedException       when accession has been merged with another one, its accession id is included
-     *                                        in the exception.
-     * @throws AccessionDeprecatedException   accession is no longer active.
+     * @throws AccessionDoesNotExistException when the accession has never existed
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
+     * @throws AccessionDeprecatedException when the accession exists but has been deprecated
      */
     AccessionWrapper<MODEL, HASH, ACCESSION> findByAccessionVersion(ACCESSION accession, int version)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException;
 
     /**
      *
-     * @param objects Wrappers containing the objects that have been accessioned
+     * @param objects Wrappers containing the objects and their associated accession and hash
      * @return State of the accession after persisting in DB layer
      */
     SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);
@@ -100,9 +98,9 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param reason Cause of patch
      * @return Accession with complete patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
-     * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
-     * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
-     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     * @throws HashAlreadyExistsException when another accessioned object exists already with the same hash
+     * @throws AccessionDeprecatedException when the accession exists but has been deprecated
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
      */
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDeprecatedException.class, AccessionMergedException.class})
@@ -121,7 +119,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
-     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     * @throws AccessionMergedException  when the accession exists but has been merged into another accession
      */
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, HashAlreadyExistsException.class,
             AccessionDeprecatedException.class, AccessionMergedException.class})
@@ -136,7 +134,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param reason comment or the necessity of deprecation
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
-     * @throws AccessionMergedException       when the accession exists but has been merged into another accession
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
      */
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
             AccessionMergedException.class})
@@ -151,7 +149,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * @param reason comment or the necessity of merge
      * @throws AccessionDoesNotExistException when either accession has never existed.
      * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
-     * @throws AccessionMergedException       when either accession exists but has been merged into another accession
+     * @throws AccessionMergedException  when either accession exists but has been merged into another accession
      */
     @Transactional(rollbackFor = {AccessionDoesNotExistException.class, AccessionDeprecatedException.class,
             AccessionMergedException.class})

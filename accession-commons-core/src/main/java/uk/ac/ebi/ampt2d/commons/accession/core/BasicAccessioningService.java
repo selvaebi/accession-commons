@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
  * Service for retrieval and modifications of object accessions.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializable>
         implements AccessioningService<MODEL, HASH, ACCESSION> {
@@ -72,7 +72,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * Searches object's accession in the repository, and if it does not exist, new accession is generated and stored in repository
      *
      * @param messages List of messages to be accessioned
-     * @return Wrappers containing the objects that have been accessioned
+     * @return Wrappers containing the objects and their associated accession and hash
      */
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)

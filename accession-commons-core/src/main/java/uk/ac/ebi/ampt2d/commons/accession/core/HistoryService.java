@@ -28,7 +28,7 @@ public interface HistoryService<MODEL, ACCESSION> {
      * Returns the history of an accession
      *
      * @param accession Accession of the object
-     * @return List of accession events associated with the object
+     * @return List of historical events associated with the object accession
      * @throws AccessionDoesNotExistException when the accession has never existed
      */
     List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException;

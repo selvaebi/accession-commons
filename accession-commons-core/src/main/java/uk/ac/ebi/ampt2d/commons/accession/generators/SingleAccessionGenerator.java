@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * in batches
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public class SingleAccessionGenerator<MODEL, ACCESSION> implements AccessionGenerator<MODEL, ACCESSION> {
 

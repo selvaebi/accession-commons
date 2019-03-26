@@ -28,7 +28,7 @@ import java.util.Map;
  * A generator for unique accessions for given objects
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public interface AccessionGenerator<MODEL, ACCESSION> {
 
@@ -37,7 +37,7 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * objects cannot get the same accession
      *
      * @param messages Objects to accession
-     * @return Wrappers containing the objects that have been accessioned
+     * @return Wrappers containing the objects and their associated accession and hash
      */
     <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;

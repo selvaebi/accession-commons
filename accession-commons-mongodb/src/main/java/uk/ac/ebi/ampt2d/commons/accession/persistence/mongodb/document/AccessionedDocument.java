@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
  * The derived classes must be annotated as Document.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public abstract class AccessionedDocument<MODEL, ACCESSION extends Serializable>
         implements IAccessionedObject<MODEL, String, ACCESSION>, Persistable<String> {

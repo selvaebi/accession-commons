@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
  * to get the accession from the entity and a function to get the hashed representation of the message from the entity.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION_ENTITY> Entry of the accession
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <ACCESSION_ENTITY> Type of entity object
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public class BasicSpringDataRepositoryDatabaseService<
         MODEL,
@@ -201,9 +201,9 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     /**
-     * @param accessionId Type of the accessions that identify a particular model
+     * @param accessionId Accession of the object that identify a particular model
      * @return All entries of an accession. It is never empty
-     * @throws AccessionDoesNotExistException If no accession with accessionId found
+     * @throws AccessionDoesNotExistException when the accession has never existed
      */
     private List<ACCESSION_ENTITY> getAccession(ACCESSION accessionId)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {

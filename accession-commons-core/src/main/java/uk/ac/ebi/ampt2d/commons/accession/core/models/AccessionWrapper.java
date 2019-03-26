@@ -22,8 +22,8 @@ package uk.ac.ebi.ampt2d.commons.accession.core.models;
  * flag indicating whether the accession is active. To be used in the service layer.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <HASH> Hash value of the fields that uniquely identify the object to be accessioned
- * @param <ACCESSION> Type of the accessions that identify a particular model
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Accession of the object that identify a particular model
  */
 public class AccessionWrapper<MODEL, HASH, ACCESSION> {
 

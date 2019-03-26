@@ -40,7 +40,7 @@ import java.util.function.Function;
  * Reuses implementation for most methods from {@link BasicSpringDataRepositoryDatabaseService}.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION_ENTITY> Entry of the accession
+ * @param <ACCESSION_ENTITY> Type of entity object
  */
 public class BasicSpringDataRepositoryMonotonicDatabaseService<
         MODEL,
