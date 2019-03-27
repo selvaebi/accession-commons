@@ -39,7 +39,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Service for retrieval and modifications of object accessions.
+ * Service for creation, retrieval and modifications of object accessions.
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
@@ -71,7 +71,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      * Find the accessions associated with a list of objects.
      * Searches object's accession in the repository, and if it does not exist, new accession is generated and stored in repository
      *
-     * @param messages List of messages to be accessioned
+     * @param messages List of objects to be accessioned or already accessioned
      * @return Wrappers containing the objects and their associated accession and hash
      */
     @Override

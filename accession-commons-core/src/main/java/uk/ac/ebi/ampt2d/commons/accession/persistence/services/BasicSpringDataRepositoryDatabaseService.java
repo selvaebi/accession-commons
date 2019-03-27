@@ -201,7 +201,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     /**
-     * @param accessionId Accession of the object that identify a particular model
+     * @param accessionId Accession that identifies object
      * @return All entries of an accession. It is never empty
      * @throws AccessionDoesNotExistException when the accession has never existed
      */

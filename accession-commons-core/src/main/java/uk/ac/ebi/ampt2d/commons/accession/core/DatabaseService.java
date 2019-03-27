@@ -48,6 +48,8 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);
 
     /**
+     * Finds accessioned model data identified by accession
+     *
      * @param accession Accession of the object
      * @return Active accession with versioning data.
      * @throws AccessionDoesNotExistException when the accession has never existed
@@ -131,7 +133,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * Deprecates an accession
      *
      * @param accession Accession of the object
-     * @param reason comment or the necessity of deprecation
+     * @param reason the reason for deprecation
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException when the accession exists but has been merged into another accession
