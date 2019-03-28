@@ -31,7 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Provides accession for objects with decoration
+ * Service for creation, retrieval and modifications of object accessions, through decorated accessions.
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object

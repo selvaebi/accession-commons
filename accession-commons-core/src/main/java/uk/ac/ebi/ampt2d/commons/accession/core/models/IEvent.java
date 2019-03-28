@@ -37,12 +37,12 @@ public interface IEvent<MODEL, ACCESSION> {
     ACCESSION getAccession();
 
     /**
-     * @return Accession of the target object to which original object accession will be merged
+     * @return Accession of the target object to which original object accession has been merged
      */
     ACCESSION getMergedInto();
 
     /**
-     * @return Type of the event like creation, deletion... executed on the accessioned object
+     * @return Type of the event like creation,updation ... executed on the accessioned object
      */
     EventType getEventType();
 

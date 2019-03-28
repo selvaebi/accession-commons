@@ -73,6 +73,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
      *
      * @param messages List of objects to be accessioned or already accessioned
      * @return Wrappers containing the objects and their associated accession and hash
+     * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
      */
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)

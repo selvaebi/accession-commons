@@ -18,8 +18,7 @@
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 /**
- * Thrown when accession can not be generated for an object;
- * Ex: When the generated accession doesn't match with the accession to commit, exception is thrown.
+ * Exception thrown when the generated accession does not match with the accession to commit.
  */
 public class AccessionIsNotPendingException extends RuntimeException {
 

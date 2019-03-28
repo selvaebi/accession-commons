@@ -22,8 +22,7 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import java.util.function.Function;
 
 /**
- * Response containing the object that has been accessioned, as well as additional information indicating whether
- * the accession is active. To be used at the REST API layer.
+ * Response containing the object that has been accessioned. To be used at the REST API layer.
  *
  * @param <DTO> Data Transfer Object accession model
  * @param <MODEL> Type of the objects identified by the accessions

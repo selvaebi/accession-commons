@@ -36,8 +36,9 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * Generate unique accessions for a set of objects. Returned accessions must be unique: two different
      * objects cannot get the same accession
      *
-     * @param messages Objects to accession
+     * @param messages Objects to be accessioned
      * @return Wrappers containing the objects and their associated accession and hash
+     * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
      */
     <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;

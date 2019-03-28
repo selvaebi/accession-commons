@@ -204,6 +204,8 @@ public class BasicSpringDataRepositoryDatabaseService<
      * @param accessionId Accession that identifies object
      * @return All entries of an accession. It is never empty
      * @throws AccessionDoesNotExistException when the accession has never existed
+     * @throws AccessionDeprecatedException when the accession exists but has been deprecated
+     * @throws AccessionMergedException when the accession exists but has been merged into another accession
      */
     private List<ACCESSION_ENTITY> getAccession(ACCESSION accessionId)
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException {
