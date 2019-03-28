@@ -48,9 +48,9 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);
 
     /**
-     * Finds accessioned model data identified by accession
+     * Finds wrapper object that is identified by accession
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @return Active accession with versioning data.
      * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws AccessionMergedException when the accession exists but has been merged into another accession
@@ -62,7 +62,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Finds last version of provided accession with its possible data model representations.
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @return Wrapper containing the object and associated accession and hash
      * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws AccessionMergedException when the accession exists but has been merged into another accession
@@ -74,7 +74,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Finds a specific version of accession and their data model representations.
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @param version Version number of the accessioned object
      * @return Wrapper containing the accessioned object
      * @throws AccessionDoesNotExistException when the accession has never existed
@@ -85,6 +85,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
             throws AccessionDoesNotExistException, AccessionDeprecatedException, AccessionMergedException;
 
     /**
+     * Saves the accessioned wrapper objects in repository
      *
      * @param objects Wrappers containing the objects and their associated accession and hash
      * @return State of the accession after persisting in DB layer
@@ -94,9 +95,9 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Persists a new patch version of an accession
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @param hash Hash value of the object
-     * @param model Type of the accession model
+     * @param model Details of the object of type MODEL
      * @param reason Cause of patch
      * @return Accession with complete patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
@@ -113,9 +114,9 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Updates a specific patch version of an accessioned object
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @param hash Hash value of the object
-     * @param model Type of the accession model
+     * @param model Details of the object of type MODEL
      * @param version Version number of the accessioned object
      * @return updated accession with all the patch information
      * @throws AccessionDoesNotExistException when the accession has never existed.
@@ -132,7 +133,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Deprecates an accession
      *
-     * @param accession Accession of the object
+     * @param accession Accession that identifies object
      * @param reason the reason for deprecation
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
