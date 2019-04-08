@@ -64,7 +64,7 @@ class BlockManager {
      * Polls the next continuous array of monotonic values.
      *
      * @param maxValues Max array size returned by the function
-     * @return
+     * @return Array of monotonically increasing ids
      */
     public long[] pollNext(int maxValues) throws AccessionCouldNotBeGeneratedException {
         if (!hasAvailableAccessions(maxValues)) {
@@ -154,8 +154,8 @@ class BlockManager {
      * This function will recover the internal state of committed elements and will remove them from the available
      * ranges.
      *
-     * @param committedElements
-     * @throws AccessionIsNotPendingException
+     * @param committedElements committed accessions
+     * @throws AccessionIsNotPendingException When the generated accession does not match with the accession to commit
      */
     public void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);

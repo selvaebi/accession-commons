@@ -52,11 +52,11 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     }
 
     /**
-     * Returns a array of monotonically increasing ids from start to end inclusively. The array is generated and
+     * Returns an array of monotonically increasing ids from start to end inclusively. The array is generated and
      * returned on demand to make the life span of the array as short as possible in order to have a smaller memory
      * footprint
      *
-     * @return
+     * @return Array of monotonically increasing ids
      */
     public long[] getIds() {
         int size = getTotalOfValues();
@@ -112,7 +112,7 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     /**
      * Returns the result of excluding a range of values of the current range.
      *
-     * @param range
+     * @param range Specifies beginning and ending integer values
      * @return Returns empty, one, two (ordered), or the original range
      */
     public List<MonotonicRange> excludeIntersection(MonotonicRange range) {
