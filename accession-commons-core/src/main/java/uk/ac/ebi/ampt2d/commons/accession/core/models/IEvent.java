@@ -27,7 +27,7 @@ import java.util.List;
  * Some operations could make some objects become inactive.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public interface IEvent<MODEL, ACCESSION> {
 

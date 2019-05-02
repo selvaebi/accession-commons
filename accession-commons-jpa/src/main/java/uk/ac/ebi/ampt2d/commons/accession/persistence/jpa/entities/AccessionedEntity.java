@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
  * The derived classes must be annotated as Entity.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

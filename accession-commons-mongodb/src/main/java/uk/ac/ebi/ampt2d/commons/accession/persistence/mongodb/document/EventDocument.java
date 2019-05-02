@@ -34,7 +34,7 @@ import java.util.List;
  * be annotated as Entity.
  *
  * @param <MODEL> Type of the objects identified by the accessions
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  * @param <INACTIVE_DOCUMENT> Currently inactive accessioned object
  */
 public abstract class EventDocument<

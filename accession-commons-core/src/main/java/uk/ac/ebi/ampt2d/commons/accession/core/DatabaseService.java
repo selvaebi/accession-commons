@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public interface DatabaseService<MODEL, HASH, ACCESSION> {
 
@@ -43,7 +43,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
      * Find all valid accessioned model data that has a hashed message in the collection @param hashes.
      *
      * @param hashes Hash value of objects
-     * @return Wrappers containing the objects and their associated accession and hash
+     * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
      */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);
 
@@ -87,7 +87,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Save the accessioned wrapper objects in repository
      *
-     * @param objects Wrappers containing the objects and their associated accession and hash
+     * @param objects List of wrapper objects containing the accessioned objects and their associated accessions and hashes
      * @return State of the accession after persisting in DB layer
      */
     SaveResponse<ACCESSION> save(List<AccessionWrapper<MODEL, HASH, ACCESSION>> objects);

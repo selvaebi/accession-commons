@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * Handles state of the accession after persisting in DB layer
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 
 public class SaveResponse<ACCESSION> {

@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public class AccessionVersionsWrapper<MODEL, HASH, ACCESSION> {
 

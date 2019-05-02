@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <ACCESSION_ENTITY> Type of entity object
- * @param <ACCESSION> Accession of the object that identify a particular model
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public class BasicSpringDataRepositoryDatabaseService<
         MODEL,
