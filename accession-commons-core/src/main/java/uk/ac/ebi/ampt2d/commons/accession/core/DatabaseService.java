@@ -42,7 +42,7 @@ public interface DatabaseService<MODEL, HASH, ACCESSION> {
     /**
      * Find all valid accessioned model data that has a hashed message in the collection @param hashes.
      *
-     * @param hashes Hash value of objects
+     * @param hashes A collection of hash value of objects
      * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
      */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> findAllByHash(Collection<HASH> hashes);

@@ -82,7 +82,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     /**
-     * Digest messages, hash them and map them. If Two messages have the same hash keep the first one.
+     * Digest messages, hash them and map them. If two messages have the same hash keep the first one.
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
         return messages.stream().collect(Collectors.toMap(hashingFunction, e -> e, (r, o) -> r));
