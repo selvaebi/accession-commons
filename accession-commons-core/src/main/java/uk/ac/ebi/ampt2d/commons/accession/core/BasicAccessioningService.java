@@ -39,7 +39,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Service for creation, retrieval and modifications of object accessions.
+ * Basic implementation of a service for creation, retrieval and modifications of object accessions.
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
@@ -67,14 +67,6 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
         this.hashingFunction = summaryFunction.andThen(hashingFunction);
     }
 
-    /**
-     * Find the accessions associated with a list of objects.
-     * Searches object's accession in the repository, and if it does not exist, new accession is generated and stored in repository
-     *
-     * @param messages List of objects to be accessioned or already accessioned
-     * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
-     * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
-     */
     @Override
     public List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException {
@@ -82,7 +74,7 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     }
 
     /**
-     * Digest messages, hash them and map them. If two messages have the same hash keep the first one.
+     * Digests messages using a hash function. If two messages have the same hash, keeps the first one.
      */
     private Map<HASH, MODEL> mapHashOfMessages(List<? extends MODEL> messages) {
         return messages.stream().collect(Collectors.toMap(hashingFunction, e -> e, (r, o) -> r));
@@ -117,7 +109,8 @@ public class BasicAccessioningService<MODEL, HASH, ACCESSION extends Serializabl
     /**
      * We try to recover all elements that could not be saved to return their accession to the user. This is only
      * expected when another application instance or thread has saved that element already with a different id. If
-     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessionsException} to alert the system.
+     * any element can't be retrieved from the database we throw a {@link MissingUnsavedAccessionsException} to alert
+     * the system.
      */
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> getPreexistingAccessions(
             List<AccessionWrapper<MODEL, HASH, ACCESSION>> saveFailedAccessions) {

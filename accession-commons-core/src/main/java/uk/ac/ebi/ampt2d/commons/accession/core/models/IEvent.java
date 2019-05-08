@@ -37,27 +37,27 @@ public interface IEvent<MODEL, ACCESSION> {
     ACCESSION getAccession();
 
     /**
-     * @return Accession of the target object to which original object accession has been merged
+     * @return Accession of the target object into the original object accession has been merged
      */
     ACCESSION getMergedInto();
 
     /**
-     * @return Type of the event like creation,updation ... executed on the accessioned object
+     * @return Type of the event like creation, update, etc, executed on the accessioned object
      */
     EventType getEventType();
 
     /**
-     * @return Information why the object is going through the event; Ex: merging with another accession
+     * @return Reason why the object is going through the event
      */
     String getReason();
 
     /**
-     * @return Get the time at which the event occurred
+     * @return The time at which the event occurred
      */
     LocalDateTime getCreatedDate();
 
     /**
-     * @return List of the objects which are in inactive state because of event
+     * @return List of the objects which are in inactive state as a result of this event
      */
     List<? extends IAccessionedObject<MODEL, ?, ACCESSION>> getInactiveObjects();
 

@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Wrapper containing the object that has been accessioned along with version information in operations
+ * Wrapper containing the object that has been accessioned, potentially across multiple versions.
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object

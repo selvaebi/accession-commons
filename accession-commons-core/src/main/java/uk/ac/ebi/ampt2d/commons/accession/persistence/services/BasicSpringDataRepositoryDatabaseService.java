@@ -39,8 +39,9 @@ import java.util.stream.Collectors;
 
 /**
  * Basic implementation of {@link DatabaseService} that requires a Spring Data repository that extends
- * {@link IAccessionedObjectRepository}, a function to generate the entities from the triple model/hash/accession, a function
- * to get the accession from the entity and a function to get the hashed representation of the message from the entity.
+ * {@link IAccessionedObjectRepository}, a function to generate the entities from the triple model/hash/accession,
+ * a function to get the accession from the entity and a function to get the hashed representation of the message
+ * from the entity.
  *
  * @param <MODEL> Type of the objects identified by the accessions
  * @param <ACCESSION_ENTITY> Type of entity object
@@ -156,7 +157,7 @@ public class BasicSpringDataRepositoryDatabaseService<
         ACCESSION_ENTITY result = repository.findByAccessionAndVersion(accession, version);
         if (result == null) {
             checkAccessionNotMergedOrDeprecated(accession);
-            //Accession does exist version does not.
+            // Accession does exist, but the version does not.
             throw new AccessionDoesNotExistException(accession.toString(), version);
         }
         return result;
@@ -201,7 +202,7 @@ public class BasicSpringDataRepositoryDatabaseService<
     }
 
     /**
-     * @param accessionId Accession that identifies object
+     * @param accessionId Accession that identifies the object
      * @return All entries of an accession. It is never empty
      * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws AccessionDeprecatedException when the accession exists but has been deprecated

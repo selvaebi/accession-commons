@@ -18,11 +18,12 @@
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 /**
- * Exception thrown when Accession could not be generated for the object
+ * Exception thrown when an accession could not be generated for an object.
  */
 public class AccessionCouldNotBeGeneratedException extends Exception {
 
     public AccessionCouldNotBeGeneratedException(String s) {
         super(s);
     }
+
 }
