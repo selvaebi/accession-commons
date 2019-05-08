@@ -27,19 +27,41 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 
 import java.util.List;
 
+/**
+ * Service for creation, retrieval and modifications of object accessions.
+ *
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
+ */
 public interface AccessioningService<MODEL, HASH, ACCESSION> {
 
+    /**
+     * Finds or creates the accessions associated with a list of objects.
+     * Searches each object's accession in the repository, and if it does not exist, a new accession is generated and
+     * stored in the repository.
+     *
+     * @param messages List of objects to be accessioned or already accessioned
+     * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
+     * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
+     */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> getOrCreate(List<? extends MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
 
+    /**
+     * Finds the accessions associated with a list of objects.
+     *
+     * @param accessionedObjects List of already accessioned objects
+     * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
+     */
     List<AccessionWrapper<MODEL, HASH, ACCESSION>> get(List<? extends MODEL> accessionedObjects);
 
     /**
-     * Finds last version of provided accession with its possible data model representations.
+     * Finds the last version of the object identified by the provided accession.
      *
-     * @param accession
-     * @return
-     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @param accession Accession that identifies the object
+     * @return Wrapper containing the object and associated accession and hash
+     * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      */
@@ -47,12 +69,12 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
-     * Finds the provided accession with its possible data model representations.
+     * Finds the object identified by the provided accession and version.
      *
-     * @param accession
-     * @param version
-     * @return accession with particular version
-     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @param accession Accession that identifies the object
+     * @param version Version number of the accessioned object
+     * @return Wrapper containing the object and associated accession and hash
+     * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
      */
@@ -60,13 +82,13 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
             throws AccessionDoesNotExistException, AccessionMergedException, AccessionDeprecatedException;
 
     /**
-     * Updates a specific patch version of an accessioned object. It does not create a new version / patch
+     * Updates a specific version of an accessioned object. It does not create a new version.
      *
-     * @param accession
-     * @param version
-     * @param message
-     * @return updated accession with all the patch information
-     * @throws AccessionDoesNotExistException when the accession has never existed.
+     * @param accession Accession that identifies the object
+     * @param version Version number of the accessioned object
+     * @param message Details of the object of type MODEL
+     * @return Updated accession complete version information
+     * @throws AccessionDoesNotExistException when the accession has never existed
      * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
@@ -76,11 +98,11 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
             AccessionMergedException;
 
     /**
-     * Creates a new patch version of an accession.
+     * Creates a new version of an accession.
      *
-     * @param accession
-     * @param message
-     * @return Accession with complete patch information
+     * @param accession Accession that identifies object
+     * @param message Details of the object of type MODEL
+     * @return Accession with complete version information
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws HashAlreadyExistsException     when another accessioned object exists already with the same hash
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
@@ -91,10 +113,10 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
             AccessionMergedException;
 
     /**
-     * Deprecates an accession
+     * Deprecates an accession.
      *
-     * @param accession
-     * @param reason
+     * @param accession Accession that identifies object
+     * @param reason The reason for deprecation
      * @throws AccessionDoesNotExistException when the accession has never existed.
      * @throws AccessionDeprecatedException   when the accession exists but has been deprecated
      * @throws AccessionMergedException       when the accession exists but has been merged into another accession
@@ -103,14 +125,14 @@ public interface AccessioningService<MODEL, HASH, ACCESSION> {
             AccessionDeprecatedException;
 
     /**
-     * Merges an accession into another
+     * Merges an accession into another one.
      *
-     * @param accessionOrigin
-     * @param mergeInto
-     * @param reason
-     * @throws AccessionDoesNotExistException when either accession has never existed.
-     * @throws AccessionDeprecatedException   when either accession exists but has been deprecated
-     * @throws AccessionMergedException       when either accession exists but has been merged into another accession
+     * @param accessionOrigin Accession which will be merged
+     * @param mergeInto Accession the original one will be merged into
+     * @param reason The reason for merging one accession into another
+     * @throws AccessionDoesNotExistException when the accession has never existed
+     * @throws AccessionDeprecatedException   when accession exists but has been deprecated
+     * @throws AccessionMergedException       when accession exists but has been merged into another accession
      */
     void merge(ACCESSION accessionOrigin, ACCESSION mergeInto, String reason) throws AccessionMergedException,
             AccessionDoesNotExistException, AccessionDeprecatedException;

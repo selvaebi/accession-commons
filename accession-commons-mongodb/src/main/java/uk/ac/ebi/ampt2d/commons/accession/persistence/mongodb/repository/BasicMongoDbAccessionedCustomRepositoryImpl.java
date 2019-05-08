@@ -84,9 +84,9 @@ public abstract class BasicMongoDbAccessionedCustomRepositoryImpl<
     }
 
     /**
-     * Unfortunately we need to set this manually when using a bulk operation.
+     * Set this manually when using a bulk operation.
      *
-     * @param documents
+     * @param documents MongoDB documents to have their creation date set
      */
     private void setAuditCreatedDate(Iterable<DOCUMENT> documents) {
         LocalDateTime createdDate = LocalDateTime.now();

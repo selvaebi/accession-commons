@@ -23,6 +23,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Handles the state of the accession after persisting in the database layer.
+ *
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
+ */
 public class SaveResponse<ACCESSION> {
 
     private final Set<ACCESSION> savedAccessions;

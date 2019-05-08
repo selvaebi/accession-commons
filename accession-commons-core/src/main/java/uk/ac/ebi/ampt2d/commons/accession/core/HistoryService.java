@@ -25,11 +25,11 @@ import java.util.List;
 public interface HistoryService<MODEL, ACCESSION> {
 
     /**
-     * Returns the history of an accession
+     * Returns the full history of an accession.
      *
-     * @param accession
-     * @return
-     * @throws AccessionDoesNotExistException
+     * @param accession Accession that identifies an accessioned object
+     * @return List of historical events associated with the accessioned object
+     * @throws AccessionDoesNotExistException when the accession has never existed
      */
     List<HistoryEvent<MODEL, ACCESSION>> getHistory(ACCESSION accession) throws AccessionDoesNotExistException;
 

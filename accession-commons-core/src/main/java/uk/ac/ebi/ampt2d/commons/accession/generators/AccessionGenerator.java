@@ -27,8 +27,8 @@ import java.util.Map;
 /**
  * A generator for unique accessions for given objects
  *
- * @param <MODEL>     Type of the object to accession
- * @param <ACCESSION> Type of the accession
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public interface AccessionGenerator<MODEL, ACCESSION> {
 
@@ -36,8 +36,9 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * Generate unique accessions for a set of objects. Returned accessions must be unique: two different
      * objects cannot get the same accession
      *
-     * @param messages Set of objects to accession
-     * @return A map of objects to unique accessions
+     * @param messages Objects to be accessioned
+     * @return List of wrapper objects containing the accessioned objects and their associated accessions and hashes
+     * @throws AccessionCouldNotBeGeneratedException when accession could not be generated
      */
     <HASH> List<AccessionWrapper<MODEL, HASH, ACCESSION>> generateAccessions(Map<HASH, MODEL> messages)
             throws AccessionCouldNotBeGeneratedException;
@@ -46,7 +47,7 @@ public interface AccessionGenerator<MODEL, ACCESSION> {
      * This method returns to the accession generator the result of the database insert operation in case any operation
      * needs to be performed at the generator level.
      *
-     * @param response
+     * @param response DB response
      */
     void postSave(SaveResponse<ACCESSION> response);
 }

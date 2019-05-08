@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class represents an inclusive range of ascending monotonic integer values
+ * This class represents an inclusive range of ascending monotonic integer values.
  */
 public class MonotonicRange implements Comparable<MonotonicRange> {
 
@@ -52,11 +52,11 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     }
 
     /**
-     * Returns a array of monotonically increasing ids from start to end inclusively. The array is generated and
+     * Returns an array of monotonically increasing ids from start to end inclusively. The array is generated and
      * returned on demand to make the life span of the array as short as possible in order to have a smaller memory
      * footprint
      *
-     * @return
+     * @return Array of monotonically increasing IDs
      */
     public long[] getIds() {
         int size = getTotalOfValues();
@@ -110,9 +110,9 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
     }
 
     /**
-     * Returns the result of excluding a range of values of the current range.
+     * Returns the result of excluding a range of values from the current range.
      *
-     * @param range
+     * @param range First and last integer values of the range to exclude
      * @return Returns empty, one, two (ordered), or the original range
      */
     public List<MonotonicRange> excludeIntersection(MonotonicRange range) {
@@ -123,16 +123,16 @@ public class MonotonicRange implements Comparable<MonotonicRange> {
         } else {
             if (range.start > start) {
                 if (range.end >= end) {
-                    //Return left
+                    // Return left
                     result.add(new MonotonicRange(start, range.start - 1));
                 } else {
-                    //Return left & right
+                    // Return left & right
                     result.add(new MonotonicRange(start, range.start - 1));
                     result.add(new MonotonicRange(range.end + 1, end));
                 }
             } else {
                 if (range.end < end) {
-                    //Return right
+                    // Return right
                     result.add(new MonotonicRange(range.end + 1, end));
                 }
                 // Else excluded the full range, return empty list

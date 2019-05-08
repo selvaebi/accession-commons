@@ -17,6 +17,9 @@
  */
 package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
+/**
+ * Exception thrown when the generated accession does not match with the accession to commit.
+ */
 public class AccessionIsNotPendingException extends RuntimeException {
 
     public AccessionIsNotPendingException(long accession) {

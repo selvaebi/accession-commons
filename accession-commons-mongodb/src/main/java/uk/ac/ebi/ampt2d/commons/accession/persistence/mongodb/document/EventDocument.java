@@ -33,8 +33,9 @@ import java.util.List;
  * Mongo document that represents an operation that changes the state of an accessioned object. The derived classes must
  * be annotated as Entity.
  *
- * @param <ACCESSION>
- * @param <INACTIVE_DOCUMENT>
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
+ * @param <INACTIVE_DOCUMENT> Currently inactive accessioned object
  */
 public abstract class EventDocument<
         MODEL,

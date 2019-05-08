@@ -30,6 +30,16 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Service for creation, retrieval and modifications of object accessions, that decorates accessions usually with a
+ * prefix and/or suffix.
+ *
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <DB_ACCESSION> Type of the actual accession stored in database
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
+ */
+
 public class DecoratedAccessioningService<MODEL, HASH, DB_ACCESSION, ACCESSION>
         implements AccessioningService<MODEL, HASH, ACCESSION> {
 

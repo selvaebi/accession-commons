@@ -32,7 +32,7 @@ import java.util.stream.LongStream;
 
 /**
  * This class holds the state of the monotonic id blocks used at this moment on the application.
- * This class is not thread safe.
+ * NOTE: This class is not thread safe.
  */
 class BlockManager {
 
@@ -64,7 +64,7 @@ class BlockManager {
      * Polls the next continuous array of monotonic values.
      *
      * @param maxValues Max array size returned by the function
-     * @return
+     * @return Array of monotonically increasing IDs
      */
     public long[] pollNext(int maxValues) throws AccessionCouldNotBeGeneratedException {
         if (!hasAvailableAccessions(maxValues)) {
@@ -79,7 +79,7 @@ class BlockManager {
     /**
      * Polls the next monotonic range to use.
      *
-     * @param maxSize max size of returned {@link MonotonicRange}
+     * @param maxSize Max size of returned {@link MonotonicRange}
      * @return Next available range, if larger than maxSize, then the range is split and only the left part is returned.
      */
     private MonotonicRange pollNextMonotonicRange(int maxSize) {
@@ -154,8 +154,8 @@ class BlockManager {
      * This function will recover the internal state of committed elements and will remove them from the available
      * ranges.
      *
-     * @param committedElements
-     * @throws AccessionIsNotPendingException
+     * @param committedElements Accessions that have already been committed
+     * @throws AccessionIsNotPendingException When the generated accession does not match with the accession to commit
      */
     public void recoverState(long[] committedElements) throws AccessionIsNotPendingException {
         List<MonotonicRange> ranges = MonotonicRange.convertToMonotonicRanges(committedElements);

@@ -22,13 +22,12 @@ import uk.ac.ebi.ampt2d.commons.accession.core.models.AccessionWrapper;
 import java.util.function.Function;
 
 /**
- * Response containing the object that has been accessioned, as well as additional information like the accession or a
- * flag indicating whether the accession is active. To be used at the REST API layer.
+ * Response containing the object that has been accessioned. To be used at the REST API layer.
  *
- * @param <DTO>
- * @param <MODEL>
- * @param <HASH>
- * @param <ACCESSION>
+ * @param <DTO> Data Transfer Object accession model
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public class AccessionResponseDTO<DTO, MODEL, HASH, ACCESSION> {
 

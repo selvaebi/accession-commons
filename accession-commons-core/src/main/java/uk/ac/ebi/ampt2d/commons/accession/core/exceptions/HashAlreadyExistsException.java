@@ -19,6 +19,9 @@ package uk.ac.ebi.ampt2d.commons.accession.core.exceptions;
 
 import java.io.Serializable;
 
+/**
+ * Exception thrown when the hash for the accessioned object is already present in the repository.
+ */
 public class HashAlreadyExistsException extends Exception {
 
     public <HASH, ACCESSION extends Serializable> HashAlreadyExistsException(HASH hash, ACCESSION accession) {

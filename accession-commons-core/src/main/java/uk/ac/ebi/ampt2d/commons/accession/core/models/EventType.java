@@ -19,9 +19,10 @@ package uk.ac.ebi.ampt2d.commons.accession.core.models;
 
 public enum EventType {
 
+    // a new accessioned object is created
     CREATED,
 
-    // accession object has changed
+    // accessioned object has changed
     UPDATED,
 
     // new object version with the same accession

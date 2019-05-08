@@ -30,8 +30,8 @@ import java.time.LocalDateTime;
  * Base class for accessioned objects to be serialized as MongoDB documents.
  * The derived classes must be annotated as Document.
  *
- * @param <MODEL>
- * @param <ACCESSION>
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 public abstract class AccessionedDocument<MODEL, ACCESSION extends Serializable>
         implements IAccessionedObject<MODEL, String, ACCESSION>, Persistable<String> {

@@ -31,7 +31,8 @@ import java.time.LocalDateTime;
  * Base class for inactive accessioned objects to be serialized as relational entities.
  * The derived classes must be annotated as Entity.
  *
- * @param <ACCESSION>
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 @MappedSuperclass
 public abstract class InactiveAccessionEntity<MODEL, ACCESSION extends Serializable>

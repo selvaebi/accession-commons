@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
  * Mongo subdocument that represents a particular accessioned object that is currently inactive. It is nested under the
  * document representing the operation that made it become inactive.
  *
- * @param <ACCESSION>
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  * @see EventDocument
  */
 public abstract class InactiveSubDocument<MODEL, ACCESSION> implements IAccessionedObject<MODEL, String, ACCESSION> {

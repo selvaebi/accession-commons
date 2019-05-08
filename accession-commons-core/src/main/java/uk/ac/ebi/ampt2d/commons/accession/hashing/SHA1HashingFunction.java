@@ -25,6 +25,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Function;
 
+/**
+ * Implementation of the SHA1 hashing function, in order to generate a unique hash from a given string.
+ */
 public class SHA1HashingFunction implements Function<String, String> {
 
     private static final Logger sha1UtilLogger = LoggerFactory.getLogger(SHA1HashingFunction.class);

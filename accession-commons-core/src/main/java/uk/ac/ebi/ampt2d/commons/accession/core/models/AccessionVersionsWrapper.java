@@ -30,16 +30,19 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Wrapper containing the object that has been accessioned, potentially across multiple versions.
+ *
+ * @param <MODEL> Type of the objects identified by the accessions
+ * @param <HASH> Type of the hash calculated based on the fields that uniquely identify an accessioned object
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
+ */
 public class AccessionVersionsWrapper<MODEL, HASH, ACCESSION> {
 
     private ACCESSION accession;
 
     private List<AccessionWrapper<MODEL, HASH, ACCESSION>> data;
 
-    /**
-     * @param models
-     * @Throws IllegalArgumentException if model list is null, empty or multiple accessions are find on the models
-     */
     public AccessionVersionsWrapper(List<AccessionWrapper<MODEL, HASH, ACCESSION>> models) {
         Assert.notEmpty(models, "One or more data objects required.");
         Set<ACCESSION> accessions = models.stream().map(AccessionWrapper::getAccession).collect(Collectors.toSet());

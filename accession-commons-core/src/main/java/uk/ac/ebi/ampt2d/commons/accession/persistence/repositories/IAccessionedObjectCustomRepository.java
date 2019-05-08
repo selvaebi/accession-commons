@@ -27,10 +27,6 @@ public interface IAccessionedObjectCustomRepository<ACCESSION,
 
     /**
      * Bulk insert of accessioned objects. All the hashes must be unique.
-     *
-     * @param entities
-     * @return
-     * @throws RuntimeException if any hash is not unique.
      */
     SaveResponse<ACCESSION> insert(List<ENTITY> entities);
 

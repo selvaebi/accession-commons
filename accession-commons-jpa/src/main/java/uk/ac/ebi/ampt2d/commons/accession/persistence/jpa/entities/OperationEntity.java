@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
  * Entity that represents an operation that changes the state of an accessioned object. The derived classes must
  * be annotated as Entity.
  *
- * @param <ACCESSION>
+ * @param <ACCESSION> Type of the accession that identifies an object of a particular model
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
