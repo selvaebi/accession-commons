@@ -50,6 +50,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
 
     @Autowired
     private BasicSpringDataRepositoryMonotonicDatabaseService<TestModel, TestMonotonicEntity> databaseService;
+
     @Autowired
     private ContiguousIdBlockService contiguousIdBlockService;
 
@@ -65,7 +66,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         String categoryId = "eva_2";
         String instanceId2 = "test-instance_2";
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
-                .getOrCreate(getObjectsForAccessionsInRange(1, 10));
+                .getOrCreate(getObjectsForAccessionsInRange(1, 9));
         assertEquals(9, evaAccessions.size());
         assertEquals(0, evaAccessions.get(0).getAccession().longValue());
         assertEquals(8, evaAccessions.get(8).getAccession().longValue());
@@ -75,7 +76,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
 
         //get another service for same category
         evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
-                .getOrCreate(getObjectsForAccessionsInRange(10, 30));
+                .getOrCreate(getObjectsForAccessionsInRange(11, 30));
         assertEquals(20, evaAccessions.size());
         //Previous block ended here
         assertEquals(9, evaAccessions.get(0).getAccession().longValue());
@@ -92,17 +93,17 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
 
         //get another service for same category but different Instance
         evaAccessions = getAccessioningService(categoryId, instanceId2)
-                .getOrCreate(getObjectsForAccessionsInRange(30, 39));
+                .getOrCreate(getObjectsForAccessionsInRange(31, 39));
         assertEquals(9, evaAccessions.size());
         assertNotEquals(60, evaAccessions.get(0).getAccession().longValue());
         assertEquals(50, evaAccessions.get(0).getAccession().longValue());
         assertEquals(58, evaAccessions.get(8).getAccession().longValue());
-        assertEquals(1, contiguousIdBlockService.getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc
-                (categoryId, instanceId2).size());
+        assertEquals(1, contiguousIdBlockService
+                .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, instanceId2).size());
 
         //get previous uncompleted service from instance1 and create accessions
         evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
-                .getOrCreate(getObjectsForAccessionsInRange(39, 41));
+                .getOrCreate(getObjectsForAccessionsInRange(40, 41));
         assertEquals(2, evaAccessions.size());
         assertEquals(49, evaAccessions.get(0).getAccession().longValue());  //Block ended here
         //New Block with 20 interval from last block made in INSTANCE_2
@@ -110,7 +111,8 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     }
 
     private List<TestModel> getObjectsForAccessionsInRange(int startRange, int endRange) {
-        return IntStream.range(startRange, endRange).mapToObj(i -> TestModel.of("Test-" + i)).collect(Collectors.toList());
+        return IntStream.range(startRange, endRange + 1).mapToObj(i -> TestModel.of("Test-" + i)).collect(Collectors
+                .toList());
     }
 
     private AccessioningService<TestModel, String, Long> getAccessioningService(String categoryId,

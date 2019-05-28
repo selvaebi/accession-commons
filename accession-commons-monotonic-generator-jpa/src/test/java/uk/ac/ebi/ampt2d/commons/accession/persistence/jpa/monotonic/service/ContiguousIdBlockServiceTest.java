@@ -133,5 +133,12 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(2000, block2.getFirstValue());
         assertEquals(2999, block2.getLastValue());
         assertEquals(block2, repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2));
+
+
+        repository.save(new ContiguousIdBlock(CATEGORY_ID_2,INSTANCE_ID,4000,500) );
+        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
+
+        assertEquals(4500, block3.getFirstValue());
+        assertEquals(4999, block3.getLastValue());
     }
 }

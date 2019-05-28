@@ -75,9 +75,16 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
 
     public ContiguousIdBlock nextBlock(String instanceId, long size, long interleaveInterval, long firstBlockStartValue) {
         long nextBlockStartValue = lastValue + 1;
-        if (interleaveInterval != 0 && (nextBlockStartValue - firstBlockStartValue) % interleaveInterval == 0) {
+        long finalBlockEnd = (lastValue / interleaveInterval + 1) * interleaveInterval - 1;
+        long availableSize = finalBlockEnd - nextBlockStartValue + 1;
+        if (availableSize <= 0) {
             nextBlockStartValue = nextBlockStartValue + interleaveInterval;
+            availableSize = interleaveInterval;
         }
+        if (size > availableSize) { // To make sure if we have used different sizes for different instances
+            size = availableSize;
+        }
+
         return new ContiguousIdBlock(categoryId, instanceId, nextBlockStartValue, size);
     }
 
