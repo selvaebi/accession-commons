@@ -67,8 +67,8 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
                 .getOrCreate(getObjectsForAccessionsInRange(1, 10));
         assertEquals(9, evaAccessions.size());
-        assertEquals(1, evaAccessions.get(0).getAccession().longValue());
-        assertEquals(9, evaAccessions.get(8).getAccession().longValue());
+        assertEquals(0, evaAccessions.get(0).getAccession().longValue());
+        assertEquals(8, evaAccessions.get(8).getAccession().longValue());
         assertEquals(1, contiguousIdBlockService
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, INSTANCE_ID)
                 .size());
@@ -78,12 +78,15 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
                 .getOrCreate(getObjectsForAccessionsInRange(10, 30));
         assertEquals(20, evaAccessions.size());
         //Previous block ended here
-        assertEquals(10, evaAccessions.get(0).getAccession().longValue());
-        //New Block after 200 values interval
-        assertEquals(211, evaAccessions.get(1).getAccession().longValue());
-        assertEquals(220, evaAccessions.get(10).getAccession().longValue());
-        assertEquals(421, evaAccessions.get(11).getAccession().longValue());
-        assertEquals(429, evaAccessions.get(19).getAccession().longValue());
+        assertEquals(9, evaAccessions.get(0).getAccession().longValue());
+
+        //New Block still not interleaved
+        assertEquals(10, evaAccessions.get(1).getAccession().longValue());
+        assertEquals(19, evaAccessions.get(10).getAccession().longValue());
+
+        //New Block interleaved
+        assertEquals(40, evaAccessions.get(11).getAccession().longValue());
+        assertEquals(48, evaAccessions.get(19).getAccession().longValue());
         assertEquals(1, contiguousIdBlockService.getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc
                 (categoryId, INSTANCE_ID).size());
 
@@ -91,9 +94,9 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         evaAccessions = getAccessioningService(categoryId, instanceId2)
                 .getOrCreate(getObjectsForAccessionsInRange(30, 39));
         assertEquals(9, evaAccessions.size());
-        assertNotEquals(430, evaAccessions.get(0).getAccession().longValue());
-        assertEquals(631, evaAccessions.get(0).getAccession().longValue());
-        assertEquals(639, evaAccessions.get(8).getAccession().longValue());
+        assertNotEquals(50, evaAccessions.get(0).getAccession().longValue());
+        assertEquals(70, evaAccessions.get(0).getAccession().longValue());
+        assertEquals(78, evaAccessions.get(8).getAccession().longValue());
         assertEquals(1, contiguousIdBlockService.getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc
                 (categoryId, instanceId2).size());
 
@@ -101,9 +104,9 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
                 .getOrCreate(getObjectsForAccessionsInRange(39, 41));
         assertEquals(2, evaAccessions.size());
-        assertEquals(430, evaAccessions.get(0).getAccession().longValue());  //Block ended here
-        //New Block with 200 interval from last block made in INSTANCE_2
-        assertEquals(841, evaAccessions.get(1).getAccession().longValue());
+        assertEquals(49, evaAccessions.get(0).getAccession().longValue());  //Block ended here
+        //New Block with 20 interval from last block made in INSTANCE_2
+        assertEquals(100, evaAccessions.get(1).getAccession().longValue());
     }
 
     private List<TestModel> getObjectsForAccessionsInRange(int startRange, int endRange) {

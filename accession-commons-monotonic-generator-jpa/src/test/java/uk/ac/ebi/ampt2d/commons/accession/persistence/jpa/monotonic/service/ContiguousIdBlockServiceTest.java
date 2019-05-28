@@ -114,8 +114,8 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
         ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID);
-        assertEquals(3000, block2.getFirstValue());
-        assertEquals(3999, block2.getLastValue());
+        assertEquals(2000, block2.getFirstValue());
+        assertEquals(2999, block2.getLastValue());
 
         List<ContiguousIdBlock> contiguousBlocks = service
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(CATEGORY_ID_2, INSTANCE_ID);
@@ -130,8 +130,8 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
         ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
-        assertEquals(3000, block2.getFirstValue());
-        assertEquals(3999, block2.getLastValue());
+        assertEquals(2000, block2.getFirstValue());
+        assertEquals(2999, block2.getLastValue());
         assertEquals(block2, repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2));
     }
 }

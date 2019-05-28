@@ -43,7 +43,7 @@ public class BlockParametersTest {
     }
 
     @Test(expected = BlockInitializationException.class)
-    public void invalidNextBlockInterval() {
+    public void invalidInterleaveInterval() {
         blockParameters = new BlockParameters("test", getBlockInitialization("1000", "0", "1a"));
     }
 
@@ -57,11 +57,11 @@ public class BlockParametersTest {
         blockParameters = new BlockParameters("test", getBlockInitialization("1000", "0", "0"));
     }
 
-    private Map<String, String> getBlockInitialization(String blockSize, String blockStartValue, String nextBlockInterval) {
+    private Map<String, String> getBlockInitialization(String blockSize, String blockStartValue, String interleaveInterval) {
         Map<String, String> blockInitializations = new HashMap<>();
         blockInitializations.put("blockSize", blockSize);
         blockInitializations.put("blockStartValue", blockStartValue);
-        blockInitializations.put("nextBlockInterval", nextBlockInterval);
+        blockInitializations.put("interleaveInterval", interleaveInterval);
         return blockInitializations;
     }
 }
