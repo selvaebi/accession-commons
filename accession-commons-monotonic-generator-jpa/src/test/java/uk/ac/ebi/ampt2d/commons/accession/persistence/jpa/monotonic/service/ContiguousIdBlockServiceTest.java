@@ -158,20 +158,20 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(999, block1.getLastValue());
 
         ContiguousIdBlock block2 = block1.nextBlock(INSTANCE_ID, 2000, 0, 0);
-        assertEquals(1000, block2.getFirstValue()); // does not interrleave as interleaveInterval = 0
+        assertEquals(1000, block2.getFirstValue()); // does not interleave as interleaveInterval = 0
         assertEquals(2999, block2.getLastValue()); // as there is no interleaving any size can be reserved for a block
 
         //Test different instance and different size
         block2 = block1.nextBlock(INSTANCE_ID, 500, 1000, 0);
         assertEquals(2000, block2.getFirstValue()); // interleaves as interleavingPoint is multiple of 1000
         assertEquals(2499, block2.getLastValue());
-        //reserving block with different instance and different size
+        //Reserving block with different instance and different size
         ContiguousIdBlock block3 = block2.nextBlock(INSTANCE_ID_2, 1000, 1000, 0);
-        assertEquals(2500, block3.getFirstValue()); // doesn't interrleave as interleavingPoint is multiple of 1000
+        assertEquals(2500, block3.getFirstValue()); // doesn't interleave as interleavingPoint is multiple of 1000
         assertEquals(2999, block3.getLastValue()); // Available size is only 500 before interleaving point
 
         block2 = block1.nextBlock(INSTANCE_ID, 2000, 2000, 0);
-        assertEquals(1000, block2.getFirstValue()); // Doesnt interrleave as interleavingPoint is multiple of 1000
+        assertEquals(1000, block2.getFirstValue()); // does not interleave as interleavingPoint is multiple of 1000
         assertEquals(1999, block2.getLastValue()); // available size is only 1000 before interleaving point
         block3 = block2.nextBlock(INSTANCE_ID, 2000, 2000, 0);
         //Interleaves as interleavingPoint is multiple of 2000 and interleaved 2000
