@@ -134,11 +134,19 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(2999, block2.getLastValue());
         assertEquals(block2, repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2));
 
-
+        //Manually save a block of size 500, so for the current range only a block size of 500 reserved
         repository.save(new ContiguousIdBlock(CATEGORY_ID_2,INSTANCE_ID,4000,500) );
+        //Reserve a new block with size 1000
         ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
 
         assertEquals(4500, block3.getFirstValue());
+        // the block is reserved only with size 500 the remainingSize in the range is 500 only
         assertEquals(4999, block3.getLastValue());
+
+        // for remaining elements service would reserve new block interleaved by 1000.
+        ContiguousIdBlock block4 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
+        assertEquals(6000, block4.getFirstValue());
+        // the block is reserved only with size full size 1000
+        assertEquals(6999, block4.getLastValue());
     }
 }
