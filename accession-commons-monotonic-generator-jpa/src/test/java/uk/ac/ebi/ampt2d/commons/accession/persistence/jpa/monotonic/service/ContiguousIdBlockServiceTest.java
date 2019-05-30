@@ -177,6 +177,7 @@ public class ContiguousIdBlockServiceTest {
         //Interleaves as interleavingPoint is multiple of 2000 and interleaved 2000
         assertEquals(4000, block3.getFirstValue());
         assertEquals(5999, block3.getLastValue()); // full 2000 is reserved as the new range contains 2000 values
+    }
 
     @Test
     public void testNextBlockWithStartingPointOtherThanZero() {
