@@ -135,7 +135,7 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(block2, repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2));
 
         //Manually save a block of size 500, so for the current range only a block size of 500 reserved
-        repository.save(new ContiguousIdBlock(CATEGORY_ID_2,INSTANCE_ID,4000,500) );
+        repository.save(new ContiguousIdBlock(CATEGORY_ID_2, INSTANCE_ID, 4000, 500));
         //Reserve a new block with size 1000
         ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
 
@@ -149,4 +149,34 @@ public class ContiguousIdBlockServiceTest {
         // the block is reserved only with size full size 1000
         assertEquals(6999, block4.getLastValue());
     }
+
+    @Test
+    public void testNextBlock() {
+        // Reserving initial block
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID,INSTANCE_ID,0,1000);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+
+        ContiguousIdBlock block2 = block1.nextBlock(INSTANCE_ID, 2000, 0, 0);
+        assertEquals(1000, block2.getFirstValue()); // does not interrleave as interleaveInterval = 0
+        assertEquals(2999, block2.getLastValue()); // as there is no interleaving any size can be reserved for a block
+
+        //Test different instance and different size
+        block2 = block1.nextBlock(INSTANCE_ID, 500, 1000, 0);
+        assertEquals(2000, block2.getFirstValue()); // interleaves as interleavingPoint is multiple of 1000
+        assertEquals(2499, block2.getLastValue());
+        //reserving block with different instance and different size
+        ContiguousIdBlock block3 = block2.nextBlock(INSTANCE_ID_2, 1000, 1000, 0);
+        assertEquals(2500, block3.getFirstValue()); // doesn't interrleave as interleavingPoint is multiple of 1000
+        assertEquals(2999, block3.getLastValue()); // Available size is only 500 before interleaving point
+
+        block2 = block1.nextBlock(INSTANCE_ID, 2000, 2000, 0);
+        assertEquals(1000, block2.getFirstValue()); // Doesnt interrleave as interleavingPoint is multiple of 1000
+        assertEquals(1999, block2.getLastValue()); // available size is only 1000 before interleaving point
+        block3 = block2.nextBlock(INSTANCE_ID, 2000, 2000, 0);
+        //Interleaves as interleavingPoint is multiple of 2000 and interleaved 2000
+        assertEquals(4000, block3.getFirstValue());
+        assertEquals(5999, block3.getLastValue()); // full 2000 is reserved as the new range contains 2000 values
+    }
+
 }
