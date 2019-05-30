@@ -78,14 +78,14 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
      * In case of interleaveInterval == 0 the next block can start contiguously , but if it is not then
      * the interleavingPoint is calculated by finding the range in which the lastvalue (previous block's endValue)
      * falls.
-     *
+     * <p>
      * Below are the series of cases
-     *
+     * <p>
      * if earliestBlockStartValue = 0 , interleaveInterval = 50 , lastValue = 40 then,
      * interleavingPoint = 50 and remainingSizeInRangeOfBlocks=9 so the nextBlockStartValue will be 41
      * if earliestBlockStartValue = 0 , interleaveInterval = 50 , lastValue = 49 then,
      * interleavingPoint = 50 and remainingSizeInRangeOfBlocks=0 so the nextBlockStartValue will be 100
-     *
+     * <p>
      * if earliestBlockStartValue = 0 , interleaveInterval = 50 , lastValue = 120 then,
      * interleavingPoint = 150 and remainingSizeInRangeOfBlocks= 29 so the nextBlockStartValue will be 121
      * if earliestBlockStartValue = 0 , interleaveInterval = 50 , lastValue = 130 and size is 25 then,
@@ -103,7 +103,8 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         if (interleaveInterval == 0) {
             return new ContiguousIdBlock(categoryId, instanceId, nextBlockStartValue, size);
         }
-        long interleavingPoint = ((lastValue - earliestBlockStartValue) / interleaveInterval + 1) * interleaveInterval;
+        long interleavingPoint = ((lastValue - earliestBlockStartValue) / interleaveInterval + 1) *
+                interleaveInterval + earliestBlockStartValue;
         long remainingSizeInRangeOfBlocks = interleavingPoint - nextBlockStartValue;
         if (remainingSizeInRangeOfBlocks <= 0) {
             nextBlockStartValue = nextBlockStartValue + interleaveInterval;

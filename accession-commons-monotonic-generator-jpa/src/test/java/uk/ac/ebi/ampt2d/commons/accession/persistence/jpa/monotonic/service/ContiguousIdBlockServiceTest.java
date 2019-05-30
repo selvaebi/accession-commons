@@ -178,20 +178,32 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(4000, block3.getFirstValue());
         assertEquals(5999, block3.getLastValue()); // full 2000 is reserved as the new range contains 2000 values
 
-        // Reserving initial block start other than 0
-        block1 = new ContiguousIdBlock(CATEGORY_ID,INSTANCE_ID,15,10);
-        assertEquals(15, block1.getFirstValue());
-        assertEquals(24, block1.getLastValue());
+    @Test
+    public void testNextBlockWithStartingPointOtherThanZero() {
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 500, 10);
+        assertEquals(500, block1.getFirstValue());
+        assertEquals(509, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(510, block1.getFirstValue());
+        assertEquals(519, block1.getLastValue());
 
-        block2 = block1.nextBlock(INSTANCE_ID, 10, 0, 15);
-        assertEquals(25, block2.getFirstValue()); // does not interleave as interleaveInterval = 0
-        assertEquals(34, block2.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(540, block1.getFirstValue());
+        assertEquals(549, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(550, block1.getFirstValue());
+        assertEquals(559, block1.getLastValue());
 
-        block2 = block1.nextBlock(INSTANCE_ID, 10, 10, 15);
-        assertEquals(35, block2.getFirstValue()); // interleaves as interleavingPoint is at 25
-        assertEquals(44, block2.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(580, block1.getFirstValue());
+        assertEquals(589, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(590, block1.getFirstValue());
+        assertEquals(599, block1.getLastValue());
 
-
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(620, block1.getFirstValue());
+        assertEquals(629, block1.getLastValue());
     }
 
 }
