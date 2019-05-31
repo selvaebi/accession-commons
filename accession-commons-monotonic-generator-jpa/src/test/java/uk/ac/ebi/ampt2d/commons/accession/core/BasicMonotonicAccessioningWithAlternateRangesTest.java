@@ -65,8 +65,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
     public void testAlternateRangesWithDifferentGenerators() throws AccessionCouldNotBeGeneratedException {
         /* blockStartValue= 0, blockSize= 10 , interleaveInterval= 20
           the new blocks are interleaved or jumped for each 20 items accessioned
-          and interleaves at an interval of 20 from interleavepoint
-          the accesions will be in the range of 0-19,40-59,80-99 */
+          so the accesions will be in the range of 0-19,40-59,80-99 */
         String categoryId = "eva_2";
         String instanceId2 = "test-instance_2";
         List<AccessionWrapper<TestModel, String, Long>> evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
@@ -74,16 +73,16 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         assertEquals(9, evaAccessions.size());
         assertEquals(0, evaAccessions.get(0).getAccession().longValue());
         assertEquals(8, evaAccessions.get(8).getAccession().longValue());
-        //blockSize 10 is reserved but only 9 elements have been accessioned
+        //BlockSize of 10 was reserved but only 9 elements have been accessioned
         assertEquals(1, contiguousIdBlockService
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, INSTANCE_ID)
                 .size());
 
-        //get another service for same category
+        //Get another service for same category
         evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
                 .getOrCreate(getObjectsForAccessionsInRange(11, 30));
         assertEquals(20, evaAccessions.size());
-        //Previous block ended here as the blocksize was 10
+        //Previous block ended here as only 9 elements were accessioned out of a blocksize of 10
         assertEquals(9, evaAccessions.get(0).getAccession().longValue());
 
         //New Block still not interleaved or jumped as the interleave point is 20
@@ -93,11 +92,11 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         //New Block interleaved as it reached interleave point 20 so jumped 20 places to 40
         assertEquals(40, evaAccessions.get(11).getAccession().longValue());
         assertEquals(48, evaAccessions.get(19).getAccession().longValue());
-        //blockSize 10 is reserved but only 9 elements have been accessioned
+        //BlockSize if 10 was reserved but only 9 elements have been accessioned
         assertEquals(1, contiguousIdBlockService.getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc
                 (categoryId, INSTANCE_ID).size());
 
-        //get another service for same category but different Instance
+        //Get another service for same category but different Instance
         evaAccessions = getAccessioningService(categoryId, instanceId2)
                 .getOrCreate(getObjectsForAccessionsInRange(31, 39));
         assertEquals(9, evaAccessions.size());
@@ -108,7 +107,7 @@ public class BasicMonotonicAccessioningWithAlternateRangesTest {
         assertEquals(1, contiguousIdBlockService
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(categoryId, instanceId2).size());
 
-        //get previous uncompleted service from instance1 and create accessions
+        //Get previous uncompleted service from instance1 and create accessions
         evaAccessions = getAccessioningService(categoryId, INSTANCE_ID)
                 .getOrCreate(getObjectsForAccessionsInRange(40, 41));
         assertEquals(2, evaAccessions.size());

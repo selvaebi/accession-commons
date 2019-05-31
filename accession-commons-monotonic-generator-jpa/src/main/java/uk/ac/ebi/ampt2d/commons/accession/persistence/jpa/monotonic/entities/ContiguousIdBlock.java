@@ -74,8 +74,8 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
     }
 
     /**
-     * This method creates a new ContiguousIdBlock based on the previous block and interleaveInterval.
-     * In case of interleaveInterval == 0 the next block can start contiguously , but if it is not then
+     * This method creates a new block based on the previous block and interleaveInterval.
+     * In case of interleaveInterval is zero, the next block can start right after the last one, otherwise
      * the interleavingPoint is calculated by finding the range in which the lastvalue (previous block's endValue)
      * falls.
      * <p>
@@ -91,10 +91,10 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
      * if earliestBlockStartValue = 0 , interleaveInterval = 50 , lastValue = 130 and size is 25 then,
      * interleavingPoint = 150 and remainingSizeInRangeOfBlocks= 19 so the nextBlockStartValue equals 131 and size = 19
      *
-     * @param instanceId              - instance id for the machine
-     * @param size                    - size of the block to be reserved
-     * @param interleaveInterval      - specifies when to interleave and interval to interleave
-     * @param earliestBlockStartValue - earliest block start value refers to blockStartValue in properties file
+     * @param instanceId              instance id for the machine
+     * @param size                    size of the block to be reserved
+     * @param interleaveInterval      specifies when to interleave and interval to interleave
+     * @param earliestBlockStartValue refers to blockStartValue in properties file
      * @return
      */
     public ContiguousIdBlock nextBlock(String instanceId, long size, long interleaveInterval,
@@ -105,15 +105,15 @@ public class ContiguousIdBlock implements Comparable<ContiguousIdBlock> {
         }
         long interleavingPoint = ((lastValue - earliestBlockStartValue) / interleaveInterval + 1) *
                 interleaveInterval + earliestBlockStartValue;
-        long remainingSizeInRangeOfBlocks = interleavingPoint - nextBlockStartValue;
-        if (remainingSizeInRangeOfBlocks <= 0) {
+        long remainingSize = interleavingPoint - nextBlockStartValue;
+        if (remainingSize <= 0) {
             nextBlockStartValue = nextBlockStartValue + interleaveInterval;
-            remainingSizeInRangeOfBlocks = interleaveInterval;
+            remainingSize = interleaveInterval;
         }
-        if (size > remainingSizeInRangeOfBlocks) {
-            /* To make sure we allocate only available blocksize in case we have reserved different sizes
+        if (size > remainingSize) {
+            /* To make sure we allocate only available size in case we have reserved different sizes
             for different instances */
-            size = remainingSizeInRangeOfBlocks;
+            size = remainingSize;
         }
 
         return new ContiguousIdBlock(categoryId, instanceId, nextBlockStartValue, size);
