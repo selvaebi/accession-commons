@@ -23,7 +23,6 @@ import uk.ac.ebi.ampt2d.commons.accession.block.initialization.BlockParameters;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.entities.ContiguousIdBlock;
 import uk.ac.ebi.ampt2d.commons.accession.persistence.jpa.monotonic.repositories.ContiguousIdBlockRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +51,7 @@ public class ContiguousIdBlockService {
         BlockParameters blockParameters = getBlockParameters(categoryId);
         if (lastBlock != null) {
             return repository.save(lastBlock.nextBlock(instanceId, blockParameters.getBlockSize(),
-                    blockParameters.getNextBlockInterval()));
+                    blockParameters.getInterleaveInterval(), blockParameters.getBlockStartValue()));
         } else {
             ContiguousIdBlock newBlock = new ContiguousIdBlock(categoryId, instanceId,
                     blockParameters.getBlockStartValue(), blockParameters.getBlockSize());

@@ -63,7 +63,7 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testReserveWithExistingData() {
-        // Save a block
+        //Save a block
         service.save(Arrays.asList(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 5)));
         ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(5, block.getFirstValue());
@@ -114,8 +114,8 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
         ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID);
-        assertEquals(3000, block2.getFirstValue());
-        assertEquals(3999, block2.getLastValue());
+        assertEquals(2000, block2.getFirstValue());
+        assertEquals(2999, block2.getLastValue());
 
         List<ContiguousIdBlock> contiguousBlocks = service
                 .getUncompletedBlocksByCategoryIdAndApplicationInstanceIdOrderByEndAsc(CATEGORY_ID_2, INSTANCE_ID);
@@ -130,8 +130,96 @@ public class ContiguousIdBlockServiceTest {
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
         ContiguousIdBlock block2 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
-        assertEquals(3000, block2.getFirstValue());
-        assertEquals(3999, block2.getLastValue());
+        assertEquals(2000, block2.getFirstValue());
+        assertEquals(2999, block2.getLastValue());
         assertEquals(block2, repository.findFirstByCategoryIdOrderByLastValueDesc(CATEGORY_ID_2));
+
+        //Manually save a block of size 500, so for the current range only a block size of 500 reserved
+        repository.save(new ContiguousIdBlock(CATEGORY_ID_2, INSTANCE_ID, 4000, 500));
+        //Reserve a new block with size 1000
+        ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
+
+        assertEquals(4500, block3.getFirstValue());
+        //The block was reserved with size 1000, but only 500 were available due to the interleaving.
+        assertEquals(4999, block3.getLastValue());
+
+        //For remaining elements service would reserve new block interleaved by 1000.
+        ContiguousIdBlock block4 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
+        assertEquals(6000, block4.getFirstValue());
+        assertEquals(6999, block4.getLastValue());
     }
+
+    @Test
+    public void testNextBlockWithZeroInterleaveInterval() {
+        //Reserving initial block
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+
+        ContiguousIdBlock block2 = block1.nextBlock(INSTANCE_ID, 2000, 0, 0);
+        assertEquals(1000, block2.getFirstValue()); // does not interleave as interleaveInterval = 0
+        assertEquals(2999, block2.getLastValue()); // as there is no interleaving any size can be reserved for a block
+    }
+
+    @Test
+    public void testNextBlockWithDifferentSizeAndInstance() {
+        //Reserving initial block
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+
+        //Test different instance and different size
+        ContiguousIdBlock block2 = block1.nextBlock(INSTANCE_ID, 500, 1000, 0);
+        assertEquals(2000, block2.getFirstValue()); // interleaves as interleavingPoint is multiple of 1000
+        assertEquals(2499, block2.getLastValue());
+        //Reserving block with different instance and different size
+        ContiguousIdBlock block3 = block2.nextBlock(INSTANCE_ID_2, 1000, 1000, 0);
+        assertEquals(2500, block3.getFirstValue()); // does not interleave as interleavingPoint is multiple of 1000
+        assertEquals(2999, block3.getLastValue()); // Available size is only 500 before interleaving point
+    }
+
+    @Test
+    public void testNextBlockWithLargerInterleaveInterval() {
+        //Reserving initial block
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
+        assertEquals(0, block1.getFirstValue());
+        assertEquals(999, block1.getLastValue());
+
+        ContiguousIdBlock block2 = block1.nextBlock(INSTANCE_ID, 2000, 2000, 0);
+        assertEquals(1000, block2.getFirstValue()); // does not interleave as interleavingPoint is multiple of 1000
+        assertEquals(1999, block2.getLastValue()); // available size is only 1000 before interleaving point
+        ContiguousIdBlock block3 = block2.nextBlock(INSTANCE_ID, 2000, 2000, 0);
+        //Interleaves as interleavingPoint is multiple of 2000 and interleaved 2000
+        assertEquals(4000, block3.getFirstValue());
+        assertEquals(5999, block3.getLastValue()); // full 2000 is reserved as the new range contains 2000 values
+    }
+
+    @Test
+    public void testNextBlockWithStartingPointOtherThanZero() {
+        ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 500, 10);
+        assertEquals(500, block1.getFirstValue());
+        assertEquals(509, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(510, block1.getFirstValue());
+        assertEquals(519, block1.getLastValue());
+
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(540, block1.getFirstValue());
+        assertEquals(549, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(550, block1.getFirstValue());
+        assertEquals(559, block1.getLastValue());
+
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(580, block1.getFirstValue());
+        assertEquals(589, block1.getLastValue());
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(590, block1.getFirstValue());
+        assertEquals(599, block1.getLastValue());
+
+        block1 = block1.nextBlock(INSTANCE_ID, 10, 20, 500);
+        assertEquals(620, block1.getFirstValue());
+        assertEquals(629, block1.getLastValue());
+    }
+
 }
