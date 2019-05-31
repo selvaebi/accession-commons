@@ -63,7 +63,7 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testReserveWithExistingData() {
-        // Save a block
+        //Save a block
         service.save(Arrays.asList(new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 5)));
         ContiguousIdBlock block = service.reserveNewBlock(CATEGORY_ID, INSTANCE_ID);
         assertEquals(5, block.getFirstValue());
@@ -140,19 +140,18 @@ public class ContiguousIdBlockServiceTest {
         ContiguousIdBlock block3 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
 
         assertEquals(4500, block3.getFirstValue());
-        // the block is reserved only with size 500 the remainingSize in the range is 500 only
+        //The block was reserved with size 1000, but only 500 were available due to the interleaving.
         assertEquals(4999, block3.getLastValue());
 
-        // for remaining elements service would reserve new block interleaved by 1000.
+        //For remaining elements service would reserve new block interleaved by 1000.
         ContiguousIdBlock block4 = service.reserveNewBlock(CATEGORY_ID_2, INSTANCE_ID_2);
         assertEquals(6000, block4.getFirstValue());
-        // the block is reserved only with size full size 1000
         assertEquals(6999, block4.getLastValue());
     }
 
     @Test
     public void testNextBlockWithZeroInterleaveInterval() {
-        // Reserving initial block
+        //Reserving initial block
         ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
@@ -164,7 +163,7 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testNextBlockWithDifferentSizeAndInstance() {
-        // Reserving initial block
+        //Reserving initial block
         ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
@@ -181,7 +180,7 @@ public class ContiguousIdBlockServiceTest {
 
     @Test
     public void testNextBlockWithLargerInterleaveInterval() {
-        // Reserving initial block
+        //Reserving initial block
         ContiguousIdBlock block1 = new ContiguousIdBlock(CATEGORY_ID, INSTANCE_ID, 0, 1000);
         assertEquals(0, block1.getFirstValue());
         assertEquals(999, block1.getLastValue());
